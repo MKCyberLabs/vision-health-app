@@ -29,12 +29,12 @@ def handle_cli_interaction(child, session_id, host_image_path):
             return jsonify({
                 "status": "needs_approval", 
                 "session_id": session_id,
-                "message": child.before.strip() 
+                "message": (child.before or "").strip() 
             })
             
         else:
             # Command finished cleanly without asking anything further
-            output = child.before.strip()
+            output = (child.before or "").strip()
             # Clean up session as it's now finished
             if session_id in active_sessions:
                 del active_sessions[session_id]
@@ -136,7 +136,7 @@ def reply_gemini():
 if __name__ == '__main__':
     # Configuration via environment variables
     # Default to 172.17.0.1 for Docker gateway access, or 0.0.0.0 for general container use
-    host = os.environ.get("FLASK_HOST", "172.17.0.1")
+    host = os.environ.get("FLASK_HOST", "0.0.0.0")
     port = int(os.environ.get("FLASK_PORT", 5000))
     debug = os.environ.get("FLASK_DEBUG", "false").lower() == "true"
     
