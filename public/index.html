@@ -4,43 +4,90 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Health Matrix</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: system-ui, sans-serif; max-width: 500px; margin: 50px auto; padding: 20px; background: #f4f7f6; }
-        .card { background: white; border: 1px solid #ddd; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        input, button { display: block; width: 100%; margin-bottom: 15px; padding: 12px; box-sizing: border-box; border-radius: 6px; border: 1px solid #ccc; }
-        button { background-color: #0d6efd; color: white; border: none; cursor: pointer; font-weight: bold; }
-        button:hover { background-color: #0b5ed7; }
-        .btn-danger { background-color: #dc3545; }
-        .btn-danger:hover { background-color: #bb2d3b; }
-        #result { margin-top: 20px; white-space: pre-wrap; background: #212529; color: #f8f9fa; padding: 15px; border-radius: 8px; display: none; font-family: monospace; }
-        #loading { display: none; color: #6c757d; font-style: italic; font-weight: 500; text-align: center; margin-top: 15px; }
+        /* Custom styles that can't be purely utility-based or are easier this way */
+        #result { display: none; }
+        #loading { display: none; }
     </style>
 </head>
-<body>
-    <div class="card">
-        <h2 style="text-align: center; margin-top: 0;">🍏 AI Health Matrix</h2>
-        <form id="uploadForm">
-            <label for="image"><strong>Food Image (Required):</strong></label>
-            <input type="file" id="image" accept="image/*" required>
-            
-            <label for="weight"><strong>Weight / Portion (Optional):</strong></label>
-            <input type="text" id="weight" placeholder="e.g., 100g, 1 slice, 2 cups">
-            
-            <button type="submit">Analyze Meal</button>
+<body class="bg-pink-50 font-sans text-gray-800 antialiased min-h-screen p-4 md:p-8 flex justify-center items-start">
+    <div class="bg-white rounded-3xl shadow-xl border border-pink-100 p-6 md:p-12 w-full max-w-4xl mt-10">
+        <h2 class="text-4xl md:text-5xl font-extrabold text-center text-pink-900 mb-8 tracking-tight">🌸 AI Health Matrix</h2>
+        <form id="uploadForm" class="space-y-8">
+            <div>
+                <label class="block text-xl font-semibold text-pink-800 mb-3">Food Image (Required):</label>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <label for="imageUpload" class="flex-1 cursor-pointer bg-pink-100 hover:bg-pink-200 text-pink-800 font-bold text-xl py-4 rounded-xl border-2 border-pink-300 transition-colors text-center shadow-sm">
+                        📁 Upload Image
+                    </label>
+                    <input type="file" id="imageUpload" accept="image/*" class="hidden">
+
+                    <label for="imageCamera" class="flex-1 cursor-pointer bg-green-100 hover:bg-green-200 text-green-800 font-bold text-xl py-4 rounded-xl border-2 border-green-300 transition-colors text-center shadow-sm">
+                        📸 Take Photo
+                    </label>
+                    <input type="file" id="imageCamera" accept="image/*" capture="environment" class="hidden">
+                </div>
+            </div>
+
+            <div id="previewContainer" class="hidden mt-6">
+                <p class="block text-xl font-semibold text-pink-800 mb-3">Image Preview:</p>
+                <img id="imagePreview" src="" alt="Selected food preview" class="w-full max-h-[600px] object-cover rounded-2xl border-4 border-pink-200 shadow-md">
+            </div>
+
+            <div>
+                <label for="weight" class="block text-xl font-semibold text-pink-800 mb-3">Weight / Portion (Optional):</label>
+                <input type="text" id="weight" placeholder="e.g., 100g, 1 slice, 2 cups" class="w-full text-xl p-4 border-2 border-pink-200 rounded-xl focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-200 transition-all placeholder-pink-300 text-gray-700">
+            </div>
+
+            <button type="submit" class="w-full bg-gradient-to-r from-pink-500 to-green-500 text-white font-bold text-2xl py-5 rounded-2xl hover:from-pink-600 hover:to-green-600 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                Analyze Meal ✨
+            </button>
         </form>
-        <div id="loading">Analyzing your meal... 🍳 Please wait.</div>
-        <div id="result"></div>
+
+        <div id="loading" class="text-2xl text-pink-600 italic font-medium text-center mt-10 animate-pulse">
+            Analyzing your meal... 🌸 Please wait.
+        </div>
+        <div id="result" class="mt-10 bg-green-50 text-green-900 p-8 rounded-2xl border-2 border-green-200 text-xl md:text-2xl leading-relaxed whitespace-pre-wrap shadow-inner font-medium"></div>
     </div>
 
     <script>
         const form = document.getElementById('uploadForm');
         const loading = document.getElementById('loading');
         const resultDiv = document.getElementById('result');
+        const imageUpload = document.getElementById('imageUpload');
+        const imageCamera = document.getElementById('imageCamera');
+        const previewContainer = document.getElementById('previewContainer');
+        const imagePreview = document.getElementById('imagePreview');
+
+        let selectedFile = null;
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                selectedFile = file;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imagePreview.src = e.target.result;
+                    previewContainer.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        imageUpload.addEventListener('change', handleFileSelect);
+        imageCamera.addEventListener('change', handleFileSelect);
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
+
+            if (!selectedFile) {
+                alert("Please select or take an image first.");
+                return;
+            }
+
             const formData = new FormData();
-            formData.append('image', document.getElementById('image').files[0]);
+            formData.append('image', selectedFile);
             formData.append('weight', document.getElementById('weight').value);
 
             loading.style.display = 'block';
@@ -60,10 +107,12 @@
                 showResult(data.result);
             } else if (data.status === "needs_approval") {
                 resultDiv.innerHTML = `
-                    <p style="color: #ffc107; margin-top:0;"><strong>⚠️ System Confirmation Required:</strong></p>
-                    <pre style="white-space: pre-wrap; margin-bottom: 15px;">${data.message}</pre>
-                    <button onclick="sendReply('${data.sessionId}', 'y')">Confirm (Yes)</button>
-                    <button onclick="sendReply('${data.sessionId}', 'n')" class="btn-danger">Cancel (No)</button>
+                    <p class="text-yellow-600 mb-4 text-2xl font-bold">⚠️ System Confirmation Required:</p>
+                    <pre class="whitespace-pre-wrap mb-6 font-sans text-xl">${data.message}</pre>
+                    <div class="flex gap-4">
+                        <button onclick="sendReply('${data.sessionId}', 'y')" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl text-xl transition-colors shadow-md">Confirm (Yes)</button>
+                        <button onclick="sendReply('${data.sessionId}', 'n')" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-xl text-xl transition-colors shadow-md">Cancel (No)</button>
+                    </div>
                 `;
                 resultDiv.style.display = 'block';
             } else {
