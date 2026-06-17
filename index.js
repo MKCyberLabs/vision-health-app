@@ -12,157 +12,117 @@ app.use(express.json());
 app.use(express.static('public'));
 
 const upload = multer({ dest: 'temp/' });
-const activeSessions = {};
+const GEMINI_API_URL = process.env.GEMINI_API_URL || 'http://172.17.0.1:5000';
 
-// Timeout for CLI responses (3 minutes)
-const CLI_TIMEOUT_MS = 180000;
-
-function handleCliInteraction(child, sessionId, imagePath, res) {
-    let outputBuffer = '';
-    let responded = false;
-
-    // Set a timeout so requests don't hang forever
-    const timeout = setTimeout(() => {
-        if (!responded) {
-            responded = true;
-            child.kill();
-            if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
-            delete activeSessions[sessionId];
-            res.status(504).json({
-                status: "error",
-                message: "CLI timed out after 3 minutes. The AI may be overloaded."
-            });
-        }
-    }, CLI_TIMEOUT_MS);
-
-    // Capture BOTH stdout and stderr — agy writes output to stderr
-    child.stdout.on('data', (data) => {
-        outputBuffer += data.toString();
-    });
-
-    child.stderr.on('data', (data) => {
-        outputBuffer += data.toString();
-
-        // Check if the CLI is asking for permission/approval
-        if (/proceed\? \[y\/n\]/i.test(outputBuffer) || /yes\/no/i.test(outputBuffer)) {
-            if (!responded) {
-                responded = true;
-                clearTimeout(timeout);
-                activeSessions[sessionId] = { child, imagePath };
-                return res.json({
-                    status: "needs_approval",
-                    sessionId: sessionId,
-                    message: outputBuffer.trim()
-                });
-            }
-        }
-    });
-
-    child.on('close', (code) => {
-        clearTimeout(timeout);
-        if (responded) return; // Already sent a response (approval prompt or timeout)
-        responded = true;
-
-        if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
-        delete activeSessions[sessionId];
-
-        if (code === 0) {
-            res.json({ status: "success", result: outputBuffer.trim() });
-        } else {
-            res.status(500).json({
-                status: "error",
-                message: outputBuffer.trim() || `CLI exited with code ${code}`
-            });
-        }
-    });
-
-    child.on('error', (err) => {
-        clearTimeout(timeout);
-        if (responded) return;
-        responded = true;
-
-        if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
-        delete activeSessions[sessionId];
-        res.status(500).json({ status: "error", message: err.message });
-    });
-}
-
-app.post('/analyze', upload.single('image'), (req, res) => {
+app.post('/analyze', upload.single('image'), async (req, res) => {
     if (!req.file) return res.status(400).json({ error: "No image file provided." });
 
     const imagePath = req.file.path;
     const weight = req.body.weight || "";
-    const sessionId = uuidv4();
 
     let prompt = "Analyze this food image and provide a health matrix: calories, protein, fiber, fats, and a description.";
     if (weight) prompt += ` The portion size/weight is: ${weight}.`;
     prompt += ` Image reference path: ${path.resolve(imagePath)}`;
 
-    console.log(`[${sessionId}] Spawning agy CLI for image: ${imagePath}`);
+    console.log(`Sending ask request to Flask API at ${GEMINI_API_URL}/ask for image: ${imagePath}`);
 
-    const child = spawn('/root/.local/bin/agy', ['-p', prompt, '--dangerously-skip-permissions'], {
-        env: { ...process.env, HOME: '/root' }
-    });
+    try {
+        const response = await fetch(`${GEMINI_API_URL}/ask`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                message: prompt,
+                image_path: imagePath
+            })
+        });
 
-    handleCliInteraction(child, sessionId, imagePath, res);
-});
-
-app.post('/reply', (req, res) => {
-    const { sessionId, answer } = req.body;
-    if (!sessionId || !activeSessions[sessionId]) return res.status(404).json({ error: "Session expired or invalid." });
-
-    const { child, imagePath } = activeSessions[sessionId];
-    child.stdin.write(`${answer}\n`);
-
-    // Re-attach handlers for the continued interaction
-    let outputBuffer = '';
-    let responded = false;
-
-    const timeout = setTimeout(() => {
-        if (!responded) {
-            responded = true;
-            child.kill();
+        if (!response.ok) {
+            const errorText = await response.text();
             if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
-            delete activeSessions[sessionId];
-            res.status(504).json({ status: "error", message: "CLI timed out." });
-        }
-    }, CLI_TIMEOUT_MS);
-
-    child.stdout.on('data', (data) => {
-        outputBuffer += data.toString();
-    });
-
-    child.stderr.on('data', (data) => {
-        outputBuffer += data.toString();
-    });
-
-    child.on('close', (code) => {
-        clearTimeout(timeout);
-        if (responded) return;
-        responded = true;
-
-        if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
-        delete activeSessions[sessionId];
-
-        if (code === 0) {
-            res.json({ status: "success", result: outputBuffer.trim() });
-        } else {
-            res.status(500).json({
+            return res.status(response.status).json({
                 status: "error",
-                message: outputBuffer.trim() || `CLI exited with code ${code}`
+                message: errorText || `Flask API returned status ${response.status}`
             });
         }
-    });
 
-    child.on('error', (err) => {
-        clearTimeout(timeout);
-        if (responded) return;
-        responded = true;
-
+        const data = await response.json();
+        if (data.status === "needs_approval") {
+            return res.json({
+                status: "needs_approval",
+                sessionId: data.session_id,
+                message: data.message
+            });
+        } else if (data.status === "success") {
+            return res.json({
+                status: "success",
+                result: data.response
+            });
+        } else {
+            if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
+            return res.status(500).json({
+                status: "error",
+                message: data.message || "Unknown response format from Flask API"
+            });
+        }
+    } catch (err) {
         if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
-        delete activeSessions[sessionId];
-        res.status(500).json({ status: "error", message: err.message });
-    });
+        console.error("Error communicating with Flask API:", err);
+        return res.status(500).json({
+            status: "error",
+            message: `Failed to connect to Flask API: ${err.message}`
+        });
+    }
+});
+
+app.post('/reply', async (req, res) => {
+    const { sessionId, answer } = req.body;
+    if (!sessionId) return res.status(400).json({ error: "Session ID is required." });
+
+    console.log(`Sending reply to Flask API at ${GEMINI_API_URL}/reply for session: ${sessionId}`);
+
+    try {
+        const response = await fetch(`${GEMINI_API_URL}/reply`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                session_id: sessionId,
+                answer: answer
+            })
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            return res.status(response.status).json({
+                status: "error",
+                message: errorText || `Flask API returned status ${response.status}`
+            });
+        }
+
+        const data = await response.json();
+        if (data.status === "needs_approval") {
+            return res.json({
+                status: "needs_approval",
+                sessionId: data.session_id,
+                message: data.message
+            });
+        } else if (data.status === "success") {
+            return res.json({
+                status: "success",
+                result: data.response
+            });
+        } else {
+            return res.status(500).json({
+                status: "error",
+                message: data.message || "Unknown response format from Flask API"
+            });
+        }
+    } catch (err) {
+        console.error("Error communicating with Flask API during reply:", err);
+        return res.status(500).json({
+            status: "error",
+            message: `Failed to connect to Flask API: ${err.message}`
+        });
+    }
 });
 
 app.listen(port, '0.0.0.0', () => {
