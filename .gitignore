@@ -3,3 +3,4 @@ temp/*
 !temp/.gitkeep
 .env
 .DS_Store
+gemini-api/venv/
