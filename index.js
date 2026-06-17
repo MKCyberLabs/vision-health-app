@@ -14,39 +14,76 @@ app.use(express.static('public'));
 const upload = multer({ dest: 'temp/' });
 const activeSessions = {};
 
+// Timeout for CLI responses (3 minutes)
+const CLI_TIMEOUT_MS = 180000;
+
 function handleCliInteraction(child, sessionId, imagePath, res) {
     let outputBuffer = '';
+    let responded = false;
 
-    child.stdout.on('data', (data) => {
-        const text = data.toString();
-        outputBuffer += text;
-
-        if (/proceed\? \[y\/n\]/i.test(text) || /yes\/no/i.test(text)) {
-            activeSessions[sessionId] = { child, imagePath };
-            return res.json({
-                status: "needs_approval",
-                sessionId: sessionId,
-                message: outputBuffer.trim()
+    // Set a timeout so requests don't hang forever
+    const timeout = setTimeout(() => {
+        if (!responded) {
+            responded = true;
+            child.kill();
+            if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
+            delete activeSessions[sessionId];
+            res.status(504).json({
+                status: "error",
+                message: "CLI timed out after 3 minutes. The AI may be overloaded."
             });
+        }
+    }, CLI_TIMEOUT_MS);
+
+    // Capture BOTH stdout and stderr — agy writes output to stderr
+    child.stdout.on('data', (data) => {
+        outputBuffer += data.toString();
+    });
+
+    child.stderr.on('data', (data) => {
+        outputBuffer += data.toString();
+
+        // Check if the CLI is asking for permission/approval
+        if (/proceed\? \[y\/n\]/i.test(outputBuffer) || /yes\/no/i.test(outputBuffer)) {
+            if (!responded) {
+                responded = true;
+                clearTimeout(timeout);
+                activeSessions[sessionId] = { child, imagePath };
+                return res.json({
+                    status: "needs_approval",
+                    sessionId: sessionId,
+                    message: outputBuffer.trim()
+                });
+            }
         }
     });
 
     child.on('close', (code) => {
-        if (activeSessions[sessionId] && !res.writableEnded) return;
+        clearTimeout(timeout);
+        if (responded) return; // Already sent a response (approval prompt or timeout)
+        responded = true;
+
         if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
         delete activeSessions[sessionId];
 
         if (code === 0) {
             res.json({ status: "success", result: outputBuffer.trim() });
         } else {
-            res.status(500).json({ status: "error", message: `CLI exited with code ${code}` });
+            res.status(500).json({
+                status: "error",
+                message: outputBuffer.trim() || `CLI exited with code ${code}`
+            });
         }
     });
 
     child.on('error', (err) => {
+        clearTimeout(timeout);
+        if (responded) return;
+        responded = true;
+
         if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
         delete activeSessions[sessionId];
-        if (!res.writableEnded) res.status(500).json({ status: "error", message: err.message });
+        res.status(500).json({ status: "error", message: err.message });
     });
 }
 
@@ -61,7 +98,12 @@ app.post('/analyze', upload.single('image'), (req, res) => {
     if (weight) prompt += ` The portion size/weight is: ${weight}.`;
     prompt += ` Image reference path: ${path.resolve(imagePath)}`;
 
-    const child = spawn('/root/.local/bin/agy', ['-p', prompt, '--dangerously-skip-permissions']);
+    console.log(`[${sessionId}] Spawning agy CLI for image: ${imagePath}`);
+
+    const child = spawn('/root/.local/bin/agy', ['-p', prompt, '--dangerously-skip-permissions'], {
+        env: { ...process.env, HOME: '/root' }
+    });
+
     handleCliInteraction(child, sessionId, imagePath, res);
 });
 
@@ -71,7 +113,56 @@ app.post('/reply', (req, res) => {
 
     const { child, imagePath } = activeSessions[sessionId];
     child.stdin.write(`${answer}\n`);
-    handleCliInteraction(child, sessionId, imagePath, res);
+
+    // Re-attach handlers for the continued interaction
+    let outputBuffer = '';
+    let responded = false;
+
+    const timeout = setTimeout(() => {
+        if (!responded) {
+            responded = true;
+            child.kill();
+            if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
+            delete activeSessions[sessionId];
+            res.status(504).json({ status: "error", message: "CLI timed out." });
+        }
+    }, CLI_TIMEOUT_MS);
+
+    child.stdout.on('data', (data) => {
+        outputBuffer += data.toString();
+    });
+
+    child.stderr.on('data', (data) => {
+        outputBuffer += data.toString();
+    });
+
+    child.on('close', (code) => {
+        clearTimeout(timeout);
+        if (responded) return;
+        responded = true;
+
+        if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
+        delete activeSessions[sessionId];
+
+        if (code === 0) {
+            res.json({ status: "success", result: outputBuffer.trim() });
+        } else {
+            res.status(500).json({
+                status: "error",
+                message: outputBuffer.trim() || `CLI exited with code ${code}`
+            });
+        }
+    });
+
+    child.on('error', (err) => {
+        clearTimeout(timeout);
+        if (responded) return;
+        responded = true;
+
+        if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
+        delete activeSessions[sessionId];
+        res.status(500).json({ status: "error", message: err.message });
+    });
 });
 
 app.listen(port, '0.0.0.0', () => {
