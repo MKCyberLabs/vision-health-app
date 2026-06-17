@@ -5,15 +5,21 @@ services:
     build: .
     container_name: vision-health
     restart: unless-stopped
-    ports:
-      - "3000:3000"
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vision.rule=Host(`vision.mkcyberlabs.in`)"
+      - "traefik.http.routers.vision.entrypoints=websecure"
+      - "traefik.http.routers.vision.tls.certresolver=letsencrypt"
+      - "traefik.http.services.vision.loadbalancer.server.port=3000"
+
     volumes:
       # Mount the host CLI tool so the container can execute it
       - /root/.local:/root/.local:ro
+
     networks:
-      - npm_network
+      - proxy
 
 networks:
-  npm_network:
+  proxy:
     external: true
-    name: npm_network
