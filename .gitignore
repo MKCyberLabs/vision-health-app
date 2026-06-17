@@ -3,3 +3,5 @@ temp/*
 !temp/.gitkeep
 .env
 .DS_Store
+venv/
+testenv/

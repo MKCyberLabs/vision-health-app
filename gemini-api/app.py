@@ -99,7 +99,8 @@ def ask_gemini():
         agy_path = shutil.which("agy") or shutil.which("agy.exe") or "agy"
 
     # Spawn the Antigravity CLI command directly on the host OS
-    child = pexpect.spawn(f'{agy_path} -p "{prompt_for_cli}" --dangerously-skip-permissions', encoding='utf-8', timeout=300)
+    # Use a list for arguments to prevent argument injection vulnerabilities
+    child = pexpect.spawn(agy_path, ['-p', prompt_for_cli, '--dangerously-skip-permissions'], encoding='utf-8', timeout=300)
     
     return handle_cli_interaction(child, session_id, host_image_path)
 
