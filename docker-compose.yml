@@ -16,6 +16,9 @@ services:
     environment:
       - GEMINI_API_URL=http://172.17.0.1:5000
 
+    ports:
+      - "3000:3000"
+
     volumes:
       # Mount the host temp folder to share uploaded images with the Python backend
       - ./temp:/usr/src/app/temp

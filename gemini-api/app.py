@@ -92,8 +92,14 @@ def ask_gemini():
         if container_prefix in prompt_for_cli:
             prompt_for_cli = prompt_for_cli.replace(container_prefix, os.path.join(host_temp_dir, ""))
 
+    # Determine the path to agy (either installed or the local mock for tests)
+    agy_path = os.environ.get("AGY_PATH", "/root/.local/bin/agy")
+    if not os.path.exists(agy_path):
+        # Fallback to local mock if absolute path not found
+        agy_path = os.path.join(os.path.dirname(__file__), 'bin', 'agy')
+
     # Spawn the Antigravity CLI command directly on the host OS
-    child = pexpect.spawn(f'/root/.local/bin/agy -p "{prompt_for_cli}" --dangerously-skip-permissions', encoding='utf-8', timeout=300)
+    child = pexpect.spawn(f'{agy_path} -p "{prompt_for_cli}" --dangerously-skip-permissions', encoding='utf-8', timeout=300)
     
     return handle_cli_interaction(child, session_id, host_image_path)
 
