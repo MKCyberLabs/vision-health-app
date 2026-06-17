@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Health Matrix</title>
+    <style>
+        body { font-family: system-ui, sans-serif; max-width: 500px; margin: 50px auto; padding: 20px; background: #f4f7f6; }
+        .card { background: white; border: 1px solid #ddd; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        input, button { display: block; width: 100%; margin-bottom: 15px; padding: 12px; box-sizing: border-box; border-radius: 6px; border: 1px solid #ccc; }
+        button { background-color: #0d6efd; color: white; border: none; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #0b5ed7; }
+        .btn-danger { background-color: #dc3545; }
+        .btn-danger:hover { background-color: #bb2d3b; }
+        #result { margin-top: 20px; white-space: pre-wrap; background: #212529; color: #f8f9fa; padding: 15px; border-radius: 8px; display: none; font-family: monospace; }
+        #loading { display: none; color: #6c757d; font-style: italic; font-weight: 500; text-align: center; margin-top: 15px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2 style="text-align: center; margin-top: 0;">🍏 AI Health Matrix</h2>
+        <form id="uploadForm">
+            <label for="image"><strong>Food Image (Required):</strong></label>
+            <input type="file" id="image" accept="image/*" required>
+            
+            <label for="weight"><strong>Weight / Portion (Optional):</strong></label>
+            <input type="text" id="weight" placeholder="e.g., 100g, 1 slice, 2 cups">
+            
+            <button type="submit">Analyze Meal</button>
+        </form>
+        <div id="loading">Analyzing your meal... 🍳 Please wait.</div>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const form = document.getElementById('uploadForm');
+        const loading = document.getElementById('loading');
+        const resultDiv = document.getElementById('result');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData();
+            formData.append('image', document.getElementById('image').files[0]);
+            formData.append('weight', document.getElementById('weight').value);
+
+            loading.style.display = 'block';
+            resultDiv.style.display = 'none';
+
+            try {
+                const response = await fetch('/analyze', { method: 'POST', body: formData });
+                handleBackendResponse(await response.json());
+            } catch (err) {
+                showResult("An error occurred connecting to the server.");
+            }
+        });
+
+        function handleBackendResponse(data) {
+            loading.style.display = 'none';
+            if (data.status === "success") {
+                showResult(data.result);
+            } else if (data.status === "needs_approval") {
+                resultDiv.innerHTML = `
+                    <p style="color: #ffc107; margin-top:0;"><strong>⚠️ System Confirmation Required:</strong></p>
+                    <pre style="white-space: pre-wrap; margin-bottom: 15px;">${data.message}</pre>
+                    <button onclick="sendReply('${data.sessionId}', 'y')">Confirm (Yes)</button>
+                    <button onclick="sendReply('${data.sessionId}', 'n')" class="btn-danger">Cancel (No)</button>
+                `;
+                resultDiv.style.display = 'block';
+            } else {
+                showResult("Error: " + (data.message || "Unknown error"));
+            }
+        }
+
+        async function sendReply(sessionId, answer) {
+            loading.style.display = 'block';
+            resultDiv.style.display = 'none';
+            try {
+                const response = await fetch('/reply', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sessionId, answer })
+                });
+                handleBackendResponse(await response.json());
+            } catch (err) {
+                showResult("Failed to send response.");
+            }
+        }
+
+        function showResult(text) {
+            loading.style.display = 'none';
+            resultDiv.textContent = text;
+            resultDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  vision-app:
+    build: .
+    container_name: vision-health
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      # Mount the host CLI tool so the container can execute it
+      - /root/.local:/root/.local:ro
+    networks:
+      - npm_network
+
+networks:
+  npm_network:
+    external: true
+    name: npm_network
