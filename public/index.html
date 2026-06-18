@@ -40,8 +40,8 @@
                 <input type="text" id="weight" placeholder="e.g., 100g, 1 slice, 2 cups" class="w-full text-xl p-4 border-2 border-pink-200 rounded-xl focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-200 transition-all placeholder-pink-300 text-gray-700">
             </div>
 
-            <button type="submit" class="w-full bg-gradient-to-r from-pink-500 to-green-500 text-white font-bold text-2xl py-5 rounded-2xl hover:from-pink-600 hover:to-green-600 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-                Analyze Meal ✨
+            <button id="submitBtn" type="submit" class="w-full flex justify-center items-center gap-3 bg-gradient-to-r from-pink-500 to-green-500 text-white font-bold text-2xl py-5 rounded-2xl hover:from-pink-600 hover:to-green-600 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                <span>Analyze Meal ✨</span>
             </button>
         </form>
 
@@ -59,6 +59,7 @@
         const imageCamera = document.getElementById('imageCamera');
         const previewContainer = document.getElementById('previewContainer');
         const imagePreview = document.getElementById('imagePreview');
+        const submitBtn = document.getElementById('submitBtn');
 
         let selectedFile = null;
         let objectUrl = null;
@@ -85,6 +86,19 @@
         imageUpload.addEventListener('change', handleFileSelect);
         imageCamera.addEventListener('change', handleFileSelect);
 
+        function setLoadingState() {
+            submitBtn.disabled = true;
+            submitBtn.classList.remove('hover:-translate-y-1', 'hover:shadow-xl', 'hover:from-pink-600', 'hover:to-green-600');
+            submitBtn.classList.add('opacity-70', 'cursor-not-allowed');
+            submitBtn.innerHTML = `
+                <svg class="animate-spin h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>Analyzing...</span>
+            `;
+        }
+
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
@@ -99,17 +113,27 @@
 
             loading.style.display = 'block';
             resultDiv.style.display = 'none';
+            setLoadingState();
 
             try {
                 const response = await fetch('/analyze', { method: 'POST', body: formData });
                 handleBackendResponse(await response.json());
             } catch (err) {
+                restoreSubmitButton();
                 showResult("An error occurred connecting to the server.");
             }
         });
 
+        function restoreSubmitButton() {
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+            submitBtn.classList.add('hover:-translate-y-1', 'hover:shadow-xl', 'hover:from-pink-600', 'hover:to-green-600');
+            submitBtn.innerHTML = '<span>Analyze Meal ✨</span>';
+        }
+
         function handleBackendResponse(data) {
             loading.style.display = 'none';
+            restoreSubmitButton();
             if (data.status === "success") {
                 showResult(data.result);
             } else if (data.status === "needs_approval") {
