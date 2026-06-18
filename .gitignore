@@ -3,3 +3,7 @@ temp/*
 !temp/.gitkeep
 .env
 .DS_Store
+node_modules/
+gemini-api/venv/
+temp/
+__pycache__/

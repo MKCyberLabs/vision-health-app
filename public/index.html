@@ -18,15 +18,15 @@
             <div>
                 <label class="block text-xl font-semibold text-pink-800 mb-3">Food Image (Required):</label>
                 <div class="flex flex-col sm:flex-row gap-4">
-                    <label for="imageUpload" class="flex-1 cursor-pointer bg-pink-100 hover:bg-pink-200 text-pink-800 font-bold text-xl py-4 rounded-xl border-2 border-pink-300 transition-colors text-center shadow-sm">
+                    <input type="file" id="imageUpload" accept="image/*" class="sr-only peer">
+                    <label for="imageUpload" class="flex-1 cursor-pointer bg-pink-100 hover:bg-pink-200 text-pink-800 font-bold text-xl py-4 rounded-xl border-2 border-pink-300 transition-colors text-center shadow-sm peer-focus-visible:ring-4 peer-focus-visible:ring-pink-400">
                         📁 Upload Image
                     </label>
-                    <input type="file" id="imageUpload" accept="image/*" class="hidden">
 
-                    <label for="imageCamera" class="flex-1 cursor-pointer bg-green-100 hover:bg-green-200 text-green-800 font-bold text-xl py-4 rounded-xl border-2 border-green-300 transition-colors text-center shadow-sm">
+                    <input type="file" id="imageCamera" accept="image/*" capture="environment" class="sr-only peer">
+                    <label for="imageCamera" class="flex-1 cursor-pointer bg-green-100 hover:bg-green-200 text-green-800 font-bold text-xl py-4 rounded-xl border-2 border-green-300 transition-colors text-center shadow-sm peer-focus-visible:ring-4 peer-focus-visible:ring-green-400">
                         📸 Take Photo
                     </label>
-                    <input type="file" id="imageCamera" accept="image/*" capture="environment" class="hidden">
                 </div>
             </div>
 
@@ -40,15 +40,15 @@
                 <input type="text" id="weight" placeholder="e.g., 100g, 1 slice, 2 cups" class="w-full text-xl p-4 border-2 border-pink-200 rounded-xl focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-200 transition-all placeholder-pink-300 text-gray-700">
             </div>
 
-            <button type="submit" class="w-full bg-gradient-to-r from-pink-500 to-green-500 text-white font-bold text-2xl py-5 rounded-2xl hover:from-pink-600 hover:to-green-600 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+            <button type="submit" class="w-full bg-gradient-to-r from-pink-500 to-green-500 text-white font-bold text-2xl py-5 rounded-2xl hover:from-pink-600 hover:to-green-600 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1 focus:outline-none focus-visible:ring-4 focus-visible:ring-green-300">
                 Analyze Meal ✨
             </button>
         </form>
 
-        <div id="loading" class="text-2xl text-pink-600 italic font-medium text-center mt-10 animate-pulse">
+        <div id="loading" role="status" aria-live="polite" class="text-2xl text-pink-600 italic font-medium text-center mt-10 animate-pulse">
             Analyzing your meal... 🌸 Please wait.
         </div>
-        <div id="result" class="mt-10 bg-green-50 text-green-900 p-8 rounded-2xl border-2 border-green-200 text-xl md:text-2xl leading-relaxed whitespace-pre-wrap shadow-inner font-medium"></div>
+        <div id="result" aria-live="polite" class="mt-10 bg-green-50 text-green-900 p-8 rounded-2xl border-2 border-green-200 text-xl md:text-2xl leading-relaxed whitespace-pre-wrap shadow-inner font-medium"></div>
     </div>
 
     <script>
@@ -110,8 +110,8 @@
                     <p class="text-yellow-600 mb-4 text-2xl font-bold">⚠️ System Confirmation Required:</p>
                     <pre class="whitespace-pre-wrap mb-6 font-sans text-xl">${data.message}</pre>
                     <div class="flex gap-4">
-                        <button onclick="sendReply('${data.sessionId}', 'y')" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl text-xl transition-colors shadow-md">Confirm (Yes)</button>
-                        <button onclick="sendReply('${data.sessionId}', 'n')" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-xl text-xl transition-colors shadow-md">Cancel (No)</button>
+                        <button onclick="sendReply('${data.sessionId}', 'y')" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl text-xl transition-colors shadow-md focus:outline-none focus-visible:ring-4 focus-visible:ring-green-300">Confirm (Yes)</button>
+                        <button onclick="sendReply('${data.sessionId}', 'n')" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-xl text-xl transition-colors shadow-md focus:outline-none focus-visible:ring-4 focus-visible:ring-red-300">Cancel (No)</button>
                     </div>
                 `;
                 resultDiv.style.display = 'block';
