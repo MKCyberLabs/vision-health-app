@@ -175,8 +175,9 @@ CRITICAL: If an image is provided without a description, you MUST do your absolu
         import shutil
         agy_path = shutil.which("agy") or shutil.which("agy.exe") or "agy"
 
-    model_flag = "--model claude-3-5-sonnet-20240620" if host_image_path else "--model gpt-4o"
-    child = pexpect.spawn(f'{agy_path} -p "{prompt}" {model_flag} --dangerously-skip-permissions', encoding='utf-8', timeout=300)
+    model_value = "claude-3-5-sonnet-20240620" if host_image_path else "gpt-4o"
+    # Use a list for arguments to prevent argument injection vulnerabilities from user input in prompt
+    child = pexpect.spawn(agy_path, ['-p', prompt, '--model', model_value, '--dangerously-skip-permissions'], encoding='utf-8', timeout=300)
     
     return handle_cli_interaction(child, session_id, host_image_path)
 
