@@ -15,8 +15,8 @@
     <div class="bg-white rounded-3xl shadow-xl border border-pink-100 p-6 md:p-12 w-full max-w-4xl mt-10">
         <h2 class="text-4xl md:text-5xl font-extrabold text-center text-pink-900 mb-8 tracking-tight">🌸 AI Health Matrix</h2>
         <form id="uploadForm" class="space-y-8">
-            <div>
-                <label class="block text-xl font-semibold text-pink-800 mb-3">Food Image (Required):</label>
+            <fieldset>
+                <legend class="block text-xl font-semibold text-pink-800 mb-3">Food Image (Required):</legend>
                 <div class="flex flex-col sm:flex-row gap-4">
                     <input type="file" id="imageUpload" accept="image/*" class="sr-only peer">
                     <label for="imageUpload" class="flex-1 cursor-pointer bg-pink-100 hover:bg-pink-200 text-pink-800 font-bold text-xl py-4 rounded-xl border-2 border-pink-300 transition-colors text-center shadow-sm peer-focus-visible:ring-4 peer-focus-visible:ring-pink-400">
@@ -28,7 +28,8 @@
                         📸 Take Photo
                     </label>
                 </div>
-            </div>
+                <div id="fileError" role="alert" class="hidden text-red-600 mt-2 font-medium text-lg">Please select or take an image first.</div>
+            </fieldset>
 
             <div id="previewContainer" class="hidden mt-6">
                 <p class="block text-xl font-semibold text-pink-800 mb-3">Image Preview:</p>
@@ -60,6 +61,7 @@
         const previewContainer = document.getElementById('previewContainer');
         const imagePreview = document.getElementById('imagePreview');
         const submitBtn = document.getElementById('submitBtn');
+        const fileError = document.getElementById('fileError');
 
         let selectedFile = null;
         let objectUrl = null;
@@ -68,6 +70,7 @@
             const file = event.target.files[0];
             if (file) {
                 selectedFile = file;
+                fileError.classList.add('hidden');
 
                 // ⚡ Bolt Optimization: Release previous object URL to prevent memory leaks
                 if (objectUrl) {
@@ -103,7 +106,7 @@
             e.preventDefault();
 
             if (!selectedFile) {
-                alert("Please select or take an image first.");
+                fileError.classList.remove('hidden');
                 return;
             }
 
