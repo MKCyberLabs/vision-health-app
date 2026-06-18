@@ -2,8 +2,15 @@ import os
 import pexpect
 import uuid
 from flask import Flask, request, jsonify
+import shutil
 
 app = Flask(__name__)
+
+# ⚡ Bolt Optimization: Cache paths at module level to avoid repeated os.stat/I/O per request
+HOST_TEMP_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'temp'))
+AGY_PATH = "/root/.local/bin/agy"
+if not os.path.exists(AGY_PATH):
+    AGY_PATH = shutil.which("agy") or shutil.which("agy.exe") or "agy"
 
 # Dictionary to hold live CLI processes and metadata in RAM
 active_sessions = {}
@@ -40,7 +47,8 @@ def handle_cli_interaction(child, session_id, host_image_path):
                 del active_sessions[session_id]
             
             # Clean up the image file on the host to save disk space
-            pass
+            if host_image_path and os.path.exists(host_image_path):
+                os.remove(host_image_path)
                     
             return jsonify({"status": "success", "response": output})
             
@@ -66,29 +74,20 @@ def ask_gemini():
 
     session_id = str(uuid.uuid4())
     
-    # Resolve the host's absolute temp directory path (parent of gemini-api folder)
-    host_temp_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'temp'))
-    
     # Resolve the specific image path on the host
     host_image_path = None
     if image_path:
-        host_image_path = os.path.join(host_temp_dir, os.path.basename(image_path))
+        host_image_path = os.path.join(HOST_TEMP_DIR, os.path.basename(image_path))
         
     # Translate container-style temp paths in the prompt to host-level temp paths
     prompt_for_cli = prompt
     for container_prefix in ["/usr/src/app/temp/", "temp/"]:
         if container_prefix in prompt_for_cli:
-            prompt_for_cli = prompt_for_cli.replace(container_prefix, os.path.join(host_temp_dir, ""))
-
-    # Resolve the agy executable path
-    agy_path = "/root/.local/bin/agy"
-    if not os.path.exists(agy_path):
-        import shutil
-        agy_path = shutil.which("agy") or shutil.which("agy.exe") or "agy"
+            prompt_for_cli = prompt_for_cli.replace(container_prefix, os.path.join(HOST_TEMP_DIR, ""))
 
     # Spawn the Antigravity CLI command directly on the host OS
     # Use a list for arguments to prevent argument injection vulnerabilities
-    child = pexpect.spawn(agy_path, ['-p', prompt_for_cli, '--dangerously-skip-permissions'], encoding='utf-8', timeout=300)
+    child = pexpect.spawn(AGY_PATH, ['-p', prompt_for_cli, '--dangerously-skip-permissions'], encoding='utf-8', timeout=300)
     
     return handle_cli_interaction(child, session_id, host_image_path)
 
@@ -131,11 +130,10 @@ def health_matrix():
         return jsonify({'error': 'Payload Validation Failed: Either mealDescription or imagePath is required.'}), 400
 
     session_id = str(uuid.uuid4())
-    host_temp_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'temp'))
     
     host_image_path = None
     if image_path:
-        host_image_path = os.path.join(host_temp_dir, os.path.basename(image_path))
+        host_image_path = os.path.join(HOST_TEMP_DIR, os.path.basename(image_path))
 
     prompt = f"Analyze this meal eaten at {meal_time}. Description: {meal_description}. "
     if weight:
@@ -170,13 +168,8 @@ CRITICAL: If an image is provided without a description, you MUST do your absolu
   ]
 }"""
 
-    agy_path = "/root/.local/bin/agy"
-    if not os.path.exists(agy_path):
-        import shutil
-        agy_path = shutil.which("agy") or shutil.which("agy.exe") or "agy"
-
     model_flag = "--model claude-3-5-sonnet-20240620" if host_image_path else "--model gpt-4o"
-    child = pexpect.spawn(f'{agy_path} -p "{prompt}" {model_flag} --dangerously-skip-permissions', encoding='utf-8', timeout=300)
+    child = pexpect.spawn(f'{AGY_PATH} -p "{prompt}" {model_flag} --dangerously-skip-permissions', encoding='utf-8', timeout=300)
     
     return handle_cli_interaction(child, session_id, host_image_path)
 
