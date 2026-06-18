@@ -5,3 +5,5 @@ temp/*
 .DS_Store
 venv/
 testenv/
+gemini-api/venv/
+*.log
