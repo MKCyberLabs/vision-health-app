@@ -7,3 +7,7 @@ node_modules/
 gemini-api/venv/
 temp/
 __pycache__/
+venv/
+testenv/
+gemini-api/venv/
+*.log
