@@ -40,31 +40,19 @@ def handle_cli_interaction(child, session_id, host_image_path):
                 del active_sessions[session_id]
             
             # Clean up the image file on the host to save disk space
-            if host_image_path and os.path.exists(host_image_path):
-                try:
-                    os.remove(host_image_path)
-                except Exception as e:
-                    print(f"Error removing file {host_image_path}: {e}")
+            pass
                     
             return jsonify({"status": "success", "response": output})
             
     except pexpect.TIMEOUT:
         if session_id in active_sessions:
             del active_sessions[session_id]
-        if host_image_path and os.path.exists(host_image_path):
-            try:
-                os.remove(host_image_path)
-            except Exception as e:
-                print(f"Error removing file {host_image_path}: {e}")
+        pass
         return jsonify({"status": "error", "message": "CLI process timed out."}), 504
     except Exception as e:
         if session_id in active_sessions:
             del active_sessions[session_id]
-        if host_image_path and os.path.exists(host_image_path):
-            try:
-                os.remove(host_image_path)
-            except Exception as e:
-                print(f"Error removing file {host_image_path}: {e}")
+        pass
         return jsonify({"status": "error", "message": str(e)}), 500
 
 @app.route('/ask', methods=['POST'])
@@ -127,12 +115,70 @@ def reply_gemini():
     except Exception as e:
         if session_id in active_sessions:
             del active_sessions[session_id]
-        if host_image_path and os.path.exists(host_image_path):
-            try:
-                os.remove(host_image_path)
-            except Exception as e:
-                print(f"Error removing file {host_image_path}: {e}")
+        pass
         return jsonify({"status": "error", "message": str(e)}), 500
+
+
+@app.route('/health-matrix', methods=['POST'])
+def health_matrix():
+    data = request.json
+    meal_description = data.get('mealDescription', '')
+    image_path = data.get('imagePath', '')
+    meal_time = data.get('mealTime', '')
+    weight = data.get('weight', '')
+    
+    if not meal_description and not image_path:
+        return jsonify({'error': 'Payload Validation Failed: Either mealDescription or imagePath is required.'}), 400
+
+    session_id = str(uuid.uuid4())
+    host_temp_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'temp'))
+    
+    host_image_path = None
+    if image_path:
+        host_image_path = os.path.join(host_temp_dir, os.path.basename(image_path))
+
+    prompt = f"Analyze this meal eaten at {meal_time}. Description: {meal_description}. "
+    if weight:
+        prompt += f"CRITICAL: The user has explicitly specified the weight of the food is {weight} grams. You MUST calculate all nutritional values based strictly on this {weight}g weight! Do not use default portion sizes. "
+    if host_image_path:
+        prompt += f"Image: {host_image_path} "
+        
+    prompt += """Return ONLY a valid JSON object matching exactly this schema (do not wrap in markdown tags).
+CRITICAL: You MUST break down the meal into individual components in the "foodItems" array. For EVERY item in the array, you MUST provide its individual nutritional breakdown using ALL the exact keys below: "name", "grams", "calories", "protein", "carbs", "fat", "fiber", "saturatedFat", and "sugar". Do NOT use "weight", use "grams".
+CRITICAL: If an image is provided without a description, you MUST do your absolute best to visually identify the food and estimate the portion size. Do NOT ask the user for more information. Do NOT return text. You MUST return ONLY the JSON matrix based on your best visual estimation.
+{
+  "calories": number,
+  "protein": number,
+  "carbs": number,
+  "fat": number,
+  "fiber": number,
+  "saturatedFat": number,
+  "sugar": number,
+  "healthInsight": "string description",
+  "foodItems": [
+    {
+      "name": "string name",
+      "grams": number,
+      "calories": number,
+      "protein": number,
+      "carbs": number,
+      "fat": number,
+      "fiber": number,
+      "saturatedFat": number,
+      "sugar": number
+    }
+  ]
+}"""
+
+    agy_path = "/root/.local/bin/agy"
+    if not os.path.exists(agy_path):
+        import shutil
+        agy_path = shutil.which("agy") or shutil.which("agy.exe") or "agy"
+
+    model_flag = "--model claude-3-5-sonnet-20240620" if host_image_path else "--model gpt-4o"
+    child = pexpect.spawn(f'{agy_path} -p "{prompt}" {model_flag} --dangerously-skip-permissions', encoding='utf-8', timeout=300)
+    
+    return handle_cli_interaction(child, session_id, host_image_path)
 
 if __name__ == '__main__':
     # Configuration via environment variables
