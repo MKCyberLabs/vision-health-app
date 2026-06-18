@@ -62,17 +62,24 @@
         const submitBtn = document.getElementById('submitBtn');
 
         let selectedFile = null;
+        let objectUrl = null;
 
         function handleFileSelect(event) {
             const file = event.target.files[0];
             if (file) {
                 selectedFile = file;
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    imagePreview.src = e.target.result;
-                    previewContainer.classList.remove('hidden');
-                };
-                reader.readAsDataURL(file);
+
+                // ⚡ Bolt Optimization: Release previous object URL to prevent memory leaks
+                if (objectUrl) {
+                    URL.revokeObjectURL(objectUrl);
+                }
+
+                // ⚡ Bolt Optimization: Use URL.createObjectURL instead of FileReader
+                // This is an O(1) operation that avoids reading the entire image into
+                // memory as a base64 string, preventing UI jank on large files.
+                objectUrl = URL.createObjectURL(file);
+                imagePreview.src = objectUrl;
+                previewContainer.classList.remove('hidden');
             }
         }
 
