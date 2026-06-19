@@ -2,6 +2,10 @@ import os
 import pexpect
 import uuid
 from flask import Flask, request, jsonify
+from dotenv import load_dotenv
+
+# Load environment variables from .env if present
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -76,9 +80,10 @@ def ask_gemini():
         
     # Translate container-style temp paths in the prompt to host-level temp paths
     prompt_for_cli = prompt
-    for container_prefix in ["/usr/src/app/temp/", "temp/"]:
-        if container_prefix in prompt_for_cli:
-            prompt_for_cli = prompt_for_cli.replace(container_prefix, os.path.join(host_temp_dir, ""))
+    if "/usr/src/app/temp/" in prompt_for_cli:
+        prompt_for_cli = prompt_for_cli.replace("/usr/src/app/temp/", os.path.join(host_temp_dir, ""))
+    elif "temp/" in prompt_for_cli:
+        prompt_for_cli = prompt_for_cli.replace("temp/", os.path.join(host_temp_dir, ""))
 
     # Resolve the agy executable path
     agy_path = "/root/.local/bin/agy"
@@ -86,9 +91,14 @@ def ask_gemini():
         import shutil
         agy_path = shutil.which("agy") or shutil.which("agy.exe") or "agy"
 
+    # Determine which model to use based on environment variables
+    text_model = os.environ.get("GEMINI_TEXT_MODEL", "gpt-4o")
+    image_model = os.environ.get("GEMINI_IMAGE_MODEL", "claude-3-5-sonnet-20240620")
+    model = image_model if host_image_path else text_model
+
     # Spawn the Antigravity CLI command directly on the host OS
     # Use a list for arguments to prevent argument injection vulnerabilities
-    child = pexpect.spawn(agy_path, ['-p', prompt_for_cli, '--dangerously-skip-permissions'], encoding='utf-8', timeout=300)
+    child = pexpect.spawn(agy_path, ['-p', prompt_for_cli, '--model', model, '--dangerously-skip-permissions'], encoding='utf-8', timeout=300)
     
     return handle_cli_interaction(child, session_id, host_image_path)
 
@@ -175,8 +185,12 @@ CRITICAL: If an image is provided without a description, you MUST do your absolu
         import shutil
         agy_path = shutil.which("agy") or shutil.which("agy.exe") or "agy"
 
-    model_flag = "--model claude-3-5-sonnet-20240620" if host_image_path else "--model gpt-4o"
-    child = pexpect.spawn(f'{agy_path} -p "{prompt}" {model_flag} --dangerously-skip-permissions', encoding='utf-8', timeout=300)
+    # Determine which model to use based on environment variables
+    text_model = os.environ.get("GEMINI_TEXT_MODEL", "gpt-4o")
+    image_model = os.environ.get("GEMINI_IMAGE_MODEL", "claude-3-5-sonnet-20240620")
+    model = image_model if host_image_path else text_model
+    
+    child = pexpect.spawn(agy_path, ['-p', prompt, '--model', model, '--dangerously-skip-permissions'], encoding='utf-8', timeout=300)
     
     return handle_cli_interaction(child, session_id, host_image_path)
 

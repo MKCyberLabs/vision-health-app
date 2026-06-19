@@ -4,6 +4,8 @@ services:
   traefik:
     image: traefik:v2.10
     container_name: local-traefik
+    security_opt:
+      - apparmor=unconfined
     command:
       - "--api.insecure=true"
       - "--providers.docker=true"
