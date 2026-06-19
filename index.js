@@ -2,6 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const { spawn } = require('child_process');
 const fs = require('fs');
+const fsPromises = require('fs').promises;
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 
@@ -11,7 +12,10 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.static('public'));
 
-const upload = multer({ dest: 'temp/' });
+const upload = multer({
+    dest: 'temp/',
+    limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit to prevent DoS
+});
 const GEMINI_API_URL = process.env.GEMINI_API_URL || 'http://172.17.0.1:5000';
 
 app.post('/analyze', upload.single('image'), async (req, res) => {
@@ -38,7 +42,7 @@ app.post('/analyze', upload.single('image'), async (req, res) => {
 
         if (!response.ok) {
             const errorText = await response.text();
-            if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
+            await fsPromises.unlink(imagePath).catch(() => {});
             return res.status(response.status).json({
                 status: "error",
                 message: errorText || `Flask API returned status ${response.status}`
@@ -58,14 +62,14 @@ app.post('/analyze', upload.single('image'), async (req, res) => {
                 result: data.response
             });
         } else {
-            if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
+            await fsPromises.unlink(imagePath).catch(() => {});
             return res.status(500).json({
                 status: "error",
                 message: data.message || "Unknown response format from Flask API"
             });
         }
     } catch (err) {
-        if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
+        await fsPromises.unlink(imagePath).catch(() => {});
         console.error("Error communicating with Flask API:", err);
         return res.status(500).json({
             status: "error",
