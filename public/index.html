@@ -149,14 +149,17 @@
             if (data.status === "success") {
                 showResult(data.result);
             } else if (data.status === "needs_approval") {
+                // 🛡️ Security Enhancement: Prevent XSS by building HTML safely
                 resultDiv.innerHTML = `
                     <p class="text-yellow-600 mb-4 text-2xl font-bold">⚠️ System Confirmation Required:</p>
-                    <pre class="whitespace-pre-wrap mb-6 font-sans text-xl">${data.message}</pre>
+                    <pre id="approvalMessage" class="whitespace-pre-wrap mb-6 font-sans text-xl"></pre>
                     <div class="flex gap-4">
                         <button onclick="sendReply('${data.sessionId}', 'y')" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl text-xl transition-colors shadow-md focus:outline-none focus-visible:ring-4 focus-visible:ring-green-300">Confirm (Yes)</button>
                         <button onclick="sendReply('${data.sessionId}', 'n')" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-xl text-xl transition-colors shadow-md focus:outline-none focus-visible:ring-4 focus-visible:ring-red-300">Cancel (No)</button>
                     </div>
                 `;
+                // Safely inject dynamic message content
+                document.getElementById('approvalMessage').textContent = data.message;
                 resultDiv.style.display = 'block';
             } else {
                 showResult("Error: " + (data.message || "Unknown error"));
