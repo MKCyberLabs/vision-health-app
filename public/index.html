@@ -40,6 +40,7 @@
                         📁 Upload from Gallery
                     </label>
                 </div>
+                <p id="fileError" class="hidden text-red-600 font-medium mt-3" role="alert">Please select or take an image first.</p>
             </div>
 
             <div id="previewContainer" class="hidden mt-6">
@@ -52,7 +53,7 @@
                 <input type="text" id="weight" placeholder="e.g., 100g, 1 slice, 2 cups" class="w-full text-xl p-4 border-2 border-pink-200 rounded-xl focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-200 transition-all placeholder-pink-300 text-gray-700">
             </div>
 
-            <button id="submitBtn" type="submit" class="w-full flex justify-center items-center gap-3 bg-gradient-to-r from-pink-500 to-green-500 text-white font-bold text-2xl py-5 rounded-2xl hover:from-pink-600 hover:to-green-600 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+            <button id="submitBtn" type="submit" class="w-full flex justify-center items-center gap-3 bg-gradient-to-r from-pink-500 to-green-500 text-white font-bold text-2xl py-5 rounded-2xl hover:from-pink-600 hover:to-green-600 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1 focus:outline-none focus-visible:ring-4 focus-visible:ring-green-300">
                 <span>Analyze Meal ✨</span>
             </button>
         </form>
@@ -80,6 +81,7 @@
             const file = event.target.files[0];
             if (file) {
                 selectedFile = file;
+                document.getElementById('fileError').classList.add('hidden');
 
                 // ⚡ Bolt Optimization: Release previous object URL to prevent memory leaks
                 if (objectUrl) {
@@ -115,7 +117,7 @@
             e.preventDefault();
 
             if (!selectedFile) {
-                alert("Please select or take an image first.");
+                document.getElementById('fileError').classList.remove('hidden');
                 return;
             }
 
