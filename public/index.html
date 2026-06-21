@@ -149,14 +149,19 @@
             if (data.status === "success") {
                 showResult(data.result);
             } else if (data.status === "needs_approval") {
+                // Sentinel Security Fix: Prevent Reflected DOM XSS by using textContent for dynamic data
+                // Create elements programmatically instead of interpolating untrusted data into innerHTML
                 resultDiv.innerHTML = `
                     <p class="text-yellow-600 mb-4 text-2xl font-bold">⚠️ System Confirmation Required:</p>
-                    <pre class="whitespace-pre-wrap mb-6 font-sans text-xl">${data.message}</pre>
+                    <pre id="approvalMessage" class="whitespace-pre-wrap mb-6 font-sans text-xl"></pre>
                     <div class="flex gap-4">
-                        <button onclick="sendReply('${data.sessionId}', 'y')" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl text-xl transition-colors shadow-md focus:outline-none focus-visible:ring-4 focus-visible:ring-green-300">Confirm (Yes)</button>
-                        <button onclick="sendReply('${data.sessionId}', 'n')" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-xl text-xl transition-colors shadow-md focus:outline-none focus-visible:ring-4 focus-visible:ring-red-300">Cancel (No)</button>
+                        <button id="btnConfirmYes" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl text-xl transition-colors shadow-md focus:outline-none focus-visible:ring-4 focus-visible:ring-green-300">Confirm (Yes)</button>
+                        <button id="btnConfirmNo" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-xl text-xl transition-colors shadow-md focus:outline-none focus-visible:ring-4 focus-visible:ring-red-300">Cancel (No)</button>
                     </div>
                 `;
+                document.getElementById('approvalMessage').textContent = data.message;
+                document.getElementById('btnConfirmYes').addEventListener('click', () => sendReply(data.sessionId, 'y'));
+                document.getElementById('btnConfirmNo').addEventListener('click', () => sendReply(data.sessionId, 'n'));
                 resultDiv.style.display = 'block';
             } else {
                 showResult("Error: " + (data.message || "Unknown error"));

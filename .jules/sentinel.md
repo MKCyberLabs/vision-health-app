@@ -2,3 +2,8 @@
 **Vulnerability:** Found an argument injection vulnerability where user-controlled input (`prompt_for_cli`) was being directly interpolated into a command string passed to `pexpect.spawn`. By injecting quotes, an attacker could add arbitrary arguments to the command being executed.
 **Learning:** `pexpect.spawn` behaves like `subprocess.Popen(..., shell=False)` when given a list, but when given a string, it uses `shlex.split` under the hood. If user input containing quotes is placed inside a string command, `shlex.split` can interpret those quotes, allowing attackers to escape the intended argument and inject additional arguments.
 **Prevention:** Always pass arguments to `pexpect.spawn` as a list rather than a single interpolated string, especially when handling user-controlled data.
+
+## 2024-06-18 - Reflected DOM XSS via InnerHTML Interpolation
+**Vulnerability:** Found a Reflected DOM XSS vulnerability in `public/index.html` where untrusted data from the backend (`data.message`) was being directly interpolated into an HTML string and assigned to `resultDiv.innerHTML`. This allowed arbitrary JavaScript execution if the backend returned malicious content (e.g. via prompt injection or unexpected responses).
+**Learning:** Rendering dynamic data proxied from a backend CLI directly into the DOM using `innerHTML` is highly dangerous. Even if the data originates from a "trusted" internal service, it can contain untrusted user input or unexpected formatting that breaks out of HTML contexts.
+**Prevention:** Always use `textContent` or proper DOM manipulation methods (like creating elements programmatically and setting their properties) to insert dynamic data into the DOM safely. Never interpolate untrusted data directly into an `innerHTML` string.
