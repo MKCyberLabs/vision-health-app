@@ -14,6 +14,15 @@ app.use(express.static('public'));
 const upload = multer({ dest: 'temp/' });
 const GEMINI_API_URL = process.env.GEMINI_API_URL || 'http://172.17.0.1:5000';
 
+// Asynchronous file cleanup to avoid blocking the event loop
+const cleanupFileAsync = (filePath) => {
+    fs.unlink(filePath, (unlinkErr) => {
+        if (unlinkErr && unlinkErr.code !== 'ENOENT') {
+            console.error(`Failed to cleanup file ${filePath}:`, unlinkErr);
+        }
+    });
+};
+
 app.post('/analyze', upload.single('image'), async (req, res) => {
     if (!req.file) return res.status(400).json({ error: "No image file provided." });
 
@@ -38,7 +47,7 @@ app.post('/analyze', upload.single('image'), async (req, res) => {
 
         if (!response.ok) {
             const errorText = await response.text();
-            if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
+            cleanupFileAsync(imagePath);
             return res.status(response.status).json({
                 status: "error",
                 message: errorText || `Flask API returned status ${response.status}`
@@ -58,14 +67,14 @@ app.post('/analyze', upload.single('image'), async (req, res) => {
                 result: data.response
             });
         } else {
-            if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
+            cleanupFileAsync(imagePath);
             return res.status(500).json({
                 status: "error",
                 message: data.message || "Unknown response format from Flask API"
             });
         }
     } catch (err) {
-        if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
+        cleanupFileAsync(imagePath);
         console.error("Error communicating with Flask API:", err);
         return res.status(500).json({
             status: "error",
