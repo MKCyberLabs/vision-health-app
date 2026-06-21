@@ -40,6 +40,7 @@
                         📁 Upload from Gallery
                     </label>
                 </div>
+                <p id="imageError" role="alert" class="hidden text-red-600 font-medium mt-3">⚠️ Please select or take an image first.</p>
             </div>
 
             <div id="previewContainer" class="hidden mt-6">
@@ -81,6 +82,9 @@
             if (file) {
                 selectedFile = file;
 
+                // Hide inline error if a file is selected
+                document.getElementById('imageError').classList.add('hidden');
+
                 // ⚡ Bolt Optimization: Release previous object URL to prevent memory leaks
                 if (objectUrl) {
                     URL.revokeObjectURL(objectUrl);
@@ -115,7 +119,7 @@
             e.preventDefault();
 
             if (!selectedFile) {
-                alert("Please select or take an image first.");
+                document.getElementById('imageError').classList.remove('hidden');
                 return;
             }
 
