@@ -1,4 +1,4 @@
-const CACHE_NAME = 'health-matrix-v1';
+const CACHE_NAME = 'health-matrix-v2';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
