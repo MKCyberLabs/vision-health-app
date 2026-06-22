@@ -11,3 +11,8 @@
 **Vulnerability:** User input or external system text (like backend prompts) was inserted into HTML views using string interpolation with `innerHTML`.
 **Learning:** Bypassing standard DOM methods and injecting directly via `innerHTML` can execute arbitrary scripts embedded within the backend data, causing a Reflected DOM XSS.
 **Prevention:** Always use safe DOM APIs like `textContent` when injecting dynamic data originating from external inputs or proxies, ensuring it is rendered strictly as text, not executable HTML.
+
+## 2024-07-25 - Prevent DoS via Unlimited File Uploads
+**Vulnerability:** The application was vulnerable to a Denial of Service (DoS) attack via disk exhaustion because the `multer` configuration lacked a `limits: { fileSize: ... }` property. Attackers could upload arbitrarily large files, filling the server's disk space and crashing the service.
+**Learning:** Default Express and `multer` configurations do not enforce limits on incoming file sizes. Furthermore, when unhandled errors occur (such as a generic crash), Express can sometimes leak HTML stack traces or internal framework information (via the `x-powered-by` header), increasing the attack surface.
+**Prevention:** Always explicitly define size limits for file uploads using middleware like `multer`. Additionally, disable framework fingerprints (`app.disable('x-powered-by')`), enforce basic security headers, and use a secure global error handler that returns sanitized JSON instead of stack traces.

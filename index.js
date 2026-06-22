@@ -8,10 +8,21 @@ const { v4: uuidv4 } = require('uuid');
 const app = express();
 const port = process.env.PORT || 3000;
 
+app.disable('x-powered-by');
+app.use((req, res, next) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    next();
+});
+
 app.use(express.json());
 app.use(express.static('public'));
 
-const upload = multer({ dest: 'temp/' });
+const upload = multer({
+    dest: 'temp/',
+    limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
+});
 const GEMINI_API_URL = process.env.GEMINI_API_URL || 'http://172.17.0.1:5000';
 
 // Asynchronous file cleanup to avoid blocking the event loop
@@ -160,6 +171,14 @@ app.post('/reply', async (req, res) => {
             message: `Failed to connect to Flask API: ${err.message}`
         });
     }
+});
+
+app.use((err, req, res, next) => {
+    console.error('Unhandled error:', err.message);
+    if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(413).json({ error: "File too large. Maximum size is 5MB." });
+    }
+    res.status(500).json({ error: "An internal server error occurred." });
 });
 
 app.listen(port, '0.0.0.0', () => {
