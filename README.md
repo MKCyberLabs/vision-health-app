@@ -32,6 +32,8 @@ The frontend is now running and accessible at **[http://localhost:3000](http://l
 
 ### 3. Boot the Native Python Backend
 The frontend relies on the backend API running on your host machine to process images. 
+By default, for security, the API binds strictly to `172.17.0.1` (the internal Docker bridge) so it is only accessible to your containers (via `host.docker.internal`) and not exposed to the public internet.
+
 Navigate to the `gemini-api` directory and start it natively:
 ```bash
 cd gemini-api
