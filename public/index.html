@@ -40,6 +40,7 @@
                         📁 Upload from Gallery
                     </label>
                 </div>
+                <p id="fileError" class="hidden text-red-600 font-medium mt-3" role="alert">Please select or take an image first.</p>
             </div>
 
             <div id="previewContainer" class="hidden mt-6">
@@ -87,6 +88,7 @@
             const file = event.target.files[0];
             if (file) {
                 selectedFile = file;
+                document.getElementById('fileError').classList.add('hidden');
 
                 // Hide error message if an image was selected
                 document.getElementById('formError').classList.add('hidden');
