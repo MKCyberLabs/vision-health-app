@@ -38,10 +38,8 @@ app.post('/analyze', upload.single('image'), async (req, res) => {
 
         if (!response.ok) {
             const errorText = await response.text();
-            // ⚡ Bolt: Use asynchronous unlink to avoid blocking the event loop
-            // Fire-and-forget deletion replaces blocking fs.existsSync and fs.unlinkSync
-            fs.unlink(imagePath, (unlinkErr) => {
-                if (unlinkErr && unlinkErr.code !== 'ENOENT') console.error("Error removing file:", unlinkErr);
+            fs.unlink(imagePath, (err) => {
+                if (err && err.code !== 'ENOENT') console.error(`Failed to delete ${imagePath}:`, err);
             });
             return res.status(response.status).json({
                 status: "error",
@@ -62,10 +60,8 @@ app.post('/analyze', upload.single('image'), async (req, res) => {
                 result: data.response
             });
         } else {
-            // ⚡ Bolt: Use asynchronous unlink to avoid blocking the event loop
-            // Fire-and-forget deletion replaces blocking fs.existsSync and fs.unlinkSync
-            fs.unlink(imagePath, (unlinkErr) => {
-                if (unlinkErr && unlinkErr.code !== 'ENOENT') console.error("Error removing file:", unlinkErr);
+            fs.unlink(imagePath, (err) => {
+                if (err && err.code !== 'ENOENT') console.error(`Failed to delete ${imagePath}:`, err);
             });
             return res.status(500).json({
                 status: "error",
@@ -73,10 +69,8 @@ app.post('/analyze', upload.single('image'), async (req, res) => {
             });
         }
     } catch (err) {
-        // ⚡ Bolt: Use asynchronous unlink to avoid blocking the event loop
-        // Fire-and-forget deletion replaces blocking fs.existsSync and fs.unlinkSync
-        fs.unlink(imagePath, (unlinkErr) => {
-            if (unlinkErr && unlinkErr.code !== 'ENOENT') console.error("Error removing file:", unlinkErr);
+        fs.unlink(imagePath, (err) => {
+            if (err && err.code !== 'ENOENT') console.error(`Failed to delete ${imagePath}:`, err);
         });
         console.error("Error communicating with Flask API:", err);
         return res.status(500).json({
