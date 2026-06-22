@@ -53,7 +53,14 @@
                 <input type="text" id="weight" placeholder="e.g., 100g, 1 slice, 2 cups" class="w-full text-xl p-4 border-2 border-pink-200 rounded-xl focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-200 transition-all placeholder-pink-300 text-gray-700">
             </div>
 
-            <button id="submitBtn" type="submit" class="w-full flex justify-center items-center gap-3 bg-gradient-to-r from-pink-500 to-green-500 text-white font-bold text-2xl py-5 rounded-2xl hover:from-pink-600 hover:to-green-600 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1 focus:outline-none focus-visible:ring-4 focus-visible:ring-green-300">
+            <div id="formError" role="alert" aria-live="assertive" class="hidden text-red-600 font-medium text-lg mt-2 mb-4 bg-red-50 p-4 rounded-xl border border-red-200 flex items-center gap-2 shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <span id="formErrorText">Please select or take an image first.</span>
+            </div>
+
+            <button id="submitBtn" type="submit" class="w-full flex justify-center items-center gap-3 bg-gradient-to-r from-pink-500 to-green-500 text-white font-bold text-2xl py-5 rounded-2xl hover:from-pink-600 hover:to-green-600 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1 focus:outline-none focus-visible:ring-4 focus-visible:ring-green-400 focus-visible:ring-offset-2 focus-visible:ring-offset-pink-50">
                 <span>Analyze Meal ✨</span>
             </button>
         </form>
@@ -82,6 +89,9 @@
             if (file) {
                 selectedFile = file;
                 document.getElementById('fileError').classList.add('hidden');
+
+                // Hide error message if an image was selected
+                document.getElementById('formError').classList.add('hidden');
 
                 // ⚡ Bolt Optimization: Release previous object URL to prevent memory leaks
                 if (objectUrl) {
@@ -117,7 +127,12 @@
             e.preventDefault();
 
             if (!selectedFile) {
-                document.getElementById('fileError').classList.remove('hidden');
+                const formError = document.getElementById('formError');
+                formError.classList.remove('hidden');
+
+                // Add a gentle shake animation to draw attention
+                formError.classList.add('animate-bounce');
+                setTimeout(() => formError.classList.remove('animate-bounce'), 1000);
                 return;
             }
 
@@ -151,14 +166,17 @@
             if (data.status === "success") {
                 showResult(data.result);
             } else if (data.status === "needs_approval") {
+                // 🛡️ Security Enhancement: Prevent XSS by building HTML safely
                 resultDiv.innerHTML = `
                     <p class="text-yellow-600 mb-4 text-2xl font-bold">⚠️ System Confirmation Required:</p>
-                    <pre class="whitespace-pre-wrap mb-6 font-sans text-xl">${data.message}</pre>
+                    <pre id="approvalMessage" class="whitespace-pre-wrap mb-6 font-sans text-xl"></pre>
                     <div class="flex gap-4">
                         <button onclick="sendReply('${data.sessionId}', 'y')" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl text-xl transition-colors shadow-md focus:outline-none focus-visible:ring-4 focus-visible:ring-green-300">Confirm (Yes)</button>
                         <button onclick="sendReply('${data.sessionId}', 'n')" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-xl text-xl transition-colors shadow-md focus:outline-none focus-visible:ring-4 focus-visible:ring-red-300">Cancel (No)</button>
                     </div>
                 `;
+                // Safely inject dynamic message content
+                document.getElementById('approvalMessage').textContent = data.message;
                 resultDiv.style.display = 'block';
             } else {
                 showResult("Error: " + (data.message || "Unknown error"));
