@@ -38,7 +38,9 @@ app.post('/analyze', upload.single('image'), async (req, res) => {
 
         if (!response.ok) {
             const errorText = await response.text();
-            if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
+            fs.unlink(imagePath, (err) => {
+                if (err && err.code !== 'ENOENT') console.error(`Failed to delete ${imagePath}:`, err);
+            });
             return res.status(response.status).json({
                 status: "error",
                 message: errorText || `Flask API returned status ${response.status}`
@@ -58,14 +60,18 @@ app.post('/analyze', upload.single('image'), async (req, res) => {
                 result: data.response
             });
         } else {
-            if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
+            fs.unlink(imagePath, (err) => {
+                if (err && err.code !== 'ENOENT') console.error(`Failed to delete ${imagePath}:`, err);
+            });
             return res.status(500).json({
                 status: "error",
                 message: data.message || "Unknown response format from Flask API"
             });
         }
     } catch (err) {
-        if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
+        fs.unlink(imagePath, (err) => {
+            if (err && err.code !== 'ENOENT') console.error(`Failed to delete ${imagePath}:`, err);
+        });
         console.error("Error communicating with Flask API:", err);
         return res.status(500).json({
             status: "error",
