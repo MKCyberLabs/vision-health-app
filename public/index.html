@@ -93,6 +93,9 @@
                 // Hide error message if an image was selected
                 document.getElementById('formError').classList.add('hidden');
 
+                // Hide inline error if a file is selected
+                document.getElementById('imageError').classList.add('hidden');
+
                 // ⚡ Bolt Optimization: Release previous object URL to prevent memory leaks
                 if (objectUrl) {
                     URL.revokeObjectURL(objectUrl);
