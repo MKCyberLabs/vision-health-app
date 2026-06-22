@@ -43,6 +43,14 @@ pip install -r requirements.txt
 python app.py
 ```
 
+#### Production Auto-Start (systemd)
+For production deployments, a `systemd` service has been set up to automatically start the Python API on boot and restart it if it crashes. 
+
+- **Check Status:** `sudo systemctl status vision-gemini-api.service`
+- **Restart API:** `sudo systemctl restart vision-gemini-api.service`
+- **View Logs:** `sudo journalctl -u vision-gemini-api.service -f`
+- **Service File Location:** `/etc/systemd/system/vision-gemini-api.service`
+
 ### Environment Variables
 If running the frontend natively (without Docker), you can specify the backend URL:
 - `GEMINI_API_URL`: The URL of the Python backend (defaults to `http://localhost:5000` or `http://host.docker.internal:5000` inside Docker).
