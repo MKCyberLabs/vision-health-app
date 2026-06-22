@@ -5,3 +5,9 @@
 ## 2026-06-21 - [Replace synchronous file operations with asynchronous]
 **Learning:** Using synchronous filesystem methods like `fs.existsSync` and `fs.unlinkSync` in Node.js request handlers blocks the event loop, degrading server throughput, especially under concurrent load.
 **Action:** Always use asynchronous filesystem methods (e.g., `fs.unlink`) in request handlers to avoid blocking the main thread and ensure non-blocking I/O. Use distinct variable names for error handling to avoid variable shadowing in nested scopes (e.g., `unlinkErr`).
+## 2024-06-20 - [Avoid synchronous file deletion in Node.js request handlers]
+**Learning:** Using `fs.unlinkSync()` blocks the Node.js event loop while the file is being deleted. Under high concurrent request load, this synchronous operation significantly degrades server throughput and increases response times for all users.
+**Action:** Always use the asynchronous `fs.unlink()` method (or `fs.promises.unlink()`) inside request handlers to allow the event loop to continue processing other requests during the disk I/O operation.
+## 2026-06-19 - [Avoid synchronous filesystem calls to unblock the Node.js event loop]
+**Learning:** Using synchronous methods like `fs.unlinkSync` inside Express route handlers blocks the Node.js main thread. This prevents the server from handling other concurrent requests while the disk operation completes, severely bottlenecking throughput under load.
+**Action:** Always use asynchronous filesystem methods like `fs.unlink` (with a callback) or `fs.promises.unlink` when running within request handlers to keep the event loop free to serve other clients.
