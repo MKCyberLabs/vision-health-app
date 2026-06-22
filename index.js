@@ -14,6 +14,15 @@ app.use(express.static('public'));
 const upload = multer({ dest: 'temp/' });
 const GEMINI_API_URL = process.env.GEMINI_API_URL || 'http://172.17.0.1:5000';
 
+// Asynchronous file cleanup to avoid blocking the event loop
+const cleanupFileAsync = (filePath) => {
+    fs.unlink(filePath, (unlinkErr) => {
+        if (unlinkErr && unlinkErr.code !== 'ENOENT') {
+            console.error(`Failed to cleanup file ${filePath}:`, unlinkErr);
+        }
+    });
+};
+
 app.post('/analyze', upload.single('image'), async (req, res) => {
     if (!req.file) return res.status(400).json({ error: "No image file provided." });
 
