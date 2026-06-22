@@ -36,6 +36,19 @@ app.post('/analyze', upload.single('image'), async (req, res) => {
     console.log(`Sending ask request to Flask API at ${GEMINI_API_URL}/ask for image: ${imagePath}`);
 
     try {
+        if (process.env.USE_MOCK_API === 'true') {
+            console.log(`[MOCK] Returning mock response for /analyze`);
+            const mockData = require('./mocks/askResponse.json');
+            // Clean up the image since we didn't send it to backend
+            fs.unlink(imagePath, (err) => {
+                if (err && err.code !== 'ENOENT') console.error(`Failed to delete ${imagePath}:`, err);
+            });
+            return res.json({
+                status: mockData.status,
+                result: mockData.result
+            });
+        }
+
         const response = await fetch(`${GEMINI_API_URL}/ask`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -96,6 +109,15 @@ app.post('/reply', async (req, res) => {
     console.log(`Sending reply to Flask API at ${GEMINI_API_URL}/reply for session: ${sessionId}`);
 
     try {
+        if (process.env.USE_MOCK_API === 'true') {
+            console.log(`[MOCK] Returning mock response for /reply`);
+            const mockData = require('./mocks/replyResponse.json');
+            return res.json({
+                status: mockData.status,
+                result: mockData.result
+            });
+        }
+
         const response = await fetch(`${GEMINI_API_URL}/reply`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

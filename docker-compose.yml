@@ -17,6 +17,7 @@ services:
 
     environment:
       - GEMINI_API_URL=http://host.docker.internal:5000
+      - USE_MOCK_API=true
 
     extra_hosts:
       - "host.docker.internal:host-gateway"
