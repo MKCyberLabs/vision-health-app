@@ -3,6 +3,10 @@ import pexpect
 import uuid
 from flask import Flask, request, jsonify
 import shutil
+from dotenv import load_dotenv
+
+# Load environment variables from .env if present
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -85,9 +89,17 @@ def ask_gemini():
         if container_prefix in prompt_for_cli:
             prompt_for_cli = prompt_for_cli.replace(container_prefix, os.path.join(HOST_TEMP_DIR, ""))
 
+    # Determine which model to use based on environment variables
+    text_model = os.environ.get("GEMINI_TEXT_MODEL", "gpt-4o")
+    image_model = os.environ.get("GEMINI_IMAGE_MODEL", "claude-3-5-sonnet-20240620")
+    model = image_model if host_image_path else text_model
+
     # Spawn the Antigravity CLI command directly on the host OS
     # Use a list for arguments to prevent argument injection vulnerabilities
-    child = pexpect.spawn(AGY_PATH, ['-p', prompt_for_cli, '--dangerously-skip-permissions'], encoding='utf-8', timeout=300)
+    spawn_env = os.environ.copy()
+    if 'ALL_PROXY' not in spawn_env:
+        spawn_env['ALL_PROXY'] = 'socks5://127.0.0.1:1080'
+    child = pexpect.spawn(AGY_PATH, ['-p', prompt_for_cli, '--model', model, '--dangerously-skip-permissions'], env=spawn_env, encoding='utf-8', timeout=300)
     
     return handle_cli_interaction(child, session_id, host_image_path)
 
@@ -168,15 +180,22 @@ CRITICAL: If an image is provided without a description, you MUST do your absolu
   ]
 }"""
 
-    model_flag = "--model claude-3-5-sonnet-20240620" if host_image_path else "--model gpt-4o"
-    child = pexpect.spawn(f'{AGY_PATH} -p "{prompt}" {model_flag} --dangerously-skip-permissions', encoding='utf-8', timeout=300)
+    # Determine which model to use based on environment variables
+    text_model = os.environ.get("GEMINI_TEXT_MODEL", "gpt-4o")
+    image_model = os.environ.get("GEMINI_IMAGE_MODEL", "claude-3-5-sonnet-20240620")
+    model = image_model if host_image_path else text_model
+    
+    spawn_env = os.environ.copy()
+    if 'ALL_PROXY' not in spawn_env:
+        spawn_env['ALL_PROXY'] = 'socks5://127.0.0.1:1080'
+    child = pexpect.spawn(AGY_PATH, ['-p', prompt, '--model', model, '--dangerously-skip-permissions'], env=spawn_env, encoding='utf-8', timeout=300)
     
     return handle_cli_interaction(child, session_id, host_image_path)
 
 if __name__ == '__main__':
     # Configuration via environment variables
     # Default to 172.17.0.1 for Docker gateway access, or 0.0.0.0 for general container use
-    host = os.environ.get("FLASK_HOST", "0.0.0.0")
+    host = os.environ.get("FLASK_HOST", "172.17.0.1")
     port = int(os.environ.get("FLASK_PORT", 5000))
     debug = os.environ.get("FLASK_DEBUG", "false").lower() == "true"
     

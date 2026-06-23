@@ -15,8 +15,11 @@ services:
       - "traefik.http.routers.vision.tls.certresolver=letsencrypt"
       - "traefik.http.services.vision.loadbalancer.server.port=3000"
 
+    env_file:
+      - .env
     environment:
-      - GEMINI_API_URL=http://host.docker.internal:5000
+      - GEMINI_API_URL=${GEMINI_API_URL:-http://host.docker.internal:5000}
+      - USE_MOCK_API=${USE_MOCK_API:-true}
 
     extra_hosts:
       - "host.docker.internal:host-gateway"
