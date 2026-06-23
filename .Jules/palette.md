@@ -11,3 +11,11 @@
 ## 2026-06-19 - Replace Browser Alerts with ARIA Inline Errors
 **Learning:** Native browser `alert()` popups are a jarring and often inaccessible UX pattern that interrupt the user journey.
 **Action:** Use inline form error elements with `role="alert"` and `aria-live="assertive"` to provide immediate, contextually relevant feedback without blocking the user interface.
+
+## 2024-06-25 - Grouping File Inputs for Screen Readers
+**Learning:** Using an orphan `<label>` tag without a `for` attribute to describe a group of file inputs (like camera vs gallery buttons) fails to provide programmatic context for screen readers.
+**Action:** Use a `<span id="groupId">` for the descriptive text, and wrap the related inputs in a container with `role="group"` and `aria-labelledby="groupId"`. This ensures screen reader users understand the purpose of the grouped inputs.
+
+## 2024-06-25 - Accessible Placeholder Contrast in Lotus Theme
+**Learning:** The light `pink-300` color used for placeholders in the app's Lotus theme fails WCAG color contrast requirements against white backgrounds, making it hard for visually impaired users to read hints.
+**Action:** Use darker shades like `gray-500` for input placeholders to maintain a clean aesthetic while ensuring accessibility.

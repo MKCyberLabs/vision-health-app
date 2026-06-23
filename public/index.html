@@ -25,8 +25,8 @@
         <h2 class="text-4xl md:text-5xl font-extrabold text-center text-pink-900 mb-8 tracking-tight">🌸 AI Health Matrix</h2>
         <form id="uploadForm" class="space-y-8">
             <div>
-                <label class="block text-xl font-semibold text-pink-800 mb-3">Food Image (Required):</label>
-                <div class="flex flex-col gap-4">
+                <span id="foodImageGroupLabel" class="block text-xl font-semibold text-pink-800 mb-3">Food Image (Required):</span>
+                <div class="flex flex-col gap-4" role="group" aria-labelledby="foodImageGroupLabel">
                     <!-- Massive Snap Photo Button -->
                     <input type="file" id="imageCamera" accept="image/*" capture="environment" class="sr-only peer">
                     <label for="imageCamera" class="w-full cursor-pointer bg-gradient-to-br from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 text-white font-extrabold text-3xl py-8 rounded-2xl border-4 border-green-300 transition-all text-center shadow-lg transform hover:-translate-y-1 peer-focus-visible:ring-4 peer-focus-visible:ring-green-400 flex flex-col items-center justify-center gap-2">
@@ -46,11 +46,12 @@
             <div id="previewContainer" class="hidden mt-6">
                 <p class="block text-xl font-semibold text-pink-800 mb-3">Image Preview:</p>
                 <img id="imagePreview" src="" alt="Selected food preview" class="w-full max-h-[600px] object-cover rounded-2xl border-4 border-pink-200 shadow-md">
+                <p id="fileNameDisplay" class="text-md text-pink-700 font-medium mt-2" aria-live="polite"></p>
             </div>
 
             <div>
                 <label for="weight" class="block text-xl font-semibold text-pink-800 mb-3">Weight / Portion (Optional):</label>
-                <input type="text" id="weight" placeholder="e.g., 100g, 1 slice, 2 cups" class="w-full text-xl p-4 border-2 border-pink-200 rounded-xl focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-200 transition-all placeholder-pink-300 text-gray-700">
+                <input type="text" id="weight" placeholder="e.g., 100g, 1 slice, 2 cups" class="w-full text-xl p-4 border-2 border-pink-200 rounded-xl focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-200 transition-all placeholder-gray-500 text-gray-700">
             </div>
 
             <div id="formError" role="alert" aria-live="assertive" class="hidden text-red-600 font-medium text-lg mt-2 mb-4 bg-red-50 p-4 rounded-xl border border-red-200 flex items-center gap-2 shadow-sm">
@@ -103,6 +104,7 @@
                 // memory as a base64 string, preventing UI jank on large files.
                 objectUrl = URL.createObjectURL(file);
                 imagePreview.src = objectUrl;
+                document.getElementById('fileNameDisplay').textContent = "Selected file: " + file.name;
                 previewContainer.classList.remove('hidden');
             }
         }
