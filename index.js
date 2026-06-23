@@ -21,7 +21,13 @@ app.use(express.static('public'));
 
 const upload = multer({
     dest: 'temp/',
-    limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+    fileFilter: (req, file, cb) => {
+        if (!file.mimetype.startsWith('image/')) {
+            return cb(new Error('INVALID_FILE_TYPE'), false);
+        }
+        cb(null, true);
+    }
 });
 const GEMINI_API_URL = process.env.GEMINI_API_URL || 'http://172.17.0.1:5000';
 
@@ -171,6 +177,9 @@ app.use((err, req, res, next) => {
     console.error('Unhandled error:', err.message);
     if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE') {
         return res.status(413).json({ error: "File too large. Maximum size is 5MB." });
+    }
+    if (err.message === 'INVALID_FILE_TYPE') {
+        return res.status(400).json({ error: "Invalid file type. Only image files are allowed." });
     }
     res.status(500).json({ error: "An internal server error occurred." });
 });
