@@ -26,7 +26,7 @@
         <form id="uploadForm" class="space-y-8">
             <div>
                 <span id="foodImageGroupLabel" class="block text-xl font-semibold text-pink-800 mb-3">Food Image (Required):</span>
-                <div class="flex flex-col gap-4" role="group" aria-labelledby="foodImageGroupLabel">
+                <div id="dropZone" class="flex flex-col gap-4 p-4 -m-4 rounded-2xl transition-all border-2 border-transparent" role="group" aria-labelledby="foodImageGroupLabel">
                     <!-- Massive Snap Photo Button -->
                     <input type="file" id="imageCamera" accept="image/*" capture="environment" class="sr-only peer">
                     <label for="imageCamera" class="w-full cursor-pointer bg-gradient-to-br from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 text-white font-extrabold text-3xl py-8 rounded-2xl border-4 border-green-300 transition-all text-center shadow-lg transform hover:-translate-y-1 peer-focus-visible:ring-4 peer-focus-visible:ring-green-400 flex flex-col items-center justify-center gap-2">
@@ -81,6 +81,7 @@
         const previewContainer = document.getElementById('previewContainer');
         const imagePreview = document.getElementById('imagePreview');
         const submitBtn = document.getElementById('submitBtn');
+        const dropZone = document.getElementById('dropZone');
 
         let selectedFile = null;
         let objectUrl = null;
@@ -111,6 +112,24 @@
 
         imageUpload.addEventListener('change', handleFileSelect);
         imageCamera.addEventListener('change', handleFileSelect);
+
+        // Drag and drop support
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+        function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.add('border-pink-400', 'bg-pink-50', 'scale-[1.02]'), false);
+        });
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.remove('border-pink-400', 'bg-pink-50', 'scale-[1.02]'), false);
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            if (dt.files && dt.files.length > 0) handleFileSelect({ target: { files: dt.files } });
+        }, false);
 
         function setLoadingState() {
             submitBtn.disabled = true;

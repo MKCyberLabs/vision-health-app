@@ -19,3 +19,7 @@
 ## 2024-06-25 - Accessible Placeholder Contrast in Lotus Theme
 **Learning:** The light `pink-300` color used for placeholders in the app's Lotus theme fails WCAG color contrast requirements against white backgrounds, making it hard for visually impaired users to read hints.
 **Action:** Use darker shades like `gray-500` for input placeholders to maintain a clean aesthetic while ensuring accessibility.
+
+## 2024-08-01 - Visual Feedback for Drag and Drop on Custom File Inputs
+**Learning:** Adding drag and drop to custom file upload labels improves UX, but without visual feedback (like changing border color or background on `dragenter` and `dragover`), users don't know the drop zone is active or where exactly they can drop the file.
+**Action:** Always add visual cues (e.g., changing border styles, background colors, or applying a slight scale transform) on `dragenter` and `dragover` events for drop zones, and remove them on `dragleave` and `drop` to clearly indicate when an element is ready to receive a file.
