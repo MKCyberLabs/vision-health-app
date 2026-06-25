@@ -23,3 +23,7 @@
 ## 2024-08-01 - Visual Feedback for Drag and Drop on Custom File Inputs
 **Learning:** Adding drag and drop to custom file upload labels improves UX, but without visual feedback (like changing border color or background on `dragenter` and `dragover`), users don't know the drop zone is active or where exactly they can drop the file.
 **Action:** Always add visual cues (e.g., changing border styles, background colors, or applying a slight scale transform) on `dragenter` and `dragover` events for drop zones, and remove them on `dragleave` and `drop` to clearly indicate when an element is ready to receive a file.
+
+## 2026-06-25 - Allow File Selection Clearing and Restore Focus
+**Learning:** Users often select the wrong file by mistake. Without a way to clear the selection, they are forced to refresh the page or upload a dummy file to replace it, which is poor UX. Furthermore, when an action like clearing a file removes the current context (the preview), screen reader and keyboard users can lose their place in the document if focus isn't managed.
+**Action:** Always provide a clear, accessible way to cancel or clear a file selection. When the selection is cleared and the preview is hidden, explicitly move keyboard focus back to a logical starting point (like the file upload input) to maintain a seamless keyboard navigation experience.
