@@ -179,7 +179,7 @@ app.use((err, req, res, next) => {
         return res.status(413).json({ error: "File too large. Maximum size is 5MB." });
     }
     if (err.message === 'INVALID_FILE_TYPE') {
-        return res.status(400).json({ error: "Invalid file type. Only image files are allowed." });
+        return res.status(400).json({ error: "Invalid file type. Only images are allowed." });
     }
     res.status(500).json({ error: "An internal server error occurred." });
 });
