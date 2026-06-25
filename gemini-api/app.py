@@ -50,10 +50,8 @@ def handle_cli_interaction(child, session_id, host_image_path):
             if session_id in active_sessions:
                 del active_sessions[session_id]
             
-            # Clean up the image file on the host to save disk space
-            if host_image_path and os.path.exists(host_image_path):
-                os.remove(host_image_path)
-                    
+            # Image remains on the host for the frontend to serve
+
             return jsonify({"status": "success", "response": output})
             
     except pexpect.TIMEOUT:
