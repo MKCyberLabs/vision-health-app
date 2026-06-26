@@ -21,3 +21,7 @@
 **Vulnerability:** The application used `multer` for file uploads without a `fileFilter` configuration, meaning it accepted any file type. This allowed attackers to upload potentially malicious files, like executable scripts, presenting an arbitrary file upload vulnerability.
 **Learning:** Default `multer` configurations only check properties like `limits: { fileSize: ... }` if provided, but they do not automatically reject files with incorrect MIME types. Failing to check file extensions or MIME types expands the application's attack surface.
 **Prevention:** Always implement a `fileFilter` in `multer` configurations to strictly validate the MIME type (e.g., checking `mimetype.startsWith('image/')`) alongside `fileSize` limits to prevent arbitrary file upload vulnerabilities. Use a secure global error handler to handle file filter errors and return a sanitized JSON message instead of a stack trace.
+## 2024-07-26 - Temporary File Leak DoS
+**Vulnerability:** File uploads were processed but temporary files were never removed from the 'temp' directory in the backend upon failure, leading to potential disk exhaustion.
+**Learning:** Backend processes must clean up temporary files they handle, especially when they error out, as frontends often rely on the backend to manage the lifecycle of files it acts upon.
+**Prevention:** Always ensure temporary files are securely deleted in error paths of the backend handlers. Do not delete them in success paths if the frontend relies on them being served.

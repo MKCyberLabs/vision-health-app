@@ -57,13 +57,24 @@ def handle_cli_interaction(child, session_id, host_image_path):
     except pexpect.TIMEOUT:
         if session_id in active_sessions:
             del active_sessions[session_id]
+        if host_image_path and os.path.exists(host_image_path):
+            try:
+                os.remove(host_image_path)
+            except Exception:
+                pass
         pass
         return jsonify({"status": "error", "message": "CLI process timed out."}), 504
     except Exception as e:
+        app.logger.exception("Error during handle_cli_interaction: %s", e)
         if session_id in active_sessions:
             del active_sessions[session_id]
+        if host_image_path and os.path.exists(host_image_path):
+            try:
+                os.remove(host_image_path)
+            except Exception:
+                pass
         pass
-        return jsonify({"status": "error", "message": str(e)}), 500
+        return jsonify({"status": "error", "message": "An internal error occurred."}), 500
 
 @app.route('/ask', methods=['POST'])
 def ask_gemini():
@@ -127,10 +138,16 @@ def reply_gemini():
         return handle_cli_interaction(child, session_id, host_image_path)
         
     except Exception as e:
+        app.logger.exception("Error during reply_gemini: %s", e)
         if session_id in active_sessions:
             del active_sessions[session_id]
+        if host_image_path and os.path.exists(host_image_path):
+            try:
+                os.remove(host_image_path)
+            except Exception:
+                pass
         pass
-        return jsonify({"status": "error", "message": str(e)}), 500
+        return jsonify({"status": "error", "message": "An internal error occurred."}), 500
 
 
 @app.route('/health-matrix', methods=['POST'])
