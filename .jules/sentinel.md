@@ -25,3 +25,8 @@
 **Vulnerability:** File uploads were processed but temporary files were never removed from the 'temp' directory in the backend upon failure, leading to potential disk exhaustion.
 **Learning:** Backend processes must clean up temporary files they handle, especially when they error out, as frontends often rely on the backend to manage the lifecycle of files it acts upon.
 **Prevention:** Always ensure temporary files are securely deleted in error paths of the backend handlers. Do not delete them in success paths if the frontend relies on them being served.
+
+## 2026-06-26 - Prevent Information Disclosure via Flask Error Responses
+**Vulnerability:** The Flask backend was returning default HTML error pages containing stack traces or internal framework details for unhandled exceptions (e.g., when a request body was a JSON array rather than an object, causing an `AttributeError` during `data.get()`, or for malformed requests like `400 Bad Request`).
+**Learning:** Default Flask error handling can expose sensitive application internals when unhandled errors occur. Also, assuming `request.json` is always a dictionary is unsafe as clients can send empty payloads, arrays, or invalid formats.
+**Prevention:** Always implement global error handling (e.g., `@app.errorhandler(Exception)`) to securely catch unhandled exceptions, log them internally, and return generic, sanitized JSON messages to the client. Additionally, actively validate incoming JSON payloads (e.g., `isinstance(request.json, dict)`) before interacting with them.

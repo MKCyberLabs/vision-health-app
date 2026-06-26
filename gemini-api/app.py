@@ -16,8 +16,35 @@ AGY_PATH = "/root/.local/bin/agy"
 if not os.path.exists(AGY_PATH):
     AGY_PATH = shutil.which("agy") or shutil.which("agy.exe") or "agy"
 
+from werkzeug.exceptions import HTTPException
+
 # Dictionary to hold live CLI processes and metadata in RAM
 active_sessions = {}
+
+@app.errorhandler(Exception)
+def handle_exception(e):
+    # Pass through HTTP errors to standard handlers if they are configured
+    if isinstance(e, HTTPException):
+        return jsonify({"status": "error", "message": e.description}), e.code
+    # Log the full exception but return a safe generic message
+    app.logger.exception("Unhandled Exception: %s", e)
+    return jsonify({"status": "error", "message": "An internal error occurred."}), 500
+
+@app.errorhandler(400)
+def handle_400(e):
+    return jsonify({"status": "error", "message": "Bad Request."}), 400
+
+@app.errorhandler(404)
+def handle_404(e):
+    return jsonify({"status": "error", "message": "Not Found."}), 404
+
+@app.errorhandler(405)
+def handle_405(e):
+    return jsonify({"status": "error", "message": "Method Not Allowed."}), 405
+
+@app.errorhandler(415)
+def handle_415(e):
+    return jsonify({"status": "error", "message": "Unsupported Media Type."}), 415
 
 # Prompt regexes for the gemini CLI
 PROMPT_REGEXES = [r'(?i)proceed\? \[y/n\]', r'(?i)yes/no']
@@ -79,6 +106,8 @@ def handle_cli_interaction(child, session_id, host_image_path):
 @app.route('/ask', methods=['POST'])
 def ask_gemini():
     data = request.json
+    if not isinstance(data, dict):
+        data = {}
     prompt = data.get("message", "")
     image_path = data.get("image_path", "")
     requested_model = data.get("model", "")
@@ -120,6 +149,8 @@ def ask_gemini():
 @app.route('/reply', methods=['POST'])
 def reply_gemini():
     data = request.json
+    if not isinstance(data, dict):
+        data = {}
     session_id = data.get("session_id")
     answer = data.get("answer") # Expecting 'y' or 'n'
     
@@ -153,6 +184,8 @@ def reply_gemini():
 @app.route('/health-matrix', methods=['POST'])
 def health_matrix():
     data = request.json
+    if not isinstance(data, dict):
+        data = {}
     meal_description = data.get('mealDescription', '')
     image_path = data.get('imagePath', '')
     meal_time = data.get('mealTime', '')
@@ -222,6 +255,8 @@ CRITICAL: If an image is provided without a description, you MUST do your absolu
 @app.route('/health-matrix-telegram', methods=['POST'])
 def health_matrix_telegram():
     data = request.json
+    if not isinstance(data, dict):
+        data = {}
     meal_description = data.get('mealDescription', '')
     image_path = data.get('imagePath', '')
     telegram_timestamp = data.get('telegramTimestamp', '')
