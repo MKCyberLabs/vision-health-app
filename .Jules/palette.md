@@ -27,3 +27,7 @@
 ## 2026-06-25 - Allow File Selection Clearing and Restore Focus
 **Learning:** Users often select the wrong file by mistake. Without a way to clear the selection, they are forced to refresh the page or upload a dummy file to replace it, which is poor UX. Furthermore, when an action like clearing a file removes the current context (the preview), screen reader and keyboard users can lose their place in the document if focus isn't managed.
 **Action:** Always provide a clear, accessible way to cancel or clear a file selection. When the selection is cleared and the preview is hidden, explicitly move keyboard focus back to a logical starting point (like the file upload input) to maintain a seamless keyboard navigation experience.
+
+## 2026-06-27 - Preserve Accessibility and Interactive States During Merge Conflicts
+**Learning:** When resolving merge conflicts between an accessibility/error-handling PR and a UI-redesign PR, blindly accepting one branch can result in the loss of critical UX features (like loading state indication) or accessibility fixes (like `aria-live` regions or focus rings).
+**Action:** Carefully combine the changes. Ensure that interactive features (such as caching `innerHTML` for loading states) and accessibility improvements (such as `focus-visible` utility classes and ARIA attributes) are both maintained in the merged element.
