@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Health Matrix</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#10b981">
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Custom styles that can't be purely utility-based or are easier this way */
@@ -12,35 +15,60 @@
     </style>
 </head>
 <body class="bg-pink-50 font-sans text-gray-800 antialiased min-h-screen p-4 md:p-8 flex justify-center items-start">
+    
+    <!-- Offline Banner -->
+    <div id="offlineBanner" class="fixed top-0 left-0 w-full bg-red-500 text-white text-center py-2 font-bold transform -translate-y-full transition-transform duration-300 z-50 shadow-md">
+        ⚠️ No Internet Connection. AI Analysis is offline.
+    </div>
+
     <div class="bg-white rounded-3xl shadow-xl border border-pink-100 p-6 md:p-12 w-full max-w-4xl mt-10">
         <h2 class="text-4xl md:text-5xl font-extrabold text-center text-pink-900 mb-8 tracking-tight">🌸 AI Health Matrix</h2>
         <form id="uploadForm" class="space-y-8">
             <div>
-                <label class="block text-xl font-semibold text-pink-800 mb-3">Food Image (Required):</label>
-                <div class="flex flex-col sm:flex-row gap-4">
-                    <input type="file" id="imageUpload" accept="image/*" class="sr-only peer">
-                    <label for="imageUpload" class="flex-1 cursor-pointer bg-pink-100 hover:bg-pink-200 text-pink-800 font-bold text-xl py-4 rounded-xl border-2 border-pink-300 transition-colors text-center shadow-sm peer-focus-visible:ring-4 peer-focus-visible:ring-pink-400">
-                        📁 Upload Image
+                <span id="foodImageGroupLabel" class="block text-xl font-semibold text-pink-800 mb-3">Food Image (Required):</span>
+                <div id="dropZone" class="flex flex-col gap-4 p-4 -m-4 rounded-2xl transition-all border-2 border-transparent" role="group" aria-labelledby="foodImageGroupLabel">
+                    <!-- Massive Snap Photo Button -->
+                    <input type="file" id="imageCamera" accept="image/*" capture="environment" class="sr-only peer">
+                    <label for="imageCamera" class="w-full cursor-pointer bg-gradient-to-br from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 text-white font-extrabold text-3xl py-8 rounded-2xl border-4 border-green-300 transition-all text-center shadow-lg transform hover:-translate-y-1 peer-focus-visible:ring-4 peer-focus-visible:ring-green-400 flex flex-col items-center justify-center gap-2">
+                        <span class="text-5xl">📸</span>
+                        Snap Photo
                     </label>
 
-                    <input type="file" id="imageCamera" accept="image/*" capture="environment" class="sr-only peer">
-                    <label for="imageCamera" class="flex-1 cursor-pointer bg-green-100 hover:bg-green-200 text-green-800 font-bold text-xl py-4 rounded-xl border-2 border-green-300 transition-colors text-center shadow-sm peer-focus-visible:ring-4 peer-focus-visible:ring-green-400">
-                        📸 Take Photo
+                    <!-- Secondary Upload Gallery Button -->
+                    <input type="file" id="imageUpload" accept="image/*" class="sr-only peer">
+                    <label for="imageUpload" class="w-full cursor-pointer bg-pink-100 hover:bg-pink-200 text-pink-800 font-semibold text-lg py-3 rounded-xl border-2 border-pink-300 transition-colors text-center shadow-sm peer-focus-visible:ring-4 peer-focus-visible:ring-pink-400">
+                        📁 Upload from Gallery
                     </label>
                 </div>
+                <p id="fileError" class="hidden text-red-600 font-medium mt-3" role="alert">Please select or take an image first.</p>
             </div>
 
-            <div id="previewContainer" class="hidden mt-6">
-                <p class="block text-xl font-semibold text-pink-800 mb-3">Image Preview:</p>
+            <div id="previewContainer" class="hidden mt-6 relative">
+                <div class="flex justify-between items-center mb-3">
+                    <p class="block text-xl font-semibold text-pink-800">Image Preview:</p>
+                    <button type="button" id="clearImageBtn" aria-label="Clear selected image" class="bg-pink-100 text-pink-700 hover:bg-pink-200 hover:text-pink-900 rounded-full p-2 transition-colors focus-visible:ring-2 focus-visible:ring-pink-400 focus:outline-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
                 <img id="imagePreview" src="" alt="Selected food preview" class="w-full max-h-[600px] object-cover rounded-2xl border-4 border-pink-200 shadow-md">
+                <p id="fileNameDisplay" class="text-md text-pink-700 font-medium mt-2" aria-live="polite"></p>
             </div>
 
             <div>
                 <label for="weight" class="block text-xl font-semibold text-pink-800 mb-3">Weight / Portion (Optional):</label>
-                <input type="text" id="weight" placeholder="e.g., 100g, 1 slice, 2 cups" class="w-full text-xl p-4 border-2 border-pink-200 rounded-xl focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-200 transition-all placeholder-pink-300 text-gray-700">
+                <input type="text" id="weight" placeholder="e.g., 100g, 1 slice, 2 cups" class="w-full text-xl p-4 border-2 border-pink-200 rounded-xl focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-200 transition-all placeholder-gray-500 text-gray-700">
             </div>
 
-            <button id="submitBtn" type="submit" class="w-full flex justify-center items-center gap-3 bg-gradient-to-r from-pink-500 to-green-500 text-white font-bold text-2xl py-5 rounded-2xl hover:from-pink-600 hover:to-green-600 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+            <div id="formError" role="alert" aria-live="assertive" class="hidden text-red-600 font-medium text-lg mt-2 mb-4 bg-red-50 p-4 rounded-xl border border-red-200 flex items-center gap-2 shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <span id="formErrorText">Please select or take an image first.</span>
+            </div>
+
+            <button id="submitBtn" type="submit" class="w-full flex justify-center items-center gap-3 bg-gradient-to-r from-pink-500 to-green-500 text-white font-bold text-2xl py-5 rounded-2xl hover:from-pink-600 hover:to-green-600 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1 focus:outline-none focus-visible:ring-4 focus-visible:ring-green-400 focus-visible:ring-offset-2 focus-visible:ring-offset-pink-50">
                 <span>Analyze Meal ✨</span>
             </button>
         </form>
@@ -60,6 +88,9 @@
         const previewContainer = document.getElementById('previewContainer');
         const imagePreview = document.getElementById('imagePreview');
         const submitBtn = document.getElementById('submitBtn');
+        const dropZone = document.getElementById('dropZone');
+        const clearImageBtn = document.getElementById('clearImageBtn');
+        const originalBtnText = submitBtn.innerHTML;
 
         let selectedFile = null;
         let objectUrl = null;
@@ -68,6 +99,10 @@
             const file = event.target.files[0];
             if (file) {
                 selectedFile = file;
+                document.getElementById('fileError').classList.add('hidden');
+
+                // Hide error message if an image was selected
+                document.getElementById('formError').classList.add('hidden');
 
                 // ⚡ Bolt Optimization: Release previous object URL to prevent memory leaks
                 if (objectUrl) {
@@ -79,12 +114,45 @@
                 // memory as a base64 string, preventing UI jank on large files.
                 objectUrl = URL.createObjectURL(file);
                 imagePreview.src = objectUrl;
+                document.getElementById('fileNameDisplay').textContent = "Selected file: " + file.name;
                 previewContainer.classList.remove('hidden');
             }
         }
 
         imageUpload.addEventListener('change', handleFileSelect);
         imageCamera.addEventListener('change', handleFileSelect);
+
+        clearImageBtn.addEventListener('click', () => {
+            selectedFile = null;
+            if (objectUrl) {
+                URL.revokeObjectURL(objectUrl);
+                objectUrl = null;
+            }
+            imagePreview.src = '';
+            document.getElementById('fileNameDisplay').textContent = '';
+            previewContainer.classList.add('hidden');
+            imageUpload.value = '';
+            imageCamera.value = '';
+            imageUpload.focus();
+        });
+
+        // Drag and drop support
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+        function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.add('border-pink-400', 'bg-pink-50', 'scale-[1.02]'), false);
+        });
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.remove('border-pink-400', 'bg-pink-50', 'scale-[1.02]'), false);
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            if (dt.files && dt.files.length > 0) handleFileSelect({ target: { files: dt.files } });
+        }, false);
 
         function setLoadingState() {
             submitBtn.disabled = true;
@@ -103,7 +171,12 @@
             e.preventDefault();
 
             if (!selectedFile) {
-                alert("Please select or take an image first.");
+                const formError = document.getElementById('formError');
+                formError.classList.remove('hidden');
+
+                // Add a gentle shake animation to draw attention
+                formError.classList.add('animate-bounce');
+                setTimeout(() => formError.classList.remove('animate-bounce'), 1000);
                 return;
             }
 
@@ -115,12 +188,26 @@
             resultDiv.style.display = 'none';
             setLoadingState();
 
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
+            submitBtn.innerHTML = `
+                <svg class="animate-spin -ml-1 mr-3 h-8 w-8 text-white inline-block align-middle" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span class="align-middle">Analyzing...</span>
+            `;
+
             try {
                 const response = await fetch('/analyze', { method: 'POST', body: formData });
                 handleBackendResponse(await response.json());
             } catch (err) {
                 restoreSubmitButton();
                 showResult("An error occurred connecting to the server.");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+                submitBtn.innerHTML = originalBtnText;
             }
         });
 
@@ -137,14 +224,17 @@
             if (data.status === "success") {
                 showResult(data.result);
             } else if (data.status === "needs_approval") {
+                // 🛡️ Security Enhancement: Prevent XSS by building HTML safely
                 resultDiv.innerHTML = `
                     <p class="text-yellow-600 mb-4 text-2xl font-bold">⚠️ System Confirmation Required:</p>
-                    <pre class="whitespace-pre-wrap mb-6 font-sans text-xl">${data.message}</pre>
+                    <pre id="approvalMessage" class="whitespace-pre-wrap mb-6 font-sans text-xl"></pre>
                     <div class="flex gap-4">
-                        <button onclick="sendReply('${data.sessionId}', 'y')" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl text-xl transition-colors shadow-md focus:outline-none focus-visible:ring-4 focus-visible:ring-green-300">Confirm (Yes)</button>
-                        <button onclick="sendReply('${data.sessionId}', 'n')" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-xl text-xl transition-colors shadow-md focus:outline-none focus-visible:ring-4 focus-visible:ring-red-300">Cancel (No)</button>
+                        <button id="btnConfirmYes" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl text-xl transition-colors shadow-md focus:outline-none focus-visible:ring-4 focus-visible:ring-green-300">Confirm (Yes)</button>
+                        <button id="btnConfirmNo" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-xl text-xl transition-colors shadow-md focus:outline-none focus-visible:ring-4 focus-visible:ring-red-300">Cancel (No)</button>
                     </div>
                 `;
+                // Safely inject dynamic message content
+                document.getElementById('approvalMessage').textContent = data.message;
                 resultDiv.style.display = 'block';
             } else {
                 showResult("Error: " + (data.message || "Unknown error"));
@@ -171,6 +261,53 @@
             resultDiv.textContent = text;
             resultDiv.style.display = 'block';
         }
+
+        // --- PWA & Offline Logic ---
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').then(reg => {
+                    console.log('ServiceWorker registered:', reg.scope);
+                }).catch(err => {
+                    console.error('ServiceWorker registration failed:', err);
+                });
+            });
+        }
+
+        // Offline state handling
+        const offlineBanner = document.getElementById('offlineBanner');
+        const cameraLabel = document.querySelector('label[for="imageCamera"]');
+        const uploadLabel = document.querySelector('label[for="imageUpload"]');
+
+        function updateOnlineStatus() {
+            if (!navigator.onLine) {
+                offlineBanner.classList.remove('-translate-y-full');
+                
+                // Disable inputs and style labels
+                imageCamera.disabled = true;
+                imageUpload.disabled = true;
+                submitBtn.disabled = true;
+                
+                cameraLabel.classList.add('opacity-50', 'cursor-not-allowed', 'pointer-events-none');
+                uploadLabel.classList.add('opacity-50', 'cursor-not-allowed', 'pointer-events-none');
+            } else {
+                offlineBanner.classList.add('-translate-y-full');
+                
+                // Enable inputs and restore labels
+                imageCamera.disabled = false;
+                imageUpload.disabled = false;
+                if(selectedFile) submitBtn.disabled = false;
+                
+                cameraLabel.classList.remove('opacity-50', 'cursor-not-allowed', 'pointer-events-none');
+                uploadLabel.classList.remove('opacity-50', 'cursor-not-allowed', 'pointer-events-none');
+            }
+        }
+
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+        
+        // Initial check
+        updateOnlineStatus();
     </script>
 </body>
 </html>

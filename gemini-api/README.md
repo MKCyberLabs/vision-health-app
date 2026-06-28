@@ -24,6 +24,36 @@ The application can be configured using environment variables:
 - `FLASK_DEBUG`: Set to `true` to enable debug mode.
 - `GEMINI_PATH`: Absolute path to the `gemini` executable if it's not in the PATH.
 
+## Running the Server
+
+### Option A: Foreground (Development)
+Start the Flask application natively (make sure your virtual environment is activated):
+```bash
+python app.py
+```
+*(By default, this runs on `0.0.0.0:5000` to allow the Dockerized frontend to communicate with it.)*
+
+### Option B: Background (Production/Continuous)
+To start the server so it continues running after you close your terminal:
+```bash
+nohup python app.py > backend.log 2>&1 &
+```
+
+### Stopping or Restarting a Background Server
+If you change your `.env` models or need to restart a server running in the background:
+
+1. **Find the Process ID (PID)**:
+   ```bash
+   ps aux | grep "[p]ython app.py"
+   ```
+   *Look for the number in the second column (e.g., `4382`).*
+2. **Kill the Process**:
+   ```bash
+   kill <PID>
+   ```
+3. **Restart**:
+   Run the `nohup` command from Option B again.
+
 ## Usage
 
 ### 1. Initiate a Request

@@ -1,3 +1,26 @@
+# vision-health-app
+
+This is the Docker Compose deployment for vision-health-app.
+
+## Location
+- Directory: `/opt/docker/containers/vision-health-app`
+
+## Management
+To start the container:
+```bash
+cd /opt/docker/containers/vision-health-app
+docker compose up -d
+```
+
+To stop the container:
+```bash
+cd /opt/docker/containers/vision-health-app
+docker compose down
+```
+
+## Details
+Found docker-compose.yml:
+```yaml
 version: '3.8'
 
 services:
@@ -17,20 +40,6 @@ services:
 
     env_file:
       - .env
-    environment:
-      - GEMINI_API_URL=${GEMINI_API_URL:-http://host.docker.internal:5000}
-      - USE_MOCK_API=${USE_MOCK_API:-true}
-
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-
-    volumes:
-      # Mount the host temp folder to share uploaded images with the Python backend
-      - ./temp:/usr/src/app/temp
-
-    networks:
-      - proxy
-
-networks:
-  proxy:
-    external: true
+    environmen
+...
+```
