@@ -17,7 +17,7 @@
 <body class="bg-pink-50 font-sans text-gray-800 antialiased min-h-screen p-4 md:p-8 flex justify-center items-start">
     
     <!-- Offline Banner -->
-    <div id="offlineBanner" class="fixed top-0 left-0 w-full bg-red-500 text-white text-center py-2 font-bold transform -translate-y-full transition-transform duration-300 z-50 shadow-md">
+    <div id="offlineBanner" role="alert" aria-live="assertive" class="fixed top-0 left-0 w-full bg-red-500 text-white text-center py-2 font-bold transform -translate-y-full transition-transform duration-300 z-50 shadow-md">
         ⚠️ No Internet Connection. AI Analysis is offline.
     </div>
 
@@ -57,11 +57,12 @@
             </div>
 
             <div>
-                <label for="weight" class="block text-xl font-semibold text-pink-800 mb-3">Weight / Portion (Optional):</label>
-                <input type="text" id="weight" placeholder="e.g., 100g, 1 slice, 2 cups" class="w-full text-xl p-4 border-2 border-pink-200 rounded-xl focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-200 transition-all placeholder-gray-500 text-gray-700">
+                <label for="weight" class="block text-xl font-semibold text-pink-800 mb-1">Weight / Portion (Optional):</label>
+                <p id="weightHint" class="text-gray-600 text-sm mb-2 font-medium">e.g., 100g, 1 slice, 2 cups</p>
+                <input type="text" id="weight" aria-describedby="weightHint" class="w-full text-xl p-4 border-2 border-pink-200 rounded-xl focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-200 transition-all text-gray-700">
             </div>
 
-            <div id="formError" role="alert" aria-live="assertive" class="hidden text-red-600 font-medium text-lg mt-2 mb-4 bg-red-50 p-4 rounded-xl border border-red-200 flex items-center gap-2 shadow-sm">
+            <div id="formError" tabindex="-1" role="alert" aria-live="assertive" class="hidden outline-none text-red-600 font-medium text-lg mt-2 mb-4 bg-red-50 p-4 rounded-xl border border-red-200 flex items-center gap-2 shadow-sm">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
