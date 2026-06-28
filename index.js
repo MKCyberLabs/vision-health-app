@@ -46,6 +46,11 @@ app.post('/analyze', upload.single('image'), async (req, res) => {
     const imagePath = req.file.path;
     const weight = req.body.weight || "";
 
+    if (typeof weight !== 'string' || weight.length > 50) {
+        if (imagePath) cleanupFileAsync(imagePath);
+        return res.status(400).json({ error: "Invalid weight format or length." });
+    }
+
     let prompt = "Analyze this food image and provide a health matrix: calories, protein, fiber, fats, and a description.";
     if (weight) prompt += ` The portion size/weight is: ${weight}.`;
     prompt += ` Image reference path: ${path.resolve(imagePath)}`;
@@ -116,6 +121,9 @@ app.post('/analyze', upload.single('image'), async (req, res) => {
 app.post('/reply', async (req, res) => {
     const { sessionId, answer } = req.body;
     if (!sessionId) return res.status(400).json({ error: "Session ID is required." });
+    if (typeof answer !== 'string' || !['y', 'n'].includes(answer.toLowerCase())) {
+        return res.status(400).json({ error: "Invalid answer. Must be 'y' or 'n'." });
+    }
 
     console.log(`Sending reply to Flask API at ${GEMINI_API_URL}/reply for session: ${sessionId}`);
 
