@@ -30,3 +30,8 @@
 **Vulnerability:** The Flask backend was returning default HTML error pages containing stack traces or internal framework details for unhandled exceptions (e.g., when a request body was a JSON array rather than an object, causing an `AttributeError` during `data.get()`, or for malformed requests like `400 Bad Request`).
 **Learning:** Default Flask error handling can expose sensitive application internals when unhandled errors occur. Also, assuming `request.json` is always a dictionary is unsafe as clients can send empty payloads, arrays, or invalid formats.
 **Prevention:** Always implement global error handling (e.g., `@app.errorhandler(Exception)`) to securely catch unhandled exceptions, log them internally, and return generic, sanitized JSON messages to the client. Additionally, actively validate incoming JSON payloads (e.g., `isinstance(request.json, dict)`) before interacting with them.
+
+## 2024-06-27 - Interactive CLI Injection in pexpect
+**Vulnerability:** User-provided answers in the `/reply` endpoint were being directly passed to a waiting CLI process via `child.sendline(answer)` without validation. If an attacker sent unexpected inputs (like newlines followed by other commands or escape characters), it could potentially manipulate the CLI's interactive state or execute unintended operations.
+**Learning:** Sending untrusted input interactively to a spawned process (e.g., via `sendline`) is a form of injection. Even if shell injection during process creation (`spawn`) is prevented, the interactive input itself must be strictly validated.
+**Prevention:** Always apply strict allowlisting to interactive inputs sent to spawned processes. Ensure the input only matches the exact expected choices (e.g., 'y', 'n') before sending it.

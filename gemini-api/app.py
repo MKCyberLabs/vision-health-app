@@ -160,6 +160,10 @@ def reply_gemini():
     session_id = data.get("session_id")
     answer = data.get("answer") # Expecting 'y' or 'n'
     
+    # 🛡️ Sentinel: Prevent Interactive CLI Injection by strictly allowlisting the input
+    if answer not in ['y', 'n', 'yes', 'no', 'Y', 'N', 'Yes', 'No']:
+        return jsonify({"status": "error", "message": "Invalid answer format."}), 400
+
     if not session_id or session_id not in active_sessions:
         return jsonify({"error": "Session expired or invalid. Try again."}), 404
         
