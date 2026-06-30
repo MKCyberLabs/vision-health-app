@@ -24,9 +24,6 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
-    ports:
-      - "3000:3000"
-
     volumes:
       # Mount the host temp folder to share uploaded images with the Python backend
       - ./temp:/usr/src/app/temp
