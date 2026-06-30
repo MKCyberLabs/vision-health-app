@@ -163,6 +163,11 @@ def reply_gemini():
     if not session_id or session_id not in active_sessions:
         return jsonify({"error": "Session expired or invalid. Try again."}), 404
         
+    # Strict allowlist validation for pexpect interactive input to prevent CLI injection
+    valid_answers = ['y', 'n', 'yes', 'no']
+    if not isinstance(answer, str) or answer.lower().strip() not in valid_answers:
+        return jsonify({"error": "Invalid answer format. Expected 'y' or 'n'."}), 400
+
     session_data = active_sessions[session_id]
     child = session_data["child"]
     host_image_path = session_data["image_path"]
