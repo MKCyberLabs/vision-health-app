@@ -1,5 +1,5 @@
-FROM node:18-slim
-RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
+FROM node:20-alpine
+RUN apk add --no-cache ca-certificates
 WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install
