@@ -34,3 +34,8 @@
 **Vulnerability:** The Node.js and Flask backend passed unvalidated interactive input (`answer`) directly to a live pexpect CLI session (`child.sendline(answer)`). A malicious payload like `y\nrm -rf /` could send multiple commands if the underlying CLI passed it to a shell or improperly handled newlines.
 **Learning:** Even when external tools are spawned safely (e.g. avoiding `shell=True`), interactive communication channels (like stdin via pexpect) remain a dangerous attack surface if inputs aren't strictly validated and bounded.
 **Prevention:** Always apply strict allowlist validation to interactive CLI inputs. In this case, `answer` is explicitly restricted to exactly `'y'` or `'n'`.
+
+## 2024-07-02 - Add Content-Security-Policy Header
+**Vulnerability:** The application was missing a Content-Security-Policy (CSP) header, leaving it vulnerable to various code injection attacks, primarily Cross-Site Scripting (XSS).
+**Learning:** Default Express configurations do not include security headers. While some basic headers (`X-Content-Type-Options`, etc.) were present, the critical CSP header was missing, which is a key defense-in-depth mechanism.
+**Prevention:** Always implement a robust Content-Security-Policy header in the global application middleware to restrict the origins of executable scripts, stylesheets, and other resources.
