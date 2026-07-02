@@ -269,6 +269,7 @@ def health_matrix_telegram():
     meal_description = data.get('mealDescription', '')
     image_path = data.get('imagePath', '')
     telegram_timestamp = data.get('telegramTimestamp', '')
+    user_local_time = data.get('userLocalTime', '')
     weight = data.get('weight', '')
     requested_model = data.get('model', '')
     
@@ -281,10 +282,10 @@ def health_matrix_telegram():
     if image_path:
         host_image_path = os.path.join(HOST_TEMP_DIR, os.path.basename(image_path))
 
-    prompt = f"The user sent this message exactly at the following anchor time: {telegram_timestamp}. "
+    prompt = f"The user sent this message exactly at the following anchor time: {telegram_timestamp} (User's Local Time: {user_local_time}). "
     prompt += f"Based on this description: '{meal_description}', calculate the actual ISO 8601 UTC time the meal was consumed. "
     prompt += "If no specific time is implied (e.g. they just said 'my meal' or didn't provide a description), assume it was consumed exactly at the anchor time. "
-    prompt += "Based on the calculated meal time, or the context of the description, determine the appropriate category ('Breakfast', 'Lunch', 'Dinner', 'Snacks'). "
+    prompt += "Based on the calculated meal time, or the context of the description, determine the appropriate category ('Breakfast', 'Lunch', 'Dinner', 'Snacks'). Make sure to classify according to typical local time meal hours (e.g. 1:30 PM is Lunch). "
     
     if weight:
         prompt += f"CRITICAL: The user explicitly specified the weight is {weight} grams. Calculate nutritional values based strictly on {weight}g. "
