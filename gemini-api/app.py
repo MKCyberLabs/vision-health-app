@@ -220,6 +220,7 @@ def health_matrix():
     prompt += """Return ONLY a valid JSON object matching exactly this schema (do not wrap in markdown tags).
 CRITICAL: The Description provided above is the User's Input Note. You MUST output your own insights/feedback exclusively into the "healthInsight" field so they do not conflict.
 CRITICAL: You MUST break down the meal into individual components in the "foodItems" array. For EVERY item in the array, you MUST provide its individual nutritional breakdown using ALL the exact keys below: "name", "grams", "calories", "protein", "carbs", "fat", "fiber", "saturatedFat", and "sugar". Do NOT use "weight", use "grams".
+CRITICAL: For EVERY item in the array, you MUST assign a health "rating" integer from 1 to 5 based strictly on purely nutritional quality (1 = ultra-processed/junk, 5 = whole foods, nutrient-dense, balanced macros).
 CRITICAL: If an image is provided without a description, you MUST do your absolute best to visually identify the food and estimate the portion size. Do NOT ask the user for more information. Do NOT return text. You MUST return ONLY the JSON matrix based on your best visual estimation.
 {
   "calories": number,
@@ -240,7 +241,8 @@ CRITICAL: If an image is provided without a description, you MUST do your absolu
       "fat": number,
       "fiber": number,
       "saturatedFat": number,
-      "sugar": number
+      "sugar": number,
+      "rating": number
     }
   ]
 }"""
@@ -296,6 +298,7 @@ def health_matrix_telegram():
     prompt += """Return ONLY a valid JSON object matching exactly this schema (do not wrap in markdown tags).
 CRITICAL: The Description provided above is the User's Input Note. You MUST output your own insights/feedback exclusively into the "healthInsight" field so they do not conflict.
 CRITICAL: You MUST break down the meal into individual components in the "foodItems" array.
+CRITICAL: For EVERY item in the array, you MUST assign a health "rating" integer from 1 to 5 based strictly on purely nutritional quality (1 = ultra-processed/junk, 5 = whole foods, nutrient-dense, balanced macros).
 CRITICAL: Include the exact "calculatedTime" (ISO 8601 UTC) and "calculatedCategory" string in the root.
 {
   "calculatedTime": "string ISO 8601 UTC time",
@@ -318,7 +321,8 @@ CRITICAL: Include the exact "calculatedTime" (ISO 8601 UTC) and "calculatedCateg
       "fat": number,
       "fiber": number,
       "saturatedFat": number,
-      "sugar": number
+      "sugar": number,
+      "rating": number
     }
   ]
 }"""
