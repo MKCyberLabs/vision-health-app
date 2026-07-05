@@ -76,6 +76,7 @@ def handle_cli_interaction(child, session_id, host_image_path):
             # Clean up session as it's now finished
             if session_id in active_sessions:
                 del active_sessions[session_id]
+                child.close(force=True)
             
             # Image remains on the host for the frontend to serve
 
@@ -89,7 +90,7 @@ def handle_cli_interaction(child, session_id, host_image_path):
                 os.remove(host_image_path)
             except Exception:
                 pass
-        pass
+        child.close(force=True)
         return jsonify({"status": "error", "message": "CLI process timed out."}), 504
     except Exception as e:
         app.logger.exception("Error during handle_cli_interaction: %s", e)
@@ -100,7 +101,8 @@ def handle_cli_interaction(child, session_id, host_image_path):
                 os.remove(host_image_path)
             except Exception:
                 pass
-        pass
+        if 'child' in locals() and child:
+            child.close(force=True)
         return jsonify({"status": "error", "message": "An internal error occurred."}), 500
 
 @app.route('/ask', methods=['POST'])
@@ -186,7 +188,8 @@ def reply_gemini():
                 os.remove(host_image_path)
             except Exception:
                 pass
-        pass
+        if 'child' in locals() and child:
+            child.close(force=True)
         return jsonify({"status": "error", "message": "An internal error occurred."}), 500
 
 
