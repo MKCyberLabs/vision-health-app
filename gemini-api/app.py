@@ -82,6 +82,8 @@ def handle_cli_interaction(child, session_id, host_image_path):
             return jsonify({"status": "success", "response": output})
             
     except pexpect.TIMEOUT:
+        # 🛡️ Security Enhancement: Ensure child process is explicitly terminated on timeout to prevent orphaned process DoS
+        child.close(force=True)
         if session_id in active_sessions:
             del active_sessions[session_id]
         if host_image_path and os.path.exists(host_image_path):
@@ -93,6 +95,8 @@ def handle_cli_interaction(child, session_id, host_image_path):
         return jsonify({"status": "error", "message": "CLI process timed out."}), 504
     except Exception as e:
         app.logger.exception("Error during handle_cli_interaction: %s", e)
+        # 🛡️ Security Enhancement: Ensure child process is explicitly terminated on error to prevent orphaned process DoS
+        child.close(force=True)
         if session_id in active_sessions:
             del active_sessions[session_id]
         if host_image_path and os.path.exists(host_image_path):

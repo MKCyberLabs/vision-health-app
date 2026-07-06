@@ -34,3 +34,8 @@
 **Vulnerability:** The Node.js and Flask backend passed unvalidated interactive input (`answer`) directly to a live pexpect CLI session (`child.sendline(answer)`). A malicious payload like `y\nrm -rf /` could send multiple commands if the underlying CLI passed it to a shell or improperly handled newlines.
 **Learning:** Even when external tools are spawned safely (e.g. avoiding `shell=True`), interactive communication channels (like stdin via pexpect) remain a dangerous attack surface if inputs aren't strictly validated and bounded.
 **Prevention:** Always apply strict allowlist validation to interactive CLI inputs. In this case, `answer` is explicitly restricted to exactly `'y'` or `'n'`.
+
+## 2026-07-06 - Prevent DoS via Orphaned Processes in pexpect
+**Vulnerability:** The backend spawned external CLI processes using `pexpect.spawn` but failed to explicitly terminate the `child` process when a timeout (`pexpect.TIMEOUT`) or an unhandled exception occurred during interaction. This allowed processes to remain alive as orphaned processes, leading to resource exhaustion (Denial of Service).
+**Learning:** `pexpect.spawn` does not automatically kill its underlying child process when python exceptions are thrown or timeouts are reached. If not manually handled, these processes persist in the background, consuming memory and file descriptors until the host OS limits are reached.
+**Prevention:** When using `pexpect.spawn` to manage child processes, always explicitly terminate the process using `child.close(force=True)` in all exception handlers and timeout paths to prevent orphaned processes and DoS vulnerabilities.
