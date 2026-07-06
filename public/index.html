@@ -17,7 +17,7 @@
 <body class="bg-pink-50 font-sans text-gray-800 antialiased min-h-screen p-4 md:p-8 flex justify-center items-start">
     
     <!-- Offline Banner -->
-    <div id="offlineBanner" class="fixed top-0 left-0 w-full bg-red-500 text-white text-center py-2 font-bold transform -translate-y-full transition-transform duration-300 z-50 shadow-md">
+    <div id="offlineBanner" role="alert" aria-live="assertive" aria-hidden="true" class="fixed top-0 left-0 w-full bg-red-500 text-white text-center py-2 font-bold transform -translate-y-full transition-transform duration-300 z-50 shadow-md">
         ⚠️ No Internet Connection. AI Analysis is offline.
     </div>
 
@@ -283,6 +283,7 @@
         function updateOnlineStatus() {
             if (!navigator.onLine) {
                 offlineBanner.classList.remove('-translate-y-full');
+                offlineBanner.setAttribute('aria-hidden', 'false');
                 
                 // Disable inputs and style labels
                 imageCamera.disabled = true;
@@ -293,6 +294,7 @@
                 uploadLabel.classList.add('opacity-50', 'cursor-not-allowed', 'pointer-events-none');
             } else {
                 offlineBanner.classList.add('-translate-y-full');
+                offlineBanner.setAttribute('aria-hidden', 'true');
                 
                 // Enable inputs and restore labels
                 imageCamera.disabled = false;
