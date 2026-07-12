@@ -214,7 +214,7 @@ def reply_gemini():
             child.close(force=True)
         if session_id in active_sessions:
             del active_sessions[session_id]
-        if host_image_path and os.path.exists(host_image_path):
+        if 'host_image_path' in locals() and host_image_path and os.path.exists(host_image_path):
             try:
                 os.remove(host_image_path)
             except Exception:
