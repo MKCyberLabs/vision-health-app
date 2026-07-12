@@ -36,6 +36,7 @@
 **Prevention:** Always apply strict allowlist validation to interactive CLI inputs. In this case, `answer` is explicitly restricted to exactly `'y'` or `'n'`.
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 ## 2024-10-25 - Resource Exhaustion / Denial of Service via Orphaned Processes
 **Vulnerability:** The backend spawned long-running CLI processes via `pexpect.spawn`. However, if the process timed out or encountered an exception, it was removed from internal trackers but the underlying process wasn't explicitly terminated, causing it to remain running in the background until it consumed all system resources (PIDs/memory), leading to a Denial of Service (DoS) vulnerability.
 **Learning:** External or child processes managed by wrappers like `pexpect` do not automatically terminate when they fall out of Python scope or timeout. They can become orphaned and leak system resources heavily.
@@ -46,3 +47,9 @@
 **Learning:** Default Express configurations do not include security headers. While some basic headers (`X-Content-Type-Options`, etc.) were present, the critical CSP header was missing, which is a key defense-in-depth mechanism.
 **Prevention:** Always implement a robust Content-Security-Policy header in the global application middleware to restrict the origins of executable scripts, stylesheets, and other resources.
 >>>>>>> jules-security-csp-header-13291046855022523846
+=======
+## 2024-06-28 - Prevent DoS via Orphaned Child Processes
+**Vulnerability:** In `gemini-api/app.py`, the backend spawned child processes using `pexpect.spawn`, but failed to explicitly close them in various execution paths (such as upon timeouts or unhandled exceptions in the `handle_cli_interaction` and `reply_gemini` methods). This left orphaned child processes running, consuming server resources, leading to potential Denial of Service (DoS) via resource exhaustion.
+**Learning:** When using libraries like `pexpect.spawn` to manage child processes, the operating system's resources (like file descriptors and memory) can become depleted if processes are not explicitly terminated when an error occurs or when the parent process stops interacting with them. Trailing `pass` statements in `except` blocks do not manage this cleanup.
+**Prevention:** Always ensure explicit termination of child processes (e.g., using `child.close(force=True)`) in all execution branches, particularly inside exception handlers and timeouts, to prevent resource exhaustion and Denial of Service (DoS) vulnerabilities.
+>>>>>>> security/fix-orphaned-processes-15558149371894511754
