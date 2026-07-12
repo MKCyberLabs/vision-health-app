@@ -38,6 +38,7 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 ## 2024-10-25 - Resource Exhaustion / Denial of Service via Orphaned Processes
 **Vulnerability:** The backend spawned long-running CLI processes via `pexpect.spawn`. However, if the process timed out or encountered an exception, it was removed from internal trackers but the underlying process wasn't explicitly terminated, causing it to remain running in the background until it consumed all system resources (PIDs/memory), leading to a Denial of Service (DoS) vulnerability.
 **Learning:** External or child processes managed by wrappers like `pexpect` do not automatically terminate when they fall out of Python scope or timeout. They can become orphaned and leak system resources heavily.
@@ -61,3 +62,9 @@
 **Learning:** Even when `pexpect.spawn` is instantiated safely (e.g., using a list of arguments to avoid initial argument injection), dynamic interaction via `.sendline()` still poses a risk if the CLI prompt accepts multi-line input or command-like sequences. Untrusted user data should never be sent raw to a spawned terminal interface.
 **Prevention:** Always apply strict allowlist validation to dynamic input before passing it to `child.sendline()` to ensure only expected inputs (e.g., `'y'`, `'n'`, `'yes'`, `'no'`) are sent to the spawned process.
 >>>>>>> sentinel-fix-cli-injection-17315862355032067567
+=======
+## 2026-07-08 - DoS via Orphaned Processes in pexpect
+**Vulnerability:** When a spawned `pexpect` process timed out or encountered an exception, it was not explicitly terminated in the error handlers. This allowed processes to persist as zombies or continue running in the background, consuming memory and file descriptors, leading to resource exhaustion DoS.
+**Learning:** In Python, child processes managed by tools like `pexpect` are not automatically terminated when the managing object is discarded or an exception interrupts the flow, unless explicitly handled.
+**Prevention:** Always explicitly terminate spawned processes using methods like `child.close(force=True)` inside exception and timeout handlers to guarantee resources are freed.
+>>>>>>> sentinel-fix-dos-orphan-processes-3133874536268309080

@@ -92,7 +92,12 @@ def handle_cli_interaction(child, session_id, host_image_path):
                 os.remove(host_image_path)
             except Exception:
                 pass
+<<<<<<< HEAD
         child.close(force=True)
+=======
+        if child.isalive():
+            child.close(force=True)
+>>>>>>> sentinel-fix-dos-orphan-processes-3133874536268309080
         return jsonify({"status": "error", "message": "CLI process timed out."}), 504
     except Exception as e:
         app.logger.exception("Error during handle_cli_interaction: %s", e)
@@ -105,7 +110,11 @@ def handle_cli_interaction(child, session_id, host_image_path):
                 os.remove(host_image_path)
             except Exception:
                 pass
+<<<<<<< HEAD
         if 'child' in locals() and child:
+=======
+        if child.isalive():
+>>>>>>> sentinel-fix-dos-orphan-processes-3133874536268309080
             child.close(force=True)
         return jsonify({"status": "error", "message": "An internal error occurred."}), 500
 
@@ -199,7 +208,11 @@ def reply_gemini():
                 os.remove(host_image_path)
             except Exception:
                 pass
+<<<<<<< HEAD
         if 'child' in locals() and child:
+=======
+        if child.isalive():
+>>>>>>> sentinel-fix-dos-orphan-processes-3133874536268309080
             child.close(force=True)
         return jsonify({"status": "error", "message": "An internal error occurred."}), 500
 
