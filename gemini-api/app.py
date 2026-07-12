@@ -100,6 +100,8 @@ def handle_cli_interaction(child, session_id, host_image_path):
 >>>>>>> sentinel-fix-dos-orphan-processes-3133874536268309080
         return jsonify({"status": "error", "message": "CLI process timed out."}), 504
     except Exception as e:
+        if child and child.isalive():
+            child.close(force=True)
         app.logger.exception("Error during handle_cli_interaction: %s", e)
         if child and child.isalive():
             child.close(force=True)
@@ -169,6 +171,7 @@ def ask_gemini():
 
 @app.route('/reply', methods=['POST'])
 def reply_gemini():
+    child = None
     data = request.json
     if not isinstance(data, dict):
         data = {}
@@ -204,6 +207,8 @@ def reply_gemini():
         return handle_cli_interaction(child, session_id, host_image_path)
         
     except Exception as e:
+        if child and child.isalive():
+            child.close(force=True)
         app.logger.exception("Error during reply_gemini: %s", e)
         if 'child' in locals() and child and child.isalive():
             child.close(force=True)

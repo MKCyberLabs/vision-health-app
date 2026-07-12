@@ -40,6 +40,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 ## 2024-10-25 - Resource Exhaustion / Denial of Service via Orphaned Processes
 **Vulnerability:** The backend spawned long-running CLI processes via `pexpect.spawn`. However, if the process timed out or encountered an exception, it was removed from internal trackers but the underlying process wasn't explicitly terminated, causing it to remain running in the background until it consumed all system resources (PIDs/memory), leading to a Denial of Service (DoS) vulnerability.
 **Learning:** External or child processes managed by wrappers like `pexpect` do not automatically terminate when they fall out of Python scope or timeout. They can become orphaned and leak system resources heavily.
@@ -76,3 +77,9 @@
 **Learning:** Sending untrusted input interactively to a spawned process (e.g., via `sendline`) is a form of injection. Even if shell injection during process creation (`spawn`) is prevented, the interactive input itself must be strictly validated.
 **Prevention:** Always apply strict allowlisting to interactive inputs sent to spawned processes. Ensure the input only matches the exact expected choices (e.g., 'y', 'n') before sending it.
 >>>>>>> sentinel-fix-interactive-cli-injection-4479278872574339230
+=======
+## 2024-10-24 - DoS via Orphaned pexpect Processes
+**Vulnerability:** The Flask backend did not explicitly terminate the `pexpect` child processes in error handlers (e.g., timeouts, exceptions). If a timeout or error occurred, the process would remain alive in the background indefinitely, potentially leading to resource exhaustion (Denial of Service).
+**Learning:** `pexpect` child processes continue running in the background even if the main thread encounters an exception or timeout. They must be explicitly terminated to release system resources.
+**Prevention:** When using `pexpect.spawn` to manage child processes, always ensure explicit termination (e.g., using `child.close(force=True)`) in exception handlers and timeouts. Verify the process is still running by checking `child.isalive()` before calling `child.close(force=True)` to prevent errors.
+>>>>>>> sentinel-fix-orphaned-processes-17159835558622461504
