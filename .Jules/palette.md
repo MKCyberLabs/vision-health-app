@@ -31,3 +31,7 @@
 ## 2026-06-27 - Preserve Accessibility and Interactive States During Merge Conflicts
 **Learning:** When resolving merge conflicts between an accessibility/error-handling PR and a UI-redesign PR, blindly accepting one branch can result in the loss of critical UX features (like loading state indication) or accessibility fixes (like `aria-live` regions or focus rings).
 **Action:** Carefully combine the changes. Ensure that interactive features (such as caching `innerHTML` for loading states) and accessibility improvements (such as `focus-visible` utility classes and ARIA attributes) are both maintained in the merged element.
+
+## 2024-05-27 - Inline Input Hints
+**Learning:** Using placeholder text (`placeholder="..."`) for crucial input hints (like expected format) is poor UX. Placeholders disappear as soon as the user starts typing, making them forget the expected format. Furthermore, light placeholder colors often fail contrast guidelines.
+**Action:** Extract placeholder text into a dedicated description element (`<p>`) placed near the input. Link the description to the input using `aria-describedby` to ensure screen readers announce the hint when the input is focused. This keeps the hint visible while typing and improves accessibility.
