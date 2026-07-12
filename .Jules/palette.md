@@ -33,6 +33,7 @@
 **Action:** Carefully combine the changes. Ensure that interactive features (such as caching `innerHTML` for loading states) and accessibility improvements (such as `focus-visible` utility classes and ARIA attributes) are both maintained in the merged element.
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 ## 2024-05-27 - Inline Input Hints
 **Learning:** Using placeholder text (`placeholder="..."`) for crucial input hints (like expected format) is poor UX. Placeholders disappear as soon as the user starts typing, making them forget the expected format. Furthermore, light placeholder colors often fail contrast guidelines.
 **Action:** Extract placeholder text into a dedicated description element (`<p>`) placed near the input. Link the description to the input using `aria-describedby` to ensure screen readers announce the hint when the input is focused. This keeps the hint visible while typing and improves accessibility.
@@ -41,3 +42,8 @@
 **Learning:** Using placeholder text for input hints means the hint disappears upon typing and often fails color contrast guidelines. Users might forget what format is expected.
 **Action:** Use a dedicated, always-visible description element (e.g., `<p>`) for hints and link it to the input via `aria-describedby` to provide persistent context for sighted users and robust semantic meaning for screen readers.
 >>>>>>> palette-ux-weight-hint-15959018386035856729
+=======
+## 2026-06-30 - Visible Input Hints
+**Learning:** Using placeholders for input hints (like expected format or examples) is problematic for accessibility and UX. The text often disappears once the user starts typing, forcing them to clear the input to read it again. It also frequently fails color contrast requirements.
+**Action:** Use a dedicated, visible description element (like a `<p>`) placed before the input, and link it to the input using the `aria-describedby` attribute. This ensures the hint remains visible and is properly announced by screen readers.
+>>>>>>> palette/visible-input-hint-869195354420355491
