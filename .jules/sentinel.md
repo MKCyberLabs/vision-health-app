@@ -35,7 +35,14 @@
 **Learning:** Even when external tools are spawned safely (e.g. avoiding `shell=True`), interactive communication channels (like stdin via pexpect) remain a dangerous attack surface if inputs aren't strictly validated and bounded.
 **Prevention:** Always apply strict allowlist validation to interactive CLI inputs. In this case, `answer` is explicitly restricted to exactly `'y'` or `'n'`.
 
+<<<<<<< HEAD
 ## 2024-10-25 - Resource Exhaustion / Denial of Service via Orphaned Processes
 **Vulnerability:** The backend spawned long-running CLI processes via `pexpect.spawn`. However, if the process timed out or encountered an exception, it was removed from internal trackers but the underlying process wasn't explicitly terminated, causing it to remain running in the background until it consumed all system resources (PIDs/memory), leading to a Denial of Service (DoS) vulnerability.
 **Learning:** External or child processes managed by wrappers like `pexpect` do not automatically terminate when they fall out of Python scope or timeout. They can become orphaned and leak system resources heavily.
 **Prevention:** Always explicitly terminate managed child processes in exception handlers, finally blocks, or timeout paths using explicit calls like `child.close(force=True)` after verifying they are still alive using `child.isalive()`.
+=======
+## 2024-07-02 - Add Content-Security-Policy Header
+**Vulnerability:** The application was missing a Content-Security-Policy (CSP) header, leaving it vulnerable to various code injection attacks, primarily Cross-Site Scripting (XSS).
+**Learning:** Default Express configurations do not include security headers. While some basic headers (`X-Content-Type-Options`, etc.) were present, the critical CSP header was missing, which is a key defense-in-depth mechanism.
+**Prevention:** Always implement a robust Content-Security-Policy header in the global application middleware to restrict the origins of executable scripts, stylesheets, and other resources.
+>>>>>>> jules-security-csp-header-13291046855022523846
