@@ -31,6 +31,7 @@
 **Learning:** Default Flask error handling can expose sensitive application internals when unhandled errors occur. Also, assuming `request.json` is always a dictionary is unsafe as clients can send empty payloads, arrays, or invalid formats.
 **Prevention:** Always implement global error handling (e.g., `@app.errorhandler(Exception)`) to securely catch unhandled exceptions, log them internally, and return generic, sanitized JSON messages to the client. Additionally, actively validate incoming JSON payloads (e.g., `isinstance(request.json, dict)`) before interacting with them.
 <<<<<<< HEAD
+<<<<<<< HEAD
 ## 2024-10-24 - Interactive CLI Injection via pexpect
 **Vulnerability:** The Node.js and Flask backend passed unvalidated interactive input (`answer`) directly to a live pexpect CLI session (`child.sendline(answer)`). A malicious payload like `y\nrm -rf /` could send multiple commands if the underlying CLI passed it to a shell or improperly handled newlines.
 **Learning:** Even when external tools are spawned safely (e.g. avoiding `shell=True`), interactive communication channels (like stdin via pexpect) remain a dangerous attack surface if inputs aren't strictly validated and bounded.
@@ -68,3 +69,10 @@
 **Learning:** In Python, child processes managed by tools like `pexpect` are not automatically terminated when the managing object is discarded or an exception interrupts the flow, unless explicitly handled.
 **Prevention:** Always explicitly terminate spawned processes using methods like `child.close(force=True)` inside exception and timeout handlers to guarantee resources are freed.
 >>>>>>> sentinel-fix-dos-orphan-processes-3133874536268309080
+=======
+
+## 2024-06-27 - Interactive CLI Injection in pexpect
+**Vulnerability:** User-provided answers in the `/reply` endpoint were being directly passed to a waiting CLI process via `child.sendline(answer)` without validation. If an attacker sent unexpected inputs (like newlines followed by other commands or escape characters), it could potentially manipulate the CLI's interactive state or execute unintended operations.
+**Learning:** Sending untrusted input interactively to a spawned process (e.g., via `sendline`) is a form of injection. Even if shell injection during process creation (`spawn`) is prevented, the interactive input itself must be strictly validated.
+**Prevention:** Always apply strict allowlisting to interactive inputs sent to spawned processes. Ensure the input only matches the exact expected choices (e.g., 'y', 'n') before sending it.
+>>>>>>> sentinel-fix-interactive-cli-injection-4479278872574339230

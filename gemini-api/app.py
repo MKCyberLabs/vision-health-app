@@ -175,8 +175,14 @@ def reply_gemini():
     session_id = data.get("session_id")
     answer = data.get("answer") # Expecting 'y' or 'n'
     
+<<<<<<< HEAD
     if not isinstance(answer, str) or answer.lower() not in ['y', 'n']:
         return jsonify({"status": "error", "message": "Invalid answer format. Must be 'y' or 'n'."}), 400
+=======
+    # 🛡️ Sentinel: Prevent Interactive CLI Injection by strictly allowlisting the input
+    if answer not in ['y', 'n', 'yes', 'no', 'Y', 'N', 'Yes', 'No']:
+        return jsonify({"status": "error", "message": "Invalid answer format."}), 400
+>>>>>>> sentinel-fix-interactive-cli-injection-4479278872574339230
 
     if not session_id or session_id not in active_sessions:
         return jsonify({"error": "Session expired or invalid. Try again."}), 404
