@@ -30,6 +30,7 @@
 **Vulnerability:** The Flask backend was returning default HTML error pages containing stack traces or internal framework details for unhandled exceptions (e.g., when a request body was a JSON array rather than an object, causing an `AttributeError` during `data.get()`, or for malformed requests like `400 Bad Request`).
 **Learning:** Default Flask error handling can expose sensitive application internals when unhandled errors occur. Also, assuming `request.json` is always a dictionary is unsafe as clients can send empty payloads, arrays, or invalid formats.
 **Prevention:** Always implement global error handling (e.g., `@app.errorhandler(Exception)`) to securely catch unhandled exceptions, log them internally, and return generic, sanitized JSON messages to the client. Additionally, actively validate incoming JSON payloads (e.g., `isinstance(request.json, dict)`) before interacting with them.
+<<<<<<< HEAD
 ## 2024-10-24 - Interactive CLI Injection via pexpect
 **Vulnerability:** The Node.js and Flask backend passed unvalidated interactive input (`answer`) directly to a live pexpect CLI session (`child.sendline(answer)`). A malicious payload like `y\nrm -rf /` could send multiple commands if the underlying CLI passed it to a shell or improperly handled newlines.
 **Learning:** Even when external tools are spawned safely (e.g. avoiding `shell=True`), interactive communication channels (like stdin via pexpect) remain a dangerous attack surface if inputs aren't strictly validated and bounded.
@@ -53,3 +54,10 @@
 **Learning:** When using libraries like `pexpect.spawn` to manage child processes, the operating system's resources (like file descriptors and memory) can become depleted if processes are not explicitly terminated when an error occurs or when the parent process stops interacting with them. Trailing `pass` statements in `except` blocks do not manage this cleanup.
 **Prevention:** Always ensure explicit termination of child processes (e.g., using `child.close(force=True)`) in all execution branches, particularly inside exception handlers and timeouts, to prevent resource exhaustion and Denial of Service (DoS) vulnerabilities.
 >>>>>>> security/fix-orphaned-processes-15558149371894511754
+=======
+
+## 2024-06-27 - Interactive CLI Injection in pexpect.spawn sendline
+**Vulnerability:** The application was vulnerable to Interactive CLI Injection. The user-controlled `answer` parameter was passed directly to `child.sendline(answer)` in `pexpect` without validation. Attackers could send unescaped input, arbitrary commands, or multiple newline characters that the interactive CLI tool would interpret and execute under its active session context.
+**Learning:** Even when `pexpect.spawn` is instantiated safely (e.g., using a list of arguments to avoid initial argument injection), dynamic interaction via `.sendline()` still poses a risk if the CLI prompt accepts multi-line input or command-like sequences. Untrusted user data should never be sent raw to a spawned terminal interface.
+**Prevention:** Always apply strict allowlist validation to dynamic input before passing it to `child.sendline()` to ensure only expected inputs (e.g., `'y'`, `'n'`, `'yes'`, `'no'`) are sent to the spawned process.
+>>>>>>> sentinel-fix-cli-injection-17315862355032067567

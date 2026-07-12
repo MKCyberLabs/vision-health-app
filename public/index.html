@@ -284,6 +284,8 @@
                 // Safely inject dynamic message content
                 document.getElementById('approvalMessage').textContent = data.message;
                 resultDiv.style.display = 'block';
+                document.getElementById('btnConfirmYes').onclick = () => sendReply(data.sessionId, 'y');
+                document.getElementById('btnConfirmNo').onclick = () => sendReply(data.sessionId, 'n');
             } else {
                 showResult("Error: " + (data.message || "Unknown error"));
             }
