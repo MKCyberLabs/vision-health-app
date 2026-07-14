@@ -83,3 +83,8 @@
 **Learning:** `pexpect` child processes continue running in the background even if the main thread encounters an exception or timeout. They must be explicitly terminated to release system resources.
 **Prevention:** When using `pexpect.spawn` to manage child processes, always ensure explicit termination (e.g., using `child.close(force=True)`) in exception handlers and timeouts. Verify the process is still running by checking `child.isalive()` before calling `child.close(force=True)` to prevent errors.
 >>>>>>> sentinel-fix-orphaned-processes-17159835558622461504
+
+## 2026-07-14 - Remove Unused Vulnerable Dependencies
+**Vulnerability:** The application included an outdated version of the `uuid` package which contained a buffer bounds check vulnerability. Although it was imported in `index.js` (`const { v4: uuidv4 } = require('uuid');`), it was never actually used anywhere in the Node.js frontend.
+**Learning:** Having unused dependencies in a project unnecessarily increases the attack surface and can trigger security alerts for vulnerabilities in code that isn't even executing.
+**Prevention:** Regularly audit projects for unused dependencies (e.g., using `pnpm audit` or unused code checkers) and remove any unused modules entirely to minimize potential security risks and bundle sizes.

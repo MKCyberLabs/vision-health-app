@@ -92,12 +92,8 @@ def handle_cli_interaction(child, session_id, host_image_path):
                 os.remove(host_image_path)
             except Exception:
                 pass
-<<<<<<< HEAD
-        child.close(force=True)
-=======
-        if child.isalive():
+        if child and child.isalive():
             child.close(force=True)
->>>>>>> sentinel-fix-dos-orphan-processes-3133874536268309080
         return jsonify({"status": "error", "message": "CLI process timed out."}), 504
     except Exception as e:
         if child and child.isalive():
@@ -112,11 +108,7 @@ def handle_cli_interaction(child, session_id, host_image_path):
                 os.remove(host_image_path)
             except Exception:
                 pass
-<<<<<<< HEAD
-        if 'child' in locals() and child:
-=======
-        if child.isalive():
->>>>>>> sentinel-fix-dos-orphan-processes-3133874536268309080
+        if child and child.isalive():
             child.close(force=True)
         return jsonify({"status": "error", "message": "An internal error occurred."}), 500
 
@@ -178,14 +170,9 @@ def reply_gemini():
     session_id = data.get("session_id")
     answer = data.get("answer") # Expecting 'y' or 'n'
     
-<<<<<<< HEAD
-    if not isinstance(answer, str) or answer.lower() not in ['y', 'n']:
-        return jsonify({"status": "error", "message": "Invalid answer format. Must be 'y' or 'n'."}), 400
-=======
     # 🛡️ Sentinel: Prevent Interactive CLI Injection by strictly allowlisting the input
     if answer not in ['y', 'n', 'yes', 'no', 'Y', 'N', 'Yes', 'No']:
         return jsonify({"status": "error", "message": "Invalid answer format."}), 400
->>>>>>> sentinel-fix-interactive-cli-injection-4479278872574339230
 
     if not session_id or session_id not in active_sessions:
         return jsonify({"error": "Session expired or invalid. Try again."}), 404
@@ -219,11 +206,7 @@ def reply_gemini():
                 os.remove(host_image_path)
             except Exception:
                 pass
-<<<<<<< HEAD
-        if 'child' in locals() and child:
-=======
-        if child.isalive():
->>>>>>> sentinel-fix-dos-orphan-processes-3133874536268309080
+        if child and child.isalive():
             child.close(force=True)
         return jsonify({"status": "error", "message": "An internal error occurred."}), 500
 
