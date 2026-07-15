@@ -46,7 +46,7 @@
             <div id="previewContainer" class="hidden mt-6 relative">
                 <div class="flex justify-between items-center mb-3">
                     <p class="block text-xl font-semibold text-pink-800">Image Preview:</p>
-                    <button type="button" id="clearImageBtn" aria-label="Clear selected image" class="bg-pink-100 text-pink-700 hover:bg-pink-200 hover:text-pink-900 rounded-full p-2 transition-colors focus-visible:ring-2 focus-visible:ring-pink-400 focus:outline-none">
+                    <button type="button" id="clearImageBtn" aria-label="Clear selected image" title="Clear selected image" class="bg-pink-100 text-pink-700 hover:bg-pink-200 hover:text-pink-900 rounded-full p-2 transition-colors focus-visible:ring-2 focus-visible:ring-pink-400 focus:outline-none">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -62,7 +62,7 @@
                 <input type="text" id="weight" aria-describedby="weight-hint" class="w-full text-xl p-4 border-2 border-pink-200 rounded-xl focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-200 transition-all text-gray-700">
             </div>
 
-            <div id="formError" tabindex="-1" role="alert" aria-live="assertive" class="hidden outline-none text-red-600 font-medium text-lg mt-2 mb-4 bg-red-50 p-4 rounded-xl border border-red-200 flex items-center gap-2 shadow-sm">
+            <div id="formError" tabindex="-1" role="alert" aria-live="assertive" class="hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400 text-red-600 font-medium text-lg mt-2 mb-4 bg-red-50 p-4 rounded-xl border border-red-200 flex items-center gap-2 shadow-sm">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
@@ -174,6 +174,7 @@
             if (!selectedFile) {
                 const formError = document.getElementById('formError');
                 formError.classList.remove('hidden');
+                formError.focus(); // Shift focus to error message for screen readers and keyboard users
 
                 // Add a gentle shake animation to draw attention
                 formError.classList.add('animate-bounce');

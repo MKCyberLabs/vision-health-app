@@ -11,3 +11,7 @@
 ## 2024-07-11 - Accessible Offline Banners
 **Learning:** Dynamically appearing status banners like offline connection notifications need proper ARIA roles to be announced by screen readers when their state changes.
 **Action:** Ensure dynamically appearing status banners include `role="alert"` and `aria-live="assertive"` attributes, and dynamically toggle `aria-hidden` via JavaScript ('false' when visible, 'true' when hidden) so that their presence and state changes are immediately announced to users relying on assistive technologies.
+
+## 2024-07-15 - Focus Management and Icon-Only Button Tooltips
+**Learning:** When displaying an inline form error that interrupts a user flow, simply unhiding the error element (even if it has `role="alert"`) may not be enough for keyboard users who then have to tab through the document to find what went wrong. Additionally, icon-only buttons with `aria-label` are accessible to screen readers, but sighted mouse users still need to understand what the button does.
+**Action:** When a form validation fails and an error message is shown, explicitly move keyboard focus to the error message element (using `element.focus()` and ensuring the element has `tabindex="-1"`). For icon-only buttons, always include a `title` attribute matching the `aria-label` to provide a native hover tooltip for sighted users.
