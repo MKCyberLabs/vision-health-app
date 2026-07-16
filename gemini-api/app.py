@@ -12,9 +12,39 @@ app = Flask(__name__)
 
 # ⚡ Bolt Optimization: Cache paths at module level to avoid repeated os.stat/I/O per request
 HOST_TEMP_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'temp'))
-AGY_PATH = "/root/.local/bin/agy"
-if not os.path.exists(AGY_PATH):
-    AGY_PATH = shutil.which("agy") or shutil.which("agy.exe") or "agy"
+
+def get_agy_path():
+    # 1. Check environment variable override
+    env_path = os.environ.get("AGY_PATH")
+    if env_path and os.path.exists(env_path):
+        return env_path
+        
+    # 2. Check system PATH
+    system_path = shutil.which("agy") or shutil.which("agy.exe")
+    if system_path:
+        return system_path
+        
+    # 3. Check common hardcoded locations
+    common_paths = [
+        os.path.expanduser("~/.local/bin/agy"),
+        "/root/.local/bin/agy",
+        "/usr/local/bin/agy",
+        "/usr/bin/agy"
+    ]
+    
+    # 4. If running as root, dynamically check all user home directories
+    if os.path.exists("/home"):
+        for user_dir in os.listdir("/home"):
+            common_paths.append(f"/home/{user_dir}/.local/bin/agy")
+            
+    for path in common_paths:
+        if os.path.exists(path):
+            return path
+            
+    # Fallback
+    return "agy"
+
+AGY_PATH = get_agy_path()
 
 from werkzeug.exceptions import HTTPException
 
@@ -146,18 +176,12 @@ def ask_gemini():
     else:
         model = image_model if host_image_path else text_model
 
-    # Determine the path to agy (either installed or the local mock for tests)
-    agy_path = os.environ.get("AGY_PATH", "/root/.local/bin/agy")
-    if not os.path.exists(agy_path):
-        # Fallback to local mock if absolute path not found
-        agy_path = os.path.join(os.path.dirname(__file__), 'bin', 'agy')
-
     # Spawn the Antigravity CLI command directly on the host OS
     # Use a list for arguments to prevent argument injection vulnerabilities
     spawn_env = os.environ.copy()
     if 'ALL_PROXY' not in spawn_env:
         spawn_env['ALL_PROXY'] = 'socks5://127.0.0.1:1080'
-    child = pexpect.spawn(agy_path, ['-p', prompt_for_cli, '--model', model, '--dangerously-skip-permissions'], env=spawn_env, encoding='utf-8', timeout=300)
+    child = pexpect.spawn(AGY_PATH, ['-p', prompt_for_cli, '--model', model, '--dangerously-skip-permissions'], env=spawn_env, encoding='utf-8', timeout=300)
     
     return handle_cli_interaction(child, session_id, host_image_path)
 
