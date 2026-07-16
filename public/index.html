@@ -142,6 +142,8 @@
             dropZone.addEventListener(eventName, preventDefaults, false);
         });
         function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+        window.addEventListener('dragover', preventDefaults, false);
+        window.addEventListener('drop', preventDefaults, false);
 
         ['dragenter', 'dragover'].forEach(eventName => {
             dropZone.addEventListener(eventName, () => dropZone.classList.add('border-pink-400', 'bg-pink-50', 'scale-[1.02]'), false);
@@ -240,6 +242,7 @@
                 resultDiv.style.display = 'block';
                 document.getElementById('btnConfirmYes').onclick = () => sendReply(data.sessionId, 'y');
                 document.getElementById('btnConfirmNo').onclick = () => sendReply(data.sessionId, 'n');
+                document.getElementById('btnConfirmYes').focus();
             } else {
                 showResult("Error: " + (data.message || "Unknown error"));
             }

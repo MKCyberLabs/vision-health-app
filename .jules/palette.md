@@ -15,3 +15,7 @@
 ## 2024-07-15 - Focus Management and Icon-Only Button Tooltips
 **Learning:** When displaying an inline form error that interrupts a user flow, simply unhiding the error element (even if it has `role="alert"`) may not be enough for keyboard users who then have to tab through the document to find what went wrong. Additionally, icon-only buttons with `aria-label` are accessible to screen readers, but sighted mouse users still need to understand what the button does.
 **Action:** When a form validation fails and an error message is shown, explicitly move keyboard focus to the error message element (using `element.focus()` and ensuring the element has `tabindex="-1"`). For icon-only buttons, always include a `title` attribute matching the `aria-label` to provide a native hover tooltip for sighted users.
+
+## 2024-07-16 - Global Drag and Drop Prevention
+**Learning:** When implementing custom drag-and-drop zones, users often miss the target area. By default, browsers will open the dropped file, navigating away from the application and causing users to lose all their unsaved state.
+**Action:** Always add global `dragover` and `drop` event listeners to the `window` to prevent default behavior, ensuring that dropping a file outside the designated zone safely does nothing instead of hijacking the session.
