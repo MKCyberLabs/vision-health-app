@@ -7,17 +7,55 @@ const path = require('path');
 const app = express();
 const port = process.env.PORT || 3000;
 
+app.set('trust proxy', 1);
 app.disable('x-powered-by');
 app.use((req, res, next) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('X-Frame-Options', 'DENY');
     res.setHeader('X-XSS-Protection', '1; mode=block');
     res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; connect-src 'self'");
+    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
     next();
 });
 
 app.use(express.json());
 app.use(express.static('public'));
+
+const rateLimitMap = new Map();
+const RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
+const MAX_REQUESTS = 100;
+
+// Prevent memory leaks by periodically cleaning up expired IPs
+setInterval(() => {
+    const now = Date.now();
+    for (const [ip, limitData] of rateLimitMap.entries()) {
+        if (now > limitData.resetTime) {
+            rateLimitMap.delete(ip);
+        }
+    }
+}, RATE_LIMIT_WINDOW);
+
+app.use((req, res, next) => {
+    if (req.path === '/analyze' || req.path === '/reply') {
+        const ip = req.ip;
+        const now = Date.now();
+        const limitData = rateLimitMap.get(ip) || { count: 0, resetTime: now + RATE_LIMIT_WINDOW };
+
+        if (now > limitData.resetTime) {
+            limitData.count = 1;
+            limitData.resetTime = now + RATE_LIMIT_WINDOW;
+        } else {
+            limitData.count++;
+        }
+
+        rateLimitMap.set(ip, limitData);
+
+        if (limitData.count > MAX_REQUESTS) {
+            return res.status(429).json({ error: "Too many requests, please try again later." });
+        }
+    }
+    next();
+});
 
 const upload = multer({
     dest: 'temp/',
