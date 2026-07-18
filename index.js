@@ -7,6 +7,7 @@ const path = require('path');
 const app = express();
 const port = process.env.PORT || 3000;
 
+app.set('trust proxy', 1);
 app.disable('x-powered-by');
 app.use((req, res, next) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -18,6 +19,29 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 app.use(express.static('public'));
+
+// Rate Limiter
+const rateLimitMap = new Map();
+setInterval(() => {
+    const now = Date.now();
+    for (const [ip, data] of rateLimitMap.entries()) {
+        if (now > data.resetTime) rateLimitMap.delete(ip);
+    }
+}, 60000);
+
+const rateLimiter = (req, res, next) => {
+    const ip = req.ip;
+    const now = Date.now();
+    let data = rateLimitMap.get(ip) || { count: 0, resetTime: now + 60000 };
+    if (now > data.resetTime) data = { count: 0, resetTime: now + 60000 };
+    data.count++;
+    rateLimitMap.set(ip, data);
+    if (data.count > 30) return res.status(429).json({ error: 'Too many requests.' });
+    next();
+};
+
+app.use('/analyze', rateLimiter);
+app.use('/reply', rateLimiter);
 
 const upload = multer({
     dest: 'temp/',
