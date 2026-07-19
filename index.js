@@ -7,6 +7,44 @@ const path = require('path');
 const app = express();
 const port = process.env.PORT || 3000;
 
+app.set('trust proxy', 1); // 🛡️ Sentinel: Trust proxy for accurate req.ip when behind load balancer
+
+// 🛡️ Sentinel: In-memory rate limiter (50 requests per 15 minutes)
+const rateLimitMap = new Map();
+const RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
+const MAX_REQUESTS = 50;
+
+setInterval(() => {
+    const now = Date.now();
+    for (const [ip, data] of rateLimitMap.entries()) {
+        if (now - data.startTime > RATE_LIMIT_WINDOW) {
+            rateLimitMap.delete(ip);
+        }
+    }
+}, RATE_LIMIT_WINDOW); // Periodically clean up to prevent memory leaks
+
+const rateLimiter = (req, res, next) => {
+    const ip = req.ip;
+    const now = Date.now();
+    if (!rateLimitMap.has(ip)) {
+        rateLimitMap.set(ip, { count: 1, startTime: now });
+    } else {
+        const data = rateLimitMap.get(ip);
+        if (now - data.startTime > RATE_LIMIT_WINDOW) {
+            data.count = 1;
+            data.startTime = now;
+        } else {
+            data.count++;
+            if (data.count > MAX_REQUESTS) {
+                return res.status(429).json({ error: 'Too many requests, please try again later.' });
+            }
+        }
+    }
+    next();
+};
+
+app.use(rateLimiter);
+
 app.disable('x-powered-by');
 app.use((req, res, next) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
