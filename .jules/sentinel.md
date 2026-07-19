@@ -88,3 +88,8 @@
 **Vulnerability:** The application included an outdated version of the `uuid` package which contained a buffer bounds check vulnerability. Although it was imported in `index.js` (`const { v4: uuidv4 } = require('uuid');`), it was never actually used anywhere in the Node.js frontend.
 **Learning:** Having unused dependencies in a project unnecessarily increases the attack surface and can trigger security alerts for vulnerabilities in code that isn't even executing.
 **Prevention:** Regularly audit projects for unused dependencies (e.g., using `pnpm audit` or unused code checkers) and remove any unused modules entirely to minimize potential security risks and bundle sizes.
+
+## 2024-10-25 - Missing Rate Limiting & Proxy Configuration
+**Vulnerability:** The Express gateway was missing rate limiting, making it vulnerable to brute force and denial of service (DoS) attacks. Additionally, it did not have `trust proxy` configured, which is necessary when deployed behind a reverse proxy/load balancer to correctly parse the client's IP address.
+**Learning:** In-memory rate limiting implementation requires a periodic cleanup to prevent memory leaks from unbounded data structures. `req.ip` is inaccurate without `app.set('trust proxy', 1)` when the application is behind a proxy.
+**Prevention:** Implement rate limiting (e.g., in-memory map with periodic cleanup) and configure `trust proxy` on all Express gateways to ensure accurate IP-based restrictions and prevent DoS.
