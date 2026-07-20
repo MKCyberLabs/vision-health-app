@@ -88,3 +88,8 @@
 **Vulnerability:** The application included an outdated version of the `uuid` package which contained a buffer bounds check vulnerability. Although it was imported in `index.js` (`const { v4: uuidv4 } = require('uuid');`), it was never actually used anywhere in the Node.js frontend.
 **Learning:** Having unused dependencies in a project unnecessarily increases the attack surface and can trigger security alerts for vulnerabilities in code that isn't even executing.
 **Prevention:** Regularly audit projects for unused dependencies (e.g., using `pnpm audit` or unused code checkers) and remove any unused modules entirely to minimize potential security risks and bundle sizes.
+
+## 2024-10-26 - Add Rate Limiting to Sensitive Endpoints
+**Vulnerability:** The Node.js frontend was missing rate limiting on its sensitive endpoints (`/analyze` and `/reply`), leaving it vulnerable to Denial of Service (DoS) and potential abuse by malicious clients making excessive requests.
+**Learning:** Default Express configurations do not include built-in rate limiting. Furthermore, when deploying behind a reverse proxy (like Traefik in this architecture), `app.set('trust proxy', 1)` must be configured so `req.ip` correctly resolves the client's actual IP from the `X-Forwarded-For` header instead of the proxy's IP. Additionally, custom in-memory rate limiters (like `Map`) must include periodic cleanup mechanisms to prevent memory leaks from unbound growth.
+**Prevention:** Always implement rate limiting on sensitive, resource-intensive, or stateful endpoints. Configure proxy trust properly in containerized architectures, and ensure in-memory tracking structures are actively cleaned up over time.
