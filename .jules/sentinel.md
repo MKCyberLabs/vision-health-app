@@ -88,3 +88,8 @@
 **Vulnerability:** The application included an outdated version of the `uuid` package which contained a buffer bounds check vulnerability. Although it was imported in `index.js` (`const { v4: uuidv4 } = require('uuid');`), it was never actually used anywhere in the Node.js frontend.
 **Learning:** Having unused dependencies in a project unnecessarily increases the attack surface and can trigger security alerts for vulnerabilities in code that isn't even executing.
 **Prevention:** Regularly audit projects for unused dependencies (e.g., using `pnpm audit` or unused code checkers) and remove any unused modules entirely to minimize potential security risks and bundle sizes.
+
+## 2024-10-25 - Lack of Rate Limiting & Trust Proxy on Node.js Gateway
+**Vulnerability:** The Express.js application was deployed behind a reverse proxy (Traefik) without `trust proxy` configured, and critical endpoints (`/analyze`, `/reply`) lacked rate limiting. This allowed abusive clients to bypass potential load balancer limits and spam the endpoints, potentially causing a Denial of Service (DoS) condition on the API.
+**Learning:** When deploying behind a reverse proxy, `req.ip` is not accurate unless `app.set('trust proxy', 1)` is configured. Moreover, custom in-memory rate limiters using `Map` require periodic cleanup mechanisms (`setInterval`) to avoid unbounded memory growth (another form of DoS).
+**Prevention:** Always configure `trust proxy` when deploying behind a proxy/load balancer. Implement robust rate limiting on exposed API endpoints, and ensure any custom in-memory state includes automatic expired entry cleanup.
