@@ -19,3 +19,7 @@
 ## 2024-07-16 - Global Drag and Drop Prevention
 **Learning:** When implementing custom drag-and-drop zones, users often miss the target area. By default, browsers will open the dropped file, navigating away from the application and causing users to lose all their unsaved state.
 **Action:** Always add global `dragover` and `drop` event listeners to the `window` to prevent default behavior, ensuring that dropping a file outside the designated zone safely does nothing instead of hijacking the session.
+
+## 2024-07-24 - Focus Management and Auto-scrolling for Asynchronous Results
+**Learning:** When dynamically displaying asynchronous results (like a result container or confirmation dialog), it's not enough to simply reveal the content. Mobile users may not see it if it appears below the fold, and keyboard/screen reader users may lose context if focus isn't managed.
+**Action:** Automatically scroll the new content into view (e.g., using `scrollIntoView({ behavior: 'smooth' })`) and explicitly move focus to it (using `.focus()` with `tabindex="-1"`) to ensure visibility for mobile users and maintain context for keyboard/screen reader users.
