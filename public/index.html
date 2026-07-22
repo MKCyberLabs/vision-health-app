@@ -77,7 +77,7 @@
         <div id="loading" role="status" aria-live="polite" class="text-2xl text-pink-600 italic font-medium text-center mt-10 animate-pulse">
             Analyzing your meal... 🌸 Please wait.
         </div>
-        <div id="result" aria-live="polite" class="mt-10 bg-green-50 text-green-900 p-8 rounded-2xl border-2 border-green-200 text-xl md:text-2xl leading-relaxed whitespace-pre-wrap shadow-inner font-medium"></div>
+        <div id="result" aria-live="polite" tabindex="-1" class="mt-10 bg-green-50 text-green-900 p-8 rounded-2xl border-2 border-green-200 text-xl md:text-2xl leading-relaxed whitespace-pre-wrap shadow-inner font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-green-400"></div>
     </div>
 
     <script>
@@ -267,6 +267,8 @@
             loading.style.display = 'none';
             resultDiv.textContent = text;
             resultDiv.style.display = 'block';
+            resultDiv.focus();
+            resultDiv.scrollIntoView({ behavior: 'smooth' });
         }
 
         // --- PWA & Offline Logic ---
