@@ -7,6 +7,7 @@ const path = require('path');
 const app = express();
 const port = process.env.PORT || 3000;
 
+app.set('trust proxy', 1);
 app.disable('x-powered-by');
 app.use((req, res, next) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -18,6 +19,36 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 app.use(express.static('public'));
+
+// Simple in-memory rate limiter
+const rateLimitMap = new Map();
+setInterval(() => {
+    const now = Date.now();
+    for (const [ip, data] of rateLimitMap.entries()) {
+        if (now > data.resetTime) {
+            rateLimitMap.delete(ip);
+        }
+    }
+}, 60000); // Cleanup every minute
+
+const rateLimiter = (req, res, next) => {
+    const ip = req.ip;
+    const now = Date.now();
+    const limitData = rateLimitMap.get(ip) || { count: 0, resetTime: now + 60000 };
+
+    if (now > limitData.resetTime) {
+        limitData.count = 0;
+        limitData.resetTime = now + 60000;
+    }
+
+    limitData.count++;
+    rateLimitMap.set(ip, limitData);
+
+    if (limitData.count > 20) {
+        return res.status(429).json({ error: "Too many requests, please try again later." });
+    }
+    next();
+};
 
 const upload = multer({
     dest: 'temp/',
@@ -40,7 +71,7 @@ const cleanupFileAsync = (filePath) => {
     });
 };
 
-app.post('/analyze', upload.single('image'), async (req, res) => {
+app.post('/analyze', rateLimiter, upload.single('image'), async (req, res) => {
     if (!req.file) return res.status(400).json({ error: "No image file provided." });
 
     const imagePath = req.file.path;
@@ -118,7 +149,7 @@ app.post('/analyze', upload.single('image'), async (req, res) => {
     }
 });
 
-app.post('/reply', async (req, res) => {
+app.post('/reply', rateLimiter, async (req, res) => {
     const { sessionId, answer } = req.body;
     if (!sessionId) return res.status(400).json({ error: "Session ID is required." });
     if (typeof answer !== 'string' || !['y', 'n'].includes(answer.toLowerCase())) {
