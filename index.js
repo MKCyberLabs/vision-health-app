@@ -7,7 +7,38 @@ const path = require('path');
 const app = express();
 const port = process.env.PORT || 3000;
 
+app.set('trust proxy', 1);
 app.disable('x-powered-by');
+
+// Rate limiting middleware
+const rateLimits = new Map();
+setInterval(() => {
+    const now = Date.now();
+    for (const [ip, data] of rateLimits.entries()) {
+        if (now > data.resetTime) rateLimits.delete(ip);
+    }
+}, 60000); // Cleanup every minute
+
+const rateLimiter = (req, res, next) => {
+    const ip = req.ip;
+    const now = Date.now();
+    const windowMs = 60000; // 1 minute
+    const maxRequests = 30;
+
+    let userRecord = rateLimits.get(ip);
+    if (!userRecord || now > userRecord.resetTime) {
+        userRecord = { count: 0, resetTime: now + windowMs };
+        rateLimits.set(ip, userRecord);
+    }
+
+    if (userRecord.count >= maxRequests) {
+        return res.status(429).json({ error: "Too many requests, please try again later." });
+    }
+
+    userRecord.count++;
+    next();
+};
+
 app.use((req, res, next) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('X-Frame-Options', 'DENY');
@@ -40,7 +71,7 @@ const cleanupFileAsync = (filePath) => {
     });
 };
 
-app.post('/analyze', upload.single('image'), async (req, res) => {
+app.post('/analyze', rateLimiter, upload.single('image'), async (req, res) => {
     if (!req.file) return res.status(400).json({ error: "No image file provided." });
 
     const imagePath = req.file.path;
@@ -118,7 +149,7 @@ app.post('/analyze', upload.single('image'), async (req, res) => {
     }
 });
 
-app.post('/reply', async (req, res) => {
+app.post('/reply', rateLimiter, async (req, res) => {
     const { sessionId, answer } = req.body;
     if (!sessionId) return res.status(400).json({ error: "Session ID is required." });
     if (typeof answer !== 'string' || !['y', 'n'].includes(answer.toLowerCase())) {
