@@ -88,3 +88,8 @@
 **Vulnerability:** The application included an outdated version of the `uuid` package which contained a buffer bounds check vulnerability. Although it was imported in `index.js` (`const { v4: uuidv4 } = require('uuid');`), it was never actually used anywhere in the Node.js frontend.
 **Learning:** Having unused dependencies in a project unnecessarily increases the attack surface and can trigger security alerts for vulnerabilities in code that isn't even executing.
 **Prevention:** Regularly audit projects for unused dependencies (e.g., using `pnpm audit` or unused code checkers) and remove any unused modules entirely to minimize potential security risks and bundle sizes.
+
+## 2026-07-27 - Rate Limiter Bypass and DoS Risk
+**Vulnerability:** The application was missing rate limiting on sensitive endpoints (`/analyze` and `/reply`) and lacked `app.set('trust proxy', 1)`, which is crucial when deployed behind reverse proxies like Traefik to correctly identify client IPs for rate limiting.
+**Learning:** When deploying Express applications behind load balancers or proxies, `req.ip` resolves to the proxy's IP rather than the client's. Rate limiting must use `X-Forwarded-For` to function properly and mitigate DoS attacks effectively.
+**Prevention:** Always implement rate limiting on endpoints handling file uploads or intensive processing, and explicitly configure `trust proxy` when the architecture includes reverse proxies.
