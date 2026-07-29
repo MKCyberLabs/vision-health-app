@@ -207,7 +207,7 @@
                 handleBackendResponse(await response.json());
             } catch (err) {
                 restoreSubmitButton();
-                showResult("An error occurred connecting to the server.");
+                showResult("An error occurred connecting to the server.", true);
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
@@ -228,6 +228,11 @@
             if (data.status === "success") {
                 showResult(data.result);
             } else if (data.status === "needs_approval") {
+                resultDiv.classList.remove('bg-green-50', 'text-green-900', 'border-green-200', 'bg-red-50', 'text-red-900', 'border-red-200');
+                resultDiv.classList.add('bg-yellow-50', 'text-yellow-900', 'border-yellow-200');
+                resultDiv.setAttribute('role', 'alert');
+                resultDiv.setAttribute('aria-live', 'assertive');
+
                 // 🛡️ Security Enhancement: Prevent XSS by building HTML safely
                 resultDiv.innerHTML = `
                     <p class="text-yellow-600 mb-4 text-2xl font-bold">⚠️ System Confirmation Required:</p>
@@ -245,7 +250,7 @@
                 resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 document.getElementById('btnConfirmYes').focus();
             } else {
-                showResult("Error: " + (data.message || "Unknown error"));
+                showResult("Error: " + (data.message || "Unknown error"), true);
             }
         }
 
@@ -260,12 +265,24 @@
                 });
                 handleBackendResponse(await response.json());
             } catch (err) {
-                showResult("Failed to send response.");
+                showResult("Failed to send response.", true);
             }
         }
 
-        function showResult(text) {
+        function showResult(text, isError = false) {
             loading.style.display = 'none';
+
+            resultDiv.classList.remove('bg-green-50', 'text-green-900', 'border-green-200', 'bg-red-50', 'text-red-900', 'border-red-200', 'bg-yellow-50', 'text-yellow-900', 'border-yellow-200');
+            if (isError) {
+                resultDiv.classList.add('bg-red-50', 'text-red-900', 'border-red-200');
+                resultDiv.setAttribute('role', 'alert');
+                resultDiv.setAttribute('aria-live', 'assertive');
+            } else {
+                resultDiv.classList.add('bg-green-50', 'text-green-900', 'border-green-200');
+                resultDiv.setAttribute('role', 'status');
+                resultDiv.setAttribute('aria-live', 'polite');
+            }
+
             resultDiv.textContent = text;
             resultDiv.style.display = 'block';
             resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
