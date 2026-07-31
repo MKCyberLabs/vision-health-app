@@ -23,3 +23,7 @@
 ## 2024-07-20 - Focus Management and Scroll for Async Results
 **Learning:** When displaying dynamic async results at the bottom of a page, users (especially on mobile) might not see the new content, and keyboard/screen reader users lose their context if focus is not explicitly managed.
 **Action:** Automatically scroll the newly revealed result container into view and programmatically shift focus to it (using `tabindex="-1"`) to provide a seamless and accessible experience.
+
+## 2024-07-21 - Accessible Dynamic Asynchronous Statuses
+**Learning:** When displaying dynamic asynchronous results or error messages in the same container, failing to dynamically update both visual styling (like warning/error color classes) and ARIA attributes (`role="alert"`, `aria-live="assertive"` for errors vs. `role="status"`, `aria-live="polite"` for success) can lead to a confusing experience for both sighted users and screen reader users.
+**Action:** When dynamically rendering status elements based on varying asynchronous results or states (like success, warning, or error), explicitly programmatically switch both their visual styling and corresponding ARIA attributes (`role`, `aria-live`) to accurately communicate the state to all users.

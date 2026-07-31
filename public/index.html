@@ -207,7 +207,7 @@
                 handleBackendResponse(await response.json());
             } catch (err) {
                 restoreSubmitButton();
-                showResult("An error occurred connecting to the server.");
+                showResult("An error occurred connecting to the server.", true);
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
@@ -237,6 +237,9 @@
                         <button id="btnConfirmNo" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-xl text-xl transition-colors shadow-md focus:outline-none focus-visible:ring-4 focus-visible:ring-red-300">Cancel (No)</button>
                     </div>
                 `;
+                resultDiv.className = "mt-10 p-8 rounded-2xl border-2 text-xl md:text-2xl leading-relaxed whitespace-pre-wrap shadow-inner font-medium focus:outline-none focus-visible:ring-4 bg-yellow-50 text-yellow-900 border-yellow-200 focus-visible:ring-yellow-400";
+                resultDiv.setAttribute('role', 'alert');
+                resultDiv.setAttribute('aria-live', 'assertive');
                 // Safely inject dynamic message content
                 document.getElementById('approvalMessage').textContent = data.message;
                 resultDiv.style.display = 'block';
@@ -245,7 +248,7 @@
                 resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 document.getElementById('btnConfirmYes').focus();
             } else {
-                showResult("Error: " + (data.message || "Unknown error"));
+                showResult("Error: " + (data.message || "Unknown error"), true);
             }
         }
 
@@ -260,13 +263,24 @@
                 });
                 handleBackendResponse(await response.json());
             } catch (err) {
-                showResult("Failed to send response.");
+                showResult("Failed to send response.", true);
             }
         }
 
-        function showResult(text) {
+        function showResult(text, isError = false) {
             loading.style.display = 'none';
             resultDiv.textContent = text;
+
+            if (isError) {
+                resultDiv.className = "mt-10 p-8 rounded-2xl border-2 text-xl md:text-2xl leading-relaxed whitespace-pre-wrap shadow-inner font-medium focus:outline-none focus-visible:ring-4 bg-red-50 text-red-900 border-red-200 focus-visible:ring-red-400";
+                resultDiv.setAttribute('role', 'alert');
+                resultDiv.setAttribute('aria-live', 'assertive');
+            } else {
+                resultDiv.className = "mt-10 p-8 rounded-2xl border-2 text-xl md:text-2xl leading-relaxed whitespace-pre-wrap shadow-inner font-medium focus:outline-none focus-visible:ring-4 bg-green-50 text-green-900 border-green-200 focus-visible:ring-green-400";
+                resultDiv.setAttribute('role', 'status');
+                resultDiv.setAttribute('aria-live', 'polite');
+            }
+
             resultDiv.style.display = 'block';
             resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             resultDiv.focus();
