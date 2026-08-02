@@ -36,7 +36,8 @@ setInterval(() => {
 }, RATE_LIMIT_WINDOW);
 
 app.use((req, res, next) => {
-    if (req.path === '/analyze' || req.path === '/reply') {
+    const normalizedPath = req.path.toLowerCase().replace(/\/+$/, '');
+    if (normalizedPath === '/analyze' || normalizedPath === '/reply') {
         const ip = req.ip;
         const now = Date.now();
         const limitData = rateLimitMap.get(ip) || { count: 0, resetTime: now + RATE_LIMIT_WINDOW };
