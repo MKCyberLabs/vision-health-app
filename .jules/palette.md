@@ -27,3 +27,7 @@
 ## 2024-07-21 - Accessible Dynamic Asynchronous Statuses
 **Learning:** When displaying dynamic asynchronous results or error messages in the same container, failing to dynamically update both visual styling (like warning/error color classes) and ARIA attributes (`role="alert"`, `aria-live="assertive"` for errors vs. `role="status"`, `aria-live="polite"` for success) can lead to a confusing experience for both sighted users and screen reader users.
 **Action:** When dynamically rendering status elements based on varying asynchronous results or states (like success, warning, or error), explicitly programmatically switch both their visual styling and corresponding ARIA attributes (`role`, `aria-live`) to accurately communicate the state to all users.
+
+## 2024-08-03 - Documenting Hidden Interactions and File Validations
+**Learning:** Hidden interaction patterns (like drag-and-drop or pasting from the clipboard) can easily go unnoticed by users, and relying solely on HTML `accept` attributes for file inputs is insufficient to prevent UI state breakage when users submit invalid file types manually.
+**Action:** When implementing hidden interactions like drag-and-drop or clipboard paste, always add visible, accessible helper text (e.g., using `aria-describedby`) to make the features discoverable. Additionally, enforce strict frontend file validation (e.g., `file.type.startsWith('image/')`) inside the file handling logic, showing a focus-managed error message if validation fails.
