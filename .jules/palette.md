@@ -27,3 +27,7 @@
 ## 2024-07-21 - Accessible Dynamic Asynchronous Statuses
 **Learning:** When displaying dynamic asynchronous results or error messages in the same container, failing to dynamically update both visual styling (like warning/error color classes) and ARIA attributes (`role="alert"`, `aria-live="assertive"` for errors vs. `role="status"`, `aria-live="polite"` for success) can lead to a confusing experience for both sighted users and screen reader users.
 **Action:** When dynamically rendering status elements based on varying asynchronous results or states (like success, warning, or error), explicitly programmatically switch both their visual styling and corresponding ARIA attributes (`role`, `aria-live`) to accurately communicate the state to all users.
+
+## 2024-07-22 - Discoverability of Hidden Interactions and Paste UX
+**Learning:** Hidden interaction patterns like drag-and-drop or pasting from the clipboard are powerful UX tools, but they are completely invisible to users unless explicitly stated. Additionally, global paste listeners can inadvertently break text entry workflows if they intercept paste events inside inputs or textareas.
+**Action:** When implementing hidden interaction patterns, always add visible, accessible helper text (e.g., using `aria-describedby`) to make the features discoverable. Furthermore, when adding global paste event listeners, explicitly check the event target (e.target.tagName !== 'INPUT' and e.target.tagName !== 'TEXTAREA') to ignore events meant for standard text entry.
