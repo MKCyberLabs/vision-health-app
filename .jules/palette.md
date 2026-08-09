@@ -27,3 +27,7 @@
 ## 2024-07-21 - Accessible Dynamic Asynchronous Statuses
 **Learning:** When displaying dynamic asynchronous results or error messages in the same container, failing to dynamically update both visual styling (like warning/error color classes) and ARIA attributes (`role="alert"`, `aria-live="assertive"` for errors vs. `role="status"`, `aria-live="polite"` for success) can lead to a confusing experience for both sighted users and screen reader users.
 **Action:** When dynamically rendering status elements based on varying asynchronous results or states (like success, warning, or error), explicitly programmatically switch both their visual styling and corresponding ARIA attributes (`role`, `aria-live`) to accurately communicate the state to all users.
+
+## 2024-07-25 - Discoverable Paste Support
+**Learning:** Hidden interaction patterns (drag-and-drop, pasting) require visible helper text to be discoverable. Global paste handlers must explicitly ignore text inputs, and custom upload handlers must validate file types since they bypass HTML accept attributes.
+**Action:** Add visible helper text (e.g. aria-describedby) to make hidden features discoverable. Scope global paste events to ignore text inputs, and apply strict frontend file type validation.
