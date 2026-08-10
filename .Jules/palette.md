@@ -47,3 +47,7 @@
 **Learning:** Using placeholders for input hints (like expected format or examples) is problematic for accessibility and UX. The text often disappears once the user starts typing, forcing them to clear the input to read it again. It also frequently fails color contrast requirements.
 **Action:** Use a dedicated, visible description element (like a `<p>`) placed before the input, and link it to the input using the `aria-describedby` attribute. This ensures the hint remains visible and is properly announced by screen readers.
 >>>>>>> palette/visible-input-hint-869195354420355491
+
+## 2024-10-26 - Paste Support for File Uploads
+**Learning:** Users often copy images directly from the web or screenshot tools. Without global paste support, they are forced to save the file first, which is a significant friction point. However, implementing hidden interactions like paste or drag-and-drop without visible helper text makes them undiscoverable to most users.
+**Action:** Implement a global `paste` event listener, but ensure it ignores events inside text inputs/textareas. Always add visible, accessible helper text (e.g., linked via `aria-labelledby`) to make these hidden interaction patterns discoverable, and enforce strict frontend file type validation to prevent UI breakage from unsupported pasted files.
