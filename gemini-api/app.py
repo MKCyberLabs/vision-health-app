@@ -253,7 +253,11 @@ def health_matrix():
     
     host_image_path = None
     if image_path:
-        host_image_path = os.path.join(HOST_TEMP_DIR, os.path.basename(image_path))
+        target_path = os.path.join(HOST_TEMP_DIR, os.path.basename(image_path))
+        if os.path.exists(target_path):
+            host_image_path = target_path
+        else:
+            return jsonify({'error': f'Image file not found on host at: {target_path}. Verify Docker volume mount.'}), 400
 
     prompt = f"Analyze this meal eaten at {meal_time}. Description: {meal_description}. "
     if weight:
@@ -327,7 +331,11 @@ def health_matrix_telegram():
     
     host_image_path = None
     if image_path:
-        host_image_path = os.path.join(HOST_TEMP_DIR, os.path.basename(image_path))
+        target_path = os.path.join(HOST_TEMP_DIR, os.path.basename(image_path))
+        if os.path.exists(target_path):
+            host_image_path = target_path
+        else:
+            return jsonify({'error': f'Image file not found on host at: {target_path}. Verify Docker volume mount.'}), 400
 
     prompt = f"The user sent this message exactly at the following anchor time: {telegram_timestamp} (User's Local Time: {user_local_time}). "
     prompt += f"Based on this description: '{meal_description}', calculate the actual ISO 8601 UTC time the meal was consumed. "
