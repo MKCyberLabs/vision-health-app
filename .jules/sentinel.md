@@ -93,3 +93,8 @@
 **Vulnerability:** Backend API endpoints lacked rate limiting, allowing attackers to perform Denial of Service (DoS) by sending unlimited requests. Furthermore, because the app runs behind a reverse proxy (Traefik), default rate limiters based on `req.ip` would limit all traffic globally as they would only see the proxy's IP.
 **Learning:** Publicly accessible API endpoints must be protected by rate limiters to prevent DoS. When an application is deployed behind a reverse proxy or load balancer, configuring `app.set('trust proxy', 1)` is crucial so the application trusts the `X-Forwarded-For` headers and accurately tracks the real client IP.
 **Prevention:** Always implement rate limiting on sensitive API endpoints. Before deploying behind a proxy, explicitly configure the framework to trust proxy headers to maintain accurate client IP visibility for security and auditing purposes.
+
+## 2024-10-26 - DoS via Rate Limiting Bypass in Path Normalization
+**Vulnerability:** The rate limiter middleware matched endpoints using strict equality (`req.path === '/analyze'`). Attackers could bypass the rate limiter (leading to DoS) by appending a trailing slash or altering the case (e.g., `/Analyze`, `/analyze/`), because default Express route handlers ignore trailing slashes and casing.
+**Learning:** Custom middleware performing route-specific logic must replicate or respect the framework's default routing behavior (case-insensitivity, trailing slash ignorance) to prevent trivial bypasses.
+**Prevention:** Always normalize the request path (e.g., `req.path.toLowerCase().replace(/\/$/, '')`) before comparison in custom routing or security middleware.
