@@ -47,3 +47,6 @@
 **Learning:** Using placeholders for input hints (like expected format or examples) is problematic for accessibility and UX. The text often disappears once the user starts typing, forcing them to clear the input to read it again. It also frequently fails color contrast requirements.
 **Action:** Use a dedicated, visible description element (like a `<p>`) placed before the input, and link it to the input using the `aria-describedby` attribute. This ensures the hint remains visible and is properly announced by screen readers.
 >>>>>>> palette/visible-input-hint-869195354420355491
+## 2024-08-12 - Discoverable Hidden Interactions and Strict Validation
+**Learning:** Hidden interaction patterns (like global paste or drag-and-drop) remain undiscoverable unless explicitly called out. Furthermore, custom drop/paste handlers bypass HTML `accept` attributes, potentially breaking the UI with unsupported file types.
+**Action:** Always provide visible, accessible helper text (linked via `aria-describedby`) for hidden features. Implement strict frontend file type validation (e.g., `file.type.startsWith('image/')`) in custom handlers.

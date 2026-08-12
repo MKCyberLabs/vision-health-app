@@ -25,8 +25,9 @@
         <h2 class="text-4xl md:text-5xl font-extrabold text-center text-pink-900 mb-8 tracking-tight">🌸 AI Health Matrix</h2>
         <form id="uploadForm" class="space-y-8">
             <fieldset>
-                <legend id="foodImageGroupLabel" class="block text-xl font-semibold text-pink-800 mb-3">Food Image (Required):</legend>
-                <div id="dropZone" class="flex flex-col gap-4 p-4 -m-4 rounded-2xl transition-all border-2 border-transparent" role="group" aria-labelledby="foodImageGroupLabel">
+                <legend id="foodImageGroupLabel" class="block text-xl font-semibold text-pink-800 mb-1">Food Image (Required):</legend>
+                <p id="foodImageGroupHint" class="text-sm text-gray-600 mb-3 font-medium">You can also drag and drop or paste an image</p>
+                <div id="dropZone" class="flex flex-col gap-4 p-4 -m-4 rounded-2xl transition-all border-2 border-transparent" role="group" aria-labelledby="foodImageGroupLabel foodImageGroupHint">
                     <!-- Massive Snap Photo Button -->
                     <input type="file" id="imageCamera" accept="image/*" capture="environment" class="sr-only peer">
                     <label for="imageCamera" class="w-full cursor-pointer bg-gradient-to-br from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 text-white font-extrabold text-3xl py-8 rounded-2xl border-4 border-green-300 transition-all text-center shadow-lg transform hover:-translate-y-1 peer-focus-visible:ring-4 peer-focus-visible:ring-green-400 flex flex-col items-center justify-center gap-2">
@@ -99,6 +100,12 @@
         function handleFileSelect(event) {
             const file = event.target.files[0];
             if (file) {
+                if (!file.type.startsWith('image/')) {
+                    const fileError = document.getElementById('fileError');
+                    fileError.textContent = "Please select a valid image file.";
+                    fileError.classList.remove('hidden');
+                    return;
+                }
                 selectedFile = file;
                 document.getElementById('fileError').classList.add('hidden');
 
@@ -156,6 +163,15 @@
             const dt = e.dataTransfer;
             if (dt.files && dt.files.length > 0) handleFileSelect({ target: { files: dt.files } });
         }, false);
+
+        window.addEventListener('paste', (e) => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+            const clipboardData = e.clipboardData;
+            if (clipboardData && clipboardData.files && clipboardData.files.length > 0) {
+                e.preventDefault();
+                handleFileSelect({ target: { files: clipboardData.files } });
+            }
+        });
 
         function setLoadingState() {
             submitBtn.disabled = true;
