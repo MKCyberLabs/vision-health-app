@@ -83,3 +83,7 @@
 ## 2026-06-31 - Focus and Scroll Management for Dynamic Content
 **Learning:** When dynamically displaying asynchronous results (like appending a result container), users might not realize new content has appeared, especially on mobile devices or for users using screen readers or keyboard navigation.
 **Action:** Always automatically scroll the new content into view (e.g., using `scrollIntoView({ behavior: 'smooth' })`) and explicitly move focus to it (using `.focus()` with `tabindex="-1"` if it's not natively focusable) to ensure visibility for all users and maintain context.
+
+## 2026-07-02 - Semantic Styling for Async Error Results
+**Learning:** Displaying backend error messages inside an element styled for success (e.g., with green borders and backgrounds) confuses users and fails to semantically communicate the error state. Screen readers may also incorrectly announce an error as a polite status update if the ARIA role is not dynamically adjusted.
+**Action:** When dynamically displaying async results, ensure the visual styling (colors) and ARIA attributes (`role`, `aria-live`) of the result container dynamically change to match the state (success, warning, error). Use `role="alert"` and red styling for errors, and `role="status"` with green styling for success.
