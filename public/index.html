@@ -289,6 +289,7 @@
                 document.getElementById('btnConfirmYes').onclick = () => sendReply(data.sessionId, 'y');
                 document.getElementById('btnConfirmNo').onclick = () => sendReply(data.sessionId, 'n');
                 resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                resultDiv.scrollIntoView({ behavior: 'smooth' });
                 document.getElementById('btnConfirmYes').focus();
                 resultDiv.scrollIntoView({ behavior: 'smooth' });
             } else {
@@ -330,6 +331,8 @@
             resultDiv.focus();
             resultDiv.focus();
             resultDiv.scrollIntoView({ behavior: 'smooth' });
+            resultDiv.scrollIntoView({ behavior: 'smooth' });
+            resultDiv.focus();
         }
 
         // --- PWA & Offline Logic ---
