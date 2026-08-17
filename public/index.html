@@ -46,6 +46,7 @@
                 <p id="upload-hint" class="text-sm text-gray-600 mb-3 font-medium">You can also drag & drop or paste an image anywhere</p>
                 <div id="dropZone" class="flex flex-col gap-4 p-4 -m-4 rounded-2xl transition-all border-2 border-transparent" role="group" aria-labelledby="foodImageGroupLabel upload-hint">
                 <div id="dropZone" class="flex flex-col gap-4 p-4 -m-4 rounded-2xl transition-all border-2 border-transparent" role="group" aria-labelledby="foodImageGroupLabel dropPasteHint">
+                <div id="dropZone" class="flex flex-col gap-4 p-4 -m-4 rounded-2xl transition-all border-2 border-transparent" role="group" aria-labelledby="foodImageGroupLabel dropZoneHint">
                     <!-- Massive Snap Photo Button -->
                     <input type="file" id="imageCamera" accept="image/*" capture="environment" class="sr-only peer">
                     <label for="imageCamera" class="w-full cursor-pointer bg-gradient-to-br from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 text-white font-extrabold text-3xl py-8 rounded-2xl border-4 border-green-300 transition-all text-center shadow-lg transform hover:-translate-y-1 peer-focus-visible:ring-4 peer-focus-visible:ring-green-400 flex flex-col items-center justify-center gap-2">
@@ -77,6 +78,7 @@
                     <span id="fileErrorText">Please select or take an image first.</span>
                 </div>
                 <p id="dragDropHint" class="text-sm text-center text-pink-600 mt-5 font-medium">💡 You can also drag &amp; drop or paste an image</p>
+                <p id="dropZoneHint" class="text-sm text-center text-pink-600 mt-2 font-medium">You can also drag and drop an image here, or paste from your clipboard (Ctrl+V/Cmd+V).</p>
                 <p id="fileError" class="hidden text-red-600 font-medium mt-3" role="alert">Please select or take an image first.</p>
             </fieldset>
 
@@ -189,6 +191,8 @@
                     fileError.classList.remove('hidden');
                     return;
                 }
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
                 selectedFile = file;
                 document.getElementById('fileError').classList.add('hidden');
                 document.getElementById('fileErrorText').textContent = 'Please select or take an image first.';
@@ -209,6 +213,11 @@
                 imagePreview.src = objectUrl;
                 document.getElementById('fileNameDisplay').textContent = "Selected file: " + file.name;
                 previewContainer.classList.remove('hidden');
+            } else if (file) {
+                const errEl = document.getElementById('fileError');
+                errEl.textContent = 'Please upload a valid image file (e.g., JPG, PNG).';
+                errEl.classList.remove('hidden');
+                errEl.focus();
             }
         }
 
@@ -372,6 +381,9 @@
                 return;
             }
             if (e.clipboardData && e.clipboardData.files && e.clipboardData.files.length > 0) {
+            // Ignore paste events in text inputs or textareas to avoid breaking standard workflows
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+            if (e.clipboardData && e.clipboardData.files.length > 0) {
                 handleFileSelect({ target: { files: e.clipboardData.files } });
             }
         });
