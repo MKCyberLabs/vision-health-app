@@ -102,3 +102,8 @@
 **Vulnerability:** The application was missing rate limiting on sensitive endpoints (`/analyze` and `/reply`) and lacked `app.set('trust proxy', 1)`, which is crucial when deployed behind reverse proxies like Traefik to correctly identify client IPs for rate limiting.
 **Learning:** When deploying Express applications behind load balancers or proxies, `req.ip` resolves to the proxy's IP rather than the client's. Rate limiting must use `X-Forwarded-For` to function properly and mitigate DoS attacks effectively.
 **Prevention:** Always implement rate limiting on endpoints handling file uploads or intensive processing, and explicitly configure `trust proxy` when the architecture includes reverse proxies.
+
+## 2024-10-25 - Lack of Rate Limiting & Trust Proxy on Node.js Gateway
+**Vulnerability:** The Express.js application was deployed behind a reverse proxy (Traefik) without `trust proxy` configured, and critical endpoints (`/analyze`, `/reply`) lacked rate limiting. This allowed abusive clients to bypass potential load balancer limits and spam the endpoints, potentially causing a Denial of Service (DoS) condition on the API.
+**Learning:** When deploying behind a reverse proxy, `req.ip` is not accurate unless `app.set('trust proxy', 1)` is configured. Moreover, custom in-memory rate limiters using `Map` require periodic cleanup mechanisms (`setInterval`) to avoid unbounded memory growth (another form of DoS).
+**Prevention:** Always configure `trust proxy` when deploying behind a proxy/load balancer. Implement robust rate limiting on exposed API endpoints, and ensure any custom in-memory state includes automatic expired entry cleanup.

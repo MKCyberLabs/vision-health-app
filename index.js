@@ -63,6 +63,36 @@ const rateLimiter = (req, res, next) => {
     }
 
     rateLimitMap.set(ip, currentRequests + 1);
+app.disable('x-powered-by');
+
+// Simple in-memory rate limiter to prevent abuse
+const rateLimitMap = new Map();
+setInterval(() => {
+    const now = Date.now();
+    for (const [ip, data] of rateLimitMap.entries()) {
+        if (now > data.resetTime) {
+            rateLimitMap.delete(ip);
+        }
+    }
+}, 60000); // Cleanup every minute
+
+const rateLimiter = (req, res, next) => {
+    const ip = req.ip;
+    const now = Date.now();
+    const windowMs = 60000; // 1 minute window
+    const maxRequests = 20;
+
+    let data = rateLimitMap.get(ip);
+
+    if (!data || now > data.resetTime) {
+        data = { count: 1, resetTime: now + windowMs };
+        rateLimitMap.set(ip, data);
+    } else {
+        data.count++;
+        if (data.count > maxRequests) {
+            return res.status(429).json({ error: "Too many requests. Please try again later." });
+        }
+    }
     next();
 };
 app.use((req, res, next) => {
