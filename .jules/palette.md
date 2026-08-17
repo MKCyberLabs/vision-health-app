@@ -75,3 +75,7 @@
 ## 2026-08-02 - Discoverability of Hidden Interactions
 **Learning:** When implementing hidden interaction patterns (like drag-and-drop or pasting from the clipboard), users may not realize the features exist. Additionally, frontend file handling needs strict validation to avoid UI breakage when unsupported file types are pasted or dropped.
 **Action:** Always add visible, accessible helper text (e.g., using `aria-describedby`) so the features are discoverable to all users. Additionally, always implement strict frontend file type validation (e.g., `file.type.startsWith('image/')`) to prevent UI breakage from unsupported file types.
+
+## 2024-07-26 - Dynamic Result Focus and Scrolling
+**Learning:** When dynamically displaying asynchronous results (like a generated summary or a new component appended to the DOM), users on mobile devices or using screen magnification may not realize content has appeared off-screen. Additionally, keyboard and screen reader users lose their place in the document context.
+**Action:** Automatically scroll the new content into view (e.g., using `scrollIntoView({ behavior: 'smooth' })`) and explicitly move focus to the new container (using `.focus()` and ensuring it has `tabindex="-1"`) to guarantee visibility and maintain logical navigation flow.

@@ -113,6 +113,7 @@
         <div id="result" tabindex="-1" aria-live="polite" class="mt-10 bg-green-50 text-green-900 p-8 rounded-2xl border-2 border-green-200 text-xl md:text-2xl leading-relaxed whitespace-pre-wrap shadow-inner font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-green-400"></div>
         <div id="result" aria-live="polite" tabindex="-1" class="mt-10 bg-green-50 text-green-900 p-8 rounded-2xl border-2 border-green-200 text-xl md:text-2xl leading-relaxed whitespace-pre-wrap shadow-inner font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-green-400"></div>
         <div id="result" tabindex="-1" aria-live="polite" class="mt-10 bg-green-50 text-green-900 p-8 rounded-2xl border-2 border-green-200 text-xl md:text-2xl leading-relaxed whitespace-pre-wrap shadow-inner font-medium focus:outline-none"></div>
+        <div id="result" tabindex="-1" aria-live="polite" class="mt-10 bg-green-50 text-green-900 p-8 rounded-2xl border-2 border-green-200 text-xl md:text-2xl leading-relaxed whitespace-pre-wrap shadow-inner font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-green-400"></div>
     </div>
 
     <script>
@@ -410,6 +411,7 @@
                 document.getElementById('approvalMessage').textContent = data.message;
                 resultDiv.style.display = 'block';
                 resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                resultDiv.scrollIntoView({ behavior: 'smooth' });
                 document.getElementById('btnConfirmYes').onclick = () => sendReply(data.sessionId, 'y');
                 document.getElementById('btnConfirmNo').onclick = () => sendReply(data.sessionId, 'n');
                 resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -459,6 +461,8 @@
             resultDiv.focus();
             resultDiv.focus();
             resultDiv.scrollIntoView({ behavior: 'smooth' });
+            resultDiv.scrollIntoView({ behavior: 'smooth' });
+            resultDiv.focus();
         }
 
         // --- PWA & Offline Logic ---
