@@ -47,6 +47,7 @@
                 <div id="dropZone" class="flex flex-col gap-4 p-4 -m-4 rounded-2xl transition-all border-2 border-transparent" role="group" aria-labelledby="foodImageGroupLabel upload-hint">
                 <div id="dropZone" class="flex flex-col gap-4 p-4 -m-4 rounded-2xl transition-all border-2 border-transparent" role="group" aria-labelledby="foodImageGroupLabel dropPasteHint">
                 <div id="dropZone" class="flex flex-col gap-4 p-4 -m-4 rounded-2xl transition-all border-2 border-transparent" role="group" aria-labelledby="foodImageGroupLabel dropZoneHint">
+                <div id="dropZone" class="flex flex-col gap-4 p-4 -m-4 rounded-2xl transition-all border-2 border-transparent" role="group" aria-labelledby="foodImageGroupLabel" aria-describedby="dropPasteHint">
                     <!-- Massive Snap Photo Button -->
                     <input type="file" id="imageCamera" accept="image/*" capture="environment" class="sr-only peer">
                     <label for="imageCamera" class="w-full cursor-pointer bg-gradient-to-br from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 text-white font-extrabold text-3xl py-8 rounded-2xl border-4 border-green-300 transition-all text-center shadow-lg transform hover:-translate-y-1 peer-focus-visible:ring-4 peer-focus-visible:ring-green-400 flex flex-col items-center justify-center gap-2">
@@ -79,6 +80,7 @@
                 </div>
                 <p id="dragDropHint" class="text-sm text-center text-pink-600 mt-5 font-medium">💡 You can also drag &amp; drop or paste an image</p>
                 <p id="dropZoneHint" class="text-sm text-center text-pink-600 mt-2 font-medium">You can also drag and drop an image here, or paste from your clipboard (Ctrl+V/Cmd+V).</p>
+                <p id="dropPasteHint" class="text-sm text-gray-600 mt-2 font-medium text-center">💡 You can also drag & drop an image here, or paste it from your clipboard.</p>
                 <p id="fileError" class="hidden text-red-600 font-medium mt-3" role="alert">Please select or take an image first.</p>
             </fieldset>
 
@@ -265,6 +267,7 @@
                     formError.classList.remove('hidden');
                     document.getElementById('formErrorText').textContent = "Please select a valid image file.";
                     formError.focus();
+                    handleFileSelect({ target: { files: dt.files } });
                 }
             }
         }, false);
@@ -385,6 +388,22 @@
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
             if (e.clipboardData && e.clipboardData.files.length > 0) {
                 handleFileSelect({ target: { files: e.clipboardData.files } });
+        // Global paste listener for images
+        document.addEventListener('paste', (e) => {
+            // Ignore paste if typing in an input or textarea
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+            for (let index in items) {
+                const item = items[index];
+                if (item.kind === 'file' && item.type.startsWith('image/')) {
+                    const file = item.getAsFile();
+                    // Create a pseudo event object to reuse existing logic
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    handleFileSelect({ target: { files: dataTransfer.files } });
+                    break;
+                }
             }
         });
 
