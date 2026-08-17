@@ -117,3 +117,8 @@
 **Vulnerability:** The Express rate-limiting middleware in `index.js` performed strict string equality checks on `req.path` (`req.path === '/analyze'`). Since default Express route handlers (like `app.post('/analyze')`) are case-insensitive and ignore trailing slashes by default, attackers could bypass the rate limit simply by requesting `/Analyze` or `/analyze/`, leading to a Denial of Service.
 **Learning:** Checking `req.path` strictly without normalizing it can leave security middlewares (like rate limiters or authorization checks) susceptible to trivial bypasses if the underlying framework treats those variations as equivalent for route matching.
 **Prevention:** When implementing custom route-matching logic in Express middleware, always normalize the request path (e.g., `req.path.toLowerCase().replace(/\/$/, '')`) before comparison.
+
+## 2026-08-07 - Rate Limit Bypass via Path Normalization
+**Vulnerability:** The rate limiting middleware strictly matched request paths (`req.path === '/analyze'`). An attacker could bypass this by appending a trailing slash (`/analyze/`) or using different casing (`/ANALYZE`), allowing them to send unlimited requests and potentially cause a Denial of Service (DoS) condition.
+**Learning:** Default Express routing behavior is case-insensitive and ignores trailing slashes, but strict equality checks (`===`) in custom middleware do not.
+**Prevention:** When implementing custom route-matching logic in middleware (e.g., for rate limiting or authentication), always normalize the request path (e.g., `req.path.toLowerCase().replace(/\/$/, '')`) before comparing to prevent trivial bypasses.
