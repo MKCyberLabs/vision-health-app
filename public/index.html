@@ -33,6 +33,7 @@
                 <div id="dropZone" class="flex flex-col gap-4 p-4 -m-4 rounded-2xl transition-all border-2 border-transparent" role="group" aria-labelledby="foodImageGroupLabel dropZoneHint">
                 <p id="drop-paste-hint" class="text-sm text-gray-600 mb-3 font-medium text-center bg-pink-50 p-2 rounded-lg border border-pink-100">💡 Tip: You can also drag & drop or <kbd class="px-2 py-1 bg-white border border-gray-200 rounded text-xs font-mono">Ctrl+V</kbd> paste an image here.</p>
                 <div id="dropZone" class="flex flex-col gap-4 p-4 -m-4 rounded-2xl transition-all border-2 border-transparent" role="group" aria-labelledby="foodImageGroupLabel drop-paste-hint">
+                <div id="dropZone" class="flex flex-col gap-4 p-4 -m-4 rounded-2xl transition-all border-2 border-transparent" role="group" aria-labelledby="foodImageGroupLabel dropPasteHint">
                     <!-- Massive Snap Photo Button -->
                     <input type="file" id="imageCamera" accept="image/*" capture="environment" class="sr-only peer">
                     <label for="imageCamera" class="w-full cursor-pointer bg-gradient-to-br from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 text-white font-extrabold text-3xl py-8 rounded-2xl border-4 border-green-300 transition-all text-center shadow-lg transform hover:-translate-y-1 peer-focus-visible:ring-4 peer-focus-visible:ring-green-400 flex flex-col items-center justify-center gap-2">
@@ -48,6 +49,11 @@
                     <p id="dropZoneHint" class="text-sm text-center text-pink-600 font-medium mt-1">💡 Pro tip: You can also drag & drop or paste an image here.</p>
 
                     <p id="dragDropHint" class="text-sm text-center text-pink-700 mt-2 font-medium">💡 You can also drag &amp; drop or paste an image.</p>
+
+                    <!-- Helper Text for Drag & Drop / Paste -->
+                    <p id="dropPasteHint" class="text-sm text-center text-pink-700 font-medium mt-1">
+                        💡 You can also drag & drop or paste an image here.
+                    </p>
                 </div>
                 <div id="fileError" tabindex="-1" class="hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400 text-red-600 font-medium text-lg mt-3 mb-4 bg-red-50 p-4 rounded-xl border border-red-200 flex items-center gap-2 shadow-sm" role="alert">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -133,6 +139,8 @@
                     document.getElementById('fileErrorText').textContent = 'Please select a valid image file.';
                     fileError.classList.remove('hidden');
                     fileError.focus();
+                if (!file.type.startsWith('image/')) {
+                    showResult("Error: Please select a valid image file.", true);
                     return;
                 }
 
@@ -258,6 +266,15 @@
                     // Scroll to preview container to show the pasted image
                     previewContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 }
+        // Global Paste Event Listener
+        window.addEventListener('paste', (e) => {
+            const targetTag = e.target.tagName;
+            // Ignore paste if typing in an input or textarea
+            if (targetTag === 'INPUT' || targetTag === 'TEXTAREA') return;
+
+            if (e.clipboardData && e.clipboardData.files && e.clipboardData.files.length > 0) {
+                handleFileSelect({ target: { files: e.clipboardData.files } });
+                e.preventDefault(); // Prevent default paste behavior if files are handled
             }
         });
 

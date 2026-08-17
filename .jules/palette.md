@@ -63,3 +63,7 @@
 ## 2024-07-25 - Discoverable Hidden Interactions & File Validation
 **Learning:** When implementing hidden interaction patterns (like drag-and-drop or pasting from the clipboard), always add visible, accessible helper text (e.g., using aria-describedby or aria-labelledby) so the features are discoverable to all users. Additionally, handling custom drag-and-drop or paste events requires strict frontend file type validation to prevent UI breakage from unsupported file types.
 **Action:** Always pair drag-and-drop/paste functionalities with visible hint text linked via ARIA attributes. Enforce file type validation (e.g., `file.type.startsWith('image/')`) in custom event handlers to maintain a robust experience.
+
+## 2024-07-22 - Hidden Interaction Patterns & Global Paste
+**Learning:** When implementing hidden interaction patterns (like drag-and-drop or pasting from the clipboard), they are not easily discoverable. Also, global paste handlers can break standard text entry if not careful.
+**Action:** Always add visible, accessible helper text (e.g., using `aria-describedby` or `aria-labelledby`) so the features are discoverable. When adding a global `paste` event listener for file uploads, explicitly check the event target (e.g., `e.target.tagName !== 'INPUT'`) to avoid breaking standard text entry workflows. Implement strict frontend file type validation when handling drag-and-drop or paste events.
