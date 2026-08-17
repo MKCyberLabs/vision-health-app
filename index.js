@@ -119,10 +119,11 @@ setInterval(() => {
             rateLimitMap.delete(ip);
         }
     }
-}, RATE_LIMIT_WINDOW);
+}, RATE_LIMIT_WINDOW).unref();
 
 app.use((req, res, next) => {
     const normalizedPath = req.path.toLowerCase().replace(/\/$/, '');
+    const normalizedPath = req.path.toLowerCase().replace(/\/+$/, '');
     if (normalizedPath === '/analyze' || normalizedPath === '/reply') {
         const ip = req.ip;
         const now = Date.now();
