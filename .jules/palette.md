@@ -55,3 +55,7 @@
 ## 2024-08-03 - Documenting Hidden Interactions and File Validations
 **Learning:** Hidden interaction patterns (like drag-and-drop or pasting from the clipboard) can easily go unnoticed by users, and relying solely on HTML `accept` attributes for file inputs is insufficient to prevent UI state breakage when users submit invalid file types manually.
 **Action:** When implementing hidden interactions like drag-and-drop or clipboard paste, always add visible, accessible helper text (e.g., using `aria-describedby`) to make the features discoverable. Additionally, enforce strict frontend file validation (e.g., `file.type.startsWith('image/')`) inside the file handling logic, showing a focus-managed error message if validation fails.
+
+## 2024-08-13 - Discoverable Hidden Interactions
+**Learning:** Hidden interaction patterns like drag-and-drop or clipboard pasting are convenient but completely invisible to many users, including those using screen readers.
+**Action:** When implementing hidden interaction patterns (like drag-and-drop or pasting from the clipboard), always add visible, accessible helper text (e.g., using `aria-describedby` or `aria-labelledby`) so the features are discoverable to all users.

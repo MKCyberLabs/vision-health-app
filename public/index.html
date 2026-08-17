@@ -44,6 +44,8 @@
                         📁 Upload from Gallery
                     </label>
                     <p id="dropZoneHint" class="text-sm text-center text-pink-600 font-medium mt-1">💡 Pro tip: You can also drag & drop or paste an image here.</p>
+
+                    <p id="dragDropHint" class="text-sm text-center text-pink-700 mt-2 font-medium">💡 You can also drag &amp; drop or paste an image.</p>
                 </div>
                 <div id="fileError" tabindex="-1" class="hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400 text-red-600 font-medium text-lg mt-3 mb-4 bg-red-50 p-4 rounded-xl border border-red-200 flex items-center gap-2 shadow-sm" role="alert">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -221,6 +223,20 @@
                 // Ignore paste if the user is typing in a text input (like the weight field)
                 if (e.target.tagName !== 'INPUT' || e.target.type !== 'text') {
                     handleFileSelect({ target: { files: clipboardData.files } });
+                }
+            // Do not intercept paste events inside form text inputs
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+            const items = e.clipboardData?.items;
+            if (items) {
+                for (let i = 0; i < items.length; i++) {
+                    if (items[i].type.startsWith('image/')) {
+                        const file = items[i].getAsFile();
+                        if (file) {
+                            handleFileSelect({ target: { files: [file] } });
+                        }
+                        break;
+                    }
                 }
             }
         });
