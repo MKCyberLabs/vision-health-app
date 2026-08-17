@@ -298,6 +298,21 @@ const cleanupFileAsync = (filePath) => {
 
 app.post('/analyze', rateLimiter, upload.single('image'), async (req, res) => {
 app.post('/analyze', apiRateLimiter, upload.single('image'), async (req, res) => {
+// In-memory rate limiter: 20 requests per minute
+const rateLimitMap = new Map();
+setInterval(() => rateLimitMap.clear(), 60000).unref(); // unref to not block process exit during testing
+
+const rateLimiter = (req, res, next) => {
+    const ip = req.ip;
+    const currentCount = rateLimitMap.get(ip) || 0;
+    if (currentCount >= 20) {
+        return res.status(429).json({ error: "Too many requests. Please try again later." });
+    }
+    rateLimitMap.set(ip, currentCount + 1);
+    next();
+};
+
+app.post('/analyze', rateLimiter, upload.single('image'), async (req, res) => {
     if (!req.file) return res.status(400).json({ error: "No image file provided." });
 
     const imagePath = req.file.path;
