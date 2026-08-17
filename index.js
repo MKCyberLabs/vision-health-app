@@ -182,6 +182,40 @@ const rateLimiter = (req, res, next) => {
     } else {
         rateLimitMap.set(ip, { count: 1, timestamp: now });
     }
+const rateLimitMap = new Map();
+const RATE_LIMIT_WINDOW_MS = 60 * 1000;
+const MAX_REQUESTS = 10;
+
+setInterval(() => {
+    const now = Date.now();
+    for (const [ip, data] of rateLimitMap.entries()) {
+        if (now - data.startTime > RATE_LIMIT_WINDOW_MS) {
+            rateLimitMap.delete(ip);
+        }
+    }
+}, RATE_LIMIT_WINDOW_MS);
+
+const apiRateLimiter = (req, res, next) => {
+    const ip = req.ip;
+    const now = Date.now();
+
+    if (!rateLimitMap.has(ip)) {
+        rateLimitMap.set(ip, { count: 1, startTime: now });
+        return next();
+    }
+
+    const data = rateLimitMap.get(ip);
+    if (now - data.startTime > RATE_LIMIT_WINDOW_MS) {
+        data.count = 1;
+        data.startTime = now;
+        return next();
+    }
+
+    data.count++;
+    if (data.count > MAX_REQUESTS) {
+        return res.status(429).json({ error: "Too many requests. Please try again later." });
+    }
+
     next();
 };
 
@@ -195,6 +229,7 @@ const cleanupFileAsync = (filePath) => {
 };
 
 app.post('/analyze', rateLimiter, upload.single('image'), async (req, res) => {
+app.post('/analyze', apiRateLimiter, upload.single('image'), async (req, res) => {
     if (!req.file) return res.status(400).json({ error: "No image file provided." });
 
     const imagePath = req.file.path;
@@ -273,6 +308,7 @@ app.post('/analyze', rateLimiter, upload.single('image'), async (req, res) => {
 });
 
 app.post('/reply', rateLimiter, async (req, res) => {
+app.post('/reply', apiRateLimiter, async (req, res) => {
     const { sessionId, answer } = req.body;
     if (!sessionId) return res.status(400).json({ error: "Session ID is required." });
     if (typeof answer !== 'string' || !['y', 'n'].includes(answer.toLowerCase())) {
