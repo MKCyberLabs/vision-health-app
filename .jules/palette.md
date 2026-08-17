@@ -103,3 +103,7 @@
 ## 2024-07-25 - Discoverable Paste Support
 **Learning:** Hidden interaction patterns (drag-and-drop, pasting) require visible helper text to be discoverable. Global paste handlers must explicitly ignore text inputs, and custom upload handlers must validate file types since they bypass HTML accept attributes.
 **Action:** Add visible helper text (e.g. aria-describedby) to make hidden features discoverable. Scope global paste events to ignore text inputs, and apply strict frontend file type validation.
+
+## 2024-08-10 - Focus Management for Dynamic Asynchronous Results
+**Learning:** When dynamically displaying asynchronous results (e.g., appending a result container), users might not realize the new content has appeared, especially on mobile devices where it might render off-screen, or for screen reader users who remain focused on the submit button.
+**Action:** Automatically scroll the new content into view (e.g., using `scrollIntoView({ behavior: 'smooth' })`) and explicitly move focus to it (using `.focus()` with `tabindex="-1"`) to ensure visibility for all users and maintain context for keyboard/screen reader users.
