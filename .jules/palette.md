@@ -27,3 +27,7 @@
 ## 2024-07-21 - Accessible Dynamic Asynchronous Statuses
 **Learning:** When displaying dynamic asynchronous results or error messages in the same container, failing to dynamically update both visual styling (like warning/error color classes) and ARIA attributes (`role="alert"`, `aria-live="assertive"` for errors vs. `role="status"`, `aria-live="polite"` for success) can lead to a confusing experience for both sighted users and screen reader users.
 **Action:** When dynamically rendering status elements based on varying asynchronous results or states (like success, warning, or error), explicitly programmatically switch both their visual styling and corresponding ARIA attributes (`role`, `aria-live`) to accurately communicate the state to all users.
+
+## 2024-08-04 - Discoverable Hidden Interactions
+**Learning:** Features like drag-and-drop or pasting from the clipboard are powerful but hidden interaction patterns. If they are not visually indicated, most users will never discover them, reducing the app's overall usability and delight.
+**Action:** Always add visible, accessible helper text (e.g., `<p>` tag) explaining hidden features and link it to the relevant interaction zone using `aria-describedby` so the features are discoverable to both sighted and screen-reader users.
