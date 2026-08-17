@@ -145,6 +145,7 @@ app.use((req, res, next) => {
     next();
 });
 // Simple in-memory rate limiter
+// Rate Limiter
 const rateLimitMap = new Map();
 setInterval(() => {
     const now = Date.now();
@@ -154,6 +155,9 @@ setInterval(() => {
         }
     }
 }, 60000); // Cleanup every minute
+        if (now > data.resetTime) rateLimitMap.delete(ip);
+    }
+}, 60000);
 
 const rateLimiter = (req, res, next) => {
     const ip = req.ip;
@@ -190,6 +194,17 @@ const rateLimiter = (req, res, next) => {
     }
     next();
 };
+
+    let data = rateLimitMap.get(ip) || { count: 0, resetTime: now + 60000 };
+    if (now > data.resetTime) data = { count: 0, resetTime: now + 60000 };
+    data.count++;
+    rateLimitMap.set(ip, data);
+    if (data.count > 30) return res.status(429).json({ error: 'Too many requests.' });
+    next();
+};
+
+app.use('/analyze', rateLimiter);
+app.use('/reply', rateLimiter);
 
 const upload = multer({
     dest: 'temp/',
