@@ -30,6 +30,7 @@
                 <legend id="foodImageGroupLabel" class="block text-xl font-semibold text-pink-800 mb-1">Food Image (Required):</legend>
                 <p id="drop-hint" class="text-sm text-gray-600 mb-3 font-medium">You can also drag & drop or paste an image here!</p>
                 <div id="dropZone" aria-describedby="drop-hint" class="flex flex-col gap-4 p-4 -m-4 rounded-2xl transition-all border-2 border-transparent" role="group" aria-labelledby="foodImageGroupLabel">
+                <div id="dropZone" class="flex flex-col gap-4 p-4 -m-4 rounded-2xl transition-all border-2 border-transparent" role="group" aria-labelledby="foodImageGroupLabel dropZoneHint">
                     <!-- Massive Snap Photo Button -->
                     <input type="file" id="imageCamera" accept="image/*" capture="environment" class="sr-only peer">
                     <label for="imageCamera" class="w-full cursor-pointer bg-gradient-to-br from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 text-white font-extrabold text-3xl py-8 rounded-2xl border-4 border-green-300 transition-all text-center shadow-lg transform hover:-translate-y-1 peer-focus-visible:ring-4 peer-focus-visible:ring-green-400 flex flex-col items-center justify-center gap-2">
@@ -42,6 +43,13 @@
                     <label for="imageUpload" class="w-full cursor-pointer bg-pink-100 hover:bg-pink-200 text-pink-800 font-semibold text-lg py-3 rounded-xl border-2 border-pink-300 transition-colors text-center shadow-sm peer-focus-visible:ring-4 peer-focus-visible:ring-pink-400">
                         📁 Upload from Gallery
                     </label>
+                    <p id="dropZoneHint" class="text-sm text-center text-pink-600 font-medium mt-1">💡 Pro tip: You can also drag & drop or paste an image here.</p>
+                </div>
+                <div id="fileError" tabindex="-1" class="hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400 text-red-600 font-medium text-lg mt-3 mb-4 bg-red-50 p-4 rounded-xl border border-red-200 flex items-center gap-2 shadow-sm" role="alert">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    <span id="fileErrorText">Please select or take an image first.</span>
                 </div>
                 <p id="dragDropHint" class="text-sm text-center text-pink-600 mt-5 font-medium">💡 You can also drag &amp; drop or paste an image</p>
                 <p id="fileError" class="hidden text-red-600 font-medium mt-3" role="alert">Please select or take an image first.</p>
@@ -116,11 +124,17 @@
                     formError.focus();
                     formError.classList.add('animate-bounce');
                     setTimeout(() => formError.classList.remove('animate-bounce'), 1000);
+                if (!file.type.startsWith('image/')) {
+                    const fileError = document.getElementById('fileError');
+                    document.getElementById('fileErrorText').textContent = 'Please select a valid image file.';
+                    fileError.classList.remove('hidden');
+                    fileError.focus();
                     return;
                 }
 
                 selectedFile = file;
                 document.getElementById('fileError').classList.add('hidden');
+                document.getElementById('fileErrorText').textContent = 'Please select or take an image first.';
 
                 // Hide error message if an image was selected
                 document.getElementById('formError').classList.add('hidden');
@@ -200,6 +214,14 @@
         window.addEventListener('paste', (e) => {
             if (e.clipboardData && e.clipboardData.files && e.clipboardData.files.length > 0) {
                 handleFileSelect({ target: { files: e.clipboardData.files } });
+        // Paste support
+        window.addEventListener('paste', (e) => {
+            const clipboardData = e.clipboardData;
+            if (clipboardData && clipboardData.files && clipboardData.files.length > 0) {
+                // Ignore paste if the user is typing in a text input (like the weight field)
+                if (e.target.tagName !== 'INPUT' || e.target.type !== 'text') {
+                    handleFileSelect({ target: { files: clipboardData.files } });
+                }
             }
         });
 

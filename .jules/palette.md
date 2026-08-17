@@ -51,3 +51,7 @@
 ## 2024-07-20 - Focus and Scroll Management for Asynchronous Results
 **Learning:** When dynamically displaying asynchronous results (e.g., appending a result container), simply making the element visible is insufficient. Mobile users might not see the new content if it appears off-screen, and keyboard/screen reader users lose context if focus remains on the triggering element or is lost entirely.
 **Action:** Automatically scroll the new content into view (e.g., using `scrollIntoView({ behavior: 'smooth' })`) and explicitly move focus to it (using `.focus()` with `tabindex="-1"`) to ensure visibility for mobile users and maintain context for keyboard/screen reader users.
+
+## 2024-08-03 - Documenting Hidden Interactions and File Validations
+**Learning:** Hidden interaction patterns (like drag-and-drop or pasting from the clipboard) can easily go unnoticed by users, and relying solely on HTML `accept` attributes for file inputs is insufficient to prevent UI state breakage when users submit invalid file types manually.
+**Action:** When implementing hidden interactions like drag-and-drop or clipboard paste, always add visible, accessible helper text (e.g., using `aria-describedby`) to make the features discoverable. Additionally, enforce strict frontend file validation (e.g., `file.type.startsWith('image/')`) inside the file handling logic, showing a focus-managed error message if validation fails.
