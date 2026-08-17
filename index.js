@@ -170,6 +170,23 @@ const rateLimiter = (req, res, next) => {
 
     if (limitData.count > 20) {
         return res.status(429).json({ error: "Too many requests, please try again later." });
+    const windowMs = 60 * 1000; // 1 minute window
+    const maxRequests = 30;
+
+    if (!rateLimitMap.has(ip)) {
+        rateLimitMap.set(ip, { count: 1, resetTime: now + windowMs });
+        return next();
+    }
+
+    const data = rateLimitMap.get(ip);
+    if (now > data.resetTime) {
+        rateLimitMap.set(ip, { count: 1, resetTime: now + windowMs });
+        return next();
+    }
+
+    data.count++;
+    if (data.count > maxRequests) {
+        return res.status(429).json({ error: "Too many requests. Please try again later." });
     }
     next();
 };
