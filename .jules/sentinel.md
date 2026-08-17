@@ -137,3 +137,8 @@
 **Vulnerability:** The rate limiter middleware matched endpoints using strict equality (`req.path === '/analyze'`). Attackers could bypass the rate limiter (leading to DoS) by appending a trailing slash or altering the case (e.g., `/Analyze`, `/analyze/`), because default Express route handlers ignore trailing slashes and casing.
 **Learning:** Custom middleware performing route-specific logic must replicate or respect the framework's default routing behavior (case-insensitivity, trailing slash ignorance) to prevent trivial bypasses.
 **Prevention:** Always normalize the request path (e.g., `req.path.toLowerCase().replace(/\/$/, '')`) before comparison in custom routing or security middleware.
+
+## 2024-10-27 - Rate Limit Bypass via Path Variation
+**Vulnerability:** The application's custom rate limiting middleware matched endpoints using strict string equality (e.g., `req.path === '/analyze'`). Since default Express route handlers are case-insensitive and ignore trailing slashes (treating `/analyze/` the same as `/analyze`), attackers could append trailing slashes or alter casing to completely bypass the rate limit while still hitting the target route.
+**Learning:** When implementing custom route-matching logic in Express middleware (e.g., for rate limiting), strict path equality checks (`===`) are dangerous because Express routing normalizes paths before matching. Attackers can trivially exploit this discrepancy.
+**Prevention:** Always normalize the request path (e.g., `req.path.toLowerCase().replace(/\/$/, '')`) before comparing it in custom middleware, or preferably use robust routing mechanics (like `app.post('/analyze', rateLimiter, handler)`) instead of custom global path checks.
