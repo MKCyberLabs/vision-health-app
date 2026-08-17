@@ -79,3 +79,7 @@
 ## 2024-07-26 - Dynamic Result Focus and Scrolling
 **Learning:** When dynamically displaying asynchronous results (like a generated summary or a new component appended to the DOM), users on mobile devices or using screen magnification may not realize content has appeared off-screen. Additionally, keyboard and screen reader users lose their place in the document context.
 **Action:** Automatically scroll the new content into view (e.g., using `scrollIntoView({ behavior: 'smooth' })`) and explicitly move focus to the new container (using `.focus()` and ensuring it has `tabindex="-1"`) to guarantee visibility and maintain logical navigation flow.
+
+## 2026-06-31 - Focus and Scroll Management for Dynamic Content
+**Learning:** When dynamically displaying asynchronous results (like appending a result container), users might not realize new content has appeared, especially on mobile devices or for users using screen readers or keyboard navigation.
+**Action:** Always automatically scroll the new content into view (e.g., using `scrollIntoView({ behavior: 'smooth' })`) and explicitly move focus to it (using `.focus()` with `tabindex="-1"` if it's not natively focusable) to ensure visibility for all users and maintain context.

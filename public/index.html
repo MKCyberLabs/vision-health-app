@@ -412,6 +412,7 @@
                 resultDiv.style.display = 'block';
                 resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 resultDiv.scrollIntoView({ behavior: 'smooth' });
+                resultDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 document.getElementById('btnConfirmYes').onclick = () => sendReply(data.sessionId, 'y');
                 document.getElementById('btnConfirmNo').onclick = () => sendReply(data.sessionId, 'n');
                 resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -462,6 +463,7 @@
             resultDiv.focus();
             resultDiv.scrollIntoView({ behavior: 'smooth' });
             resultDiv.scrollIntoView({ behavior: 'smooth' });
+            resultDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
             resultDiv.focus();
         }
 
