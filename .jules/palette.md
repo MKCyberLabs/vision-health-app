@@ -31,3 +31,7 @@
 ## 2024-08-04 - Discoverable Hidden Interactions
 **Learning:** Features like drag-and-drop or pasting from the clipboard are powerful but hidden interaction patterns. If they are not visually indicated, most users will never discover them, reducing the app's overall usability and delight.
 **Action:** Always add visible, accessible helper text (e.g., `<p>` tag) explaining hidden features and link it to the relevant interaction zone using `aria-describedby` so the features are discoverable to both sighted and screen-reader users.
+
+## 2024-08-01 - Revealing Hidden Interactions & Frontend File Validation
+**Learning:** Some interaction patterns (like drag-and-drop or pasting from the clipboard) are incredibly useful but entirely invisible to users unless explicitly stated. Additionally, relying solely on backend file type validation or HTML input `accept` attributes is insufficient when dealing with custom drag/paste events, leading to broken UI states if non-image files are dropped.
+**Action:** Always add an accessible helper text to make hidden interaction patterns (like dropping or pasting) visible and discoverable. Implement strict frontend file type validation (e.g., checking `file.type.startsWith('image/')`) on custom drop/paste events before updating the UI state, providing immediate inline error feedback when invalid files are used.
