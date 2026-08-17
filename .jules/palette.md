@@ -99,3 +99,7 @@
 ## 2026-07-23 - Scrolling and Focusing Asynchronous Results
 **Learning:** When displaying asynchronous results (like appending a result container), users, especially those on mobile devices or using screen readers, might miss the newly added content if it appears off-screen or without focus.
 **Action:** When dynamically displaying asynchronous results, automatically scroll the new content into view (e.g., using `scrollIntoView({ behavior: 'smooth' })`) and explicitly move focus to it (using `.focus()` with `tabindex="-1"`) to ensure visibility for mobile users and maintain context for keyboard/screen reader users.
+
+## 2024-07-25 - Discoverable Paste Support
+**Learning:** Hidden interaction patterns (drag-and-drop, pasting) require visible helper text to be discoverable. Global paste handlers must explicitly ignore text inputs, and custom upload handlers must validate file types since they bypass HTML accept attributes.
+**Action:** Add visible helper text (e.g. aria-describedby) to make hidden features discoverable. Scope global paste events to ignore text inputs, and apply strict frontend file type validation.
