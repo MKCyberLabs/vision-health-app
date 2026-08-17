@@ -277,6 +277,13 @@ const apiRateLimiter = (req, res, next) => {
         return res.status(429).json({ error: "Too many requests. Please try again later." });
     }
 
+const requestCounts = new Map();
+setInterval(() => requestCounts.clear(), 60000); // Clear every minute
+const rateLimiter = (req, res, next) => {
+    const ip = req.ip;
+    const currentCount = requestCounts.get(ip) || 0;
+    if (currentCount >= 10) return res.status(429).json({ error: "Too many requests" });
+    requestCounts.set(ip, currentCount + 1);
     next();
 };
 
