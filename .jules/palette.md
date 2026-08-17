@@ -59,3 +59,7 @@
 ## 2024-08-13 - Discoverable Hidden Interactions
 **Learning:** Hidden interaction patterns like drag-and-drop or clipboard pasting are convenient but completely invisible to many users, including those using screen readers.
 **Action:** When implementing hidden interaction patterns (like drag-and-drop or pasting from the clipboard), always add visible, accessible helper text (e.g., using `aria-describedby` or `aria-labelledby`) so the features are discoverable to all users.
+
+## 2024-07-25 - Discoverable Hidden Interactions & File Validation
+**Learning:** When implementing hidden interaction patterns (like drag-and-drop or pasting from the clipboard), always add visible, accessible helper text (e.g., using aria-describedby or aria-labelledby) so the features are discoverable to all users. Additionally, handling custom drag-and-drop or paste events requires strict frontend file type validation to prevent UI breakage from unsupported file types.
+**Action:** Always pair drag-and-drop/paste functionalities with visible hint text linked via ARIA attributes. Enforce file type validation (e.g., `file.type.startsWith('image/')`) in custom event handlers to maintain a robust experience.
