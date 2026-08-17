@@ -126,6 +126,34 @@ const upload = multer({
 });
 const GEMINI_API_URL = process.env.GEMINI_API_URL || 'http://172.17.0.1:5000';
 
+// Rate Limiter
+const rateLimitMap = new Map();
+setInterval(() => {
+    const now = Date.now();
+    for (const [ip, data] of rateLimitMap.entries()) {
+        if (now - data.timestamp > 60000) {
+            rateLimitMap.delete(ip);
+        }
+    }
+}, 60000); // 1 minute cleanup
+
+const rateLimiter = (req, res, next) => {
+    const ip = req.ip;
+    const now = Date.now();
+    const entry = rateLimitMap.get(ip);
+
+    if (entry && now - entry.timestamp < 60000) {
+        if (entry.count >= 20) {
+            return res.status(429).json({ error: "Too many requests, please try again later." });
+        }
+        entry.count++;
+        rateLimitMap.set(ip, entry);
+    } else {
+        rateLimitMap.set(ip, { count: 1, timestamp: now });
+    }
+    next();
+};
+
 // Asynchronous file cleanup to avoid blocking the event loop
 const cleanupFileAsync = (filePath) => {
     fs.unlink(filePath, (unlinkErr) => {

@@ -97,3 +97,8 @@
 **Vulnerability:** The application's custom rate limiting middleware matched exactly against `req.path === '/analyze'`. However, Express's default routing is case-insensitive and ignores trailing slashes. Thus, requests to `/analyze/` or `/ANALYZE` bypassed the rate limiter entirely while still being processed by the route handler.
 **Learning:** When implementing custom route-matching logic in Express middleware (e.g., for rate limiting), strict equality checks on `req.path` are insufficient because they don't mirror the underlying framework's forgiving route resolution, leading to trivial bypasses.
 **Prevention:** Always normalize the request path (e.g., `req.path.toLowerCase().replace(/\/$/, '')`) before comparison in custom middleware to ensure consistency with how the framework will ultimately route the request.
+
+## 2026-07-27 - Rate Limiter Bypass and DoS Risk
+**Vulnerability:** The application was missing rate limiting on sensitive endpoints (`/analyze` and `/reply`) and lacked `app.set('trust proxy', 1)`, which is crucial when deployed behind reverse proxies like Traefik to correctly identify client IPs for rate limiting.
+**Learning:** When deploying Express applications behind load balancers or proxies, `req.ip` resolves to the proxy's IP rather than the client's. Rate limiting must use `X-Forwarded-For` to function properly and mitigate DoS attacks effectively.
+**Prevention:** Always implement rate limiting on endpoints handling file uploads or intensive processing, and explicitly configure `trust proxy` when the architecture includes reverse proxies.
