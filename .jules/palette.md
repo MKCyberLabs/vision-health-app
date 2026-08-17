@@ -35,3 +35,7 @@
 ## 2024-08-01 - Revealing Hidden Interactions & Frontend File Validation
 **Learning:** Some interaction patterns (like drag-and-drop or pasting from the clipboard) are incredibly useful but entirely invisible to users unless explicitly stated. Additionally, relying solely on backend file type validation or HTML input `accept` attributes is insufficient when dealing with custom drag/paste events, leading to broken UI states if non-image files are dropped.
 **Action:** Always add an accessible helper text to make hidden interaction patterns (like dropping or pasting) visible and discoverable. Implement strict frontend file type validation (e.g., checking `file.type.startsWith('image/')`) on custom drop/paste events before updating the UI state, providing immediate inline error feedback when invalid files are used.
+
+## 2024-07-24 - Focus Management and Auto-scrolling for Asynchronous Results
+**Learning:** When dynamically displaying asynchronous results (like a result container or confirmation dialog), it's not enough to simply reveal the content. Mobile users may not see it if it appears below the fold, and keyboard/screen reader users may lose context if focus isn't managed.
+**Action:** Automatically scroll the new content into view (e.g., using `scrollIntoView({ behavior: 'smooth' })`) and explicitly move focus to it (using `.focus()` with `tabindex="-1"`) to ensure visibility for mobile users and maintain context for keyboard/screen reader users.
