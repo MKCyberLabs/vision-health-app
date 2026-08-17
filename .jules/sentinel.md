@@ -92,3 +92,8 @@
 **Vulnerability:** The Express gateway was missing rate limiting, making it vulnerable to brute force and denial of service (DoS) attacks. Additionally, it did not have `trust proxy` configured, which is necessary when deployed behind a reverse proxy/load balancer to correctly parse the client's IP address.
 **Learning:** In-memory rate limiting implementation requires a periodic cleanup to prevent memory leaks from unbounded data structures. `req.ip` is inaccurate without `app.set('trust proxy', 1)` when the application is behind a proxy.
 **Prevention:** Implement rate limiting (e.g., in-memory map with periodic cleanup) and configure `trust proxy` on all Express gateways to ensure accurate IP-based restrictions and prevent DoS.
+
+## 2024-10-27 - Rate Limit Bypass via Path Variation
+**Vulnerability:** The application's custom rate limiting middleware matched exactly against `req.path === '/analyze'`. However, Express's default routing is case-insensitive and ignores trailing slashes. Thus, requests to `/analyze/` or `/ANALYZE` bypassed the rate limiter entirely while still being processed by the route handler.
+**Learning:** When implementing custom route-matching logic in Express middleware (e.g., for rate limiting), strict equality checks on `req.path` are insufficient because they don't mirror the underlying framework's forgiving route resolution, leading to trivial bypasses.
+**Prevention:** Always normalize the request path (e.g., `req.path.toLowerCase().replace(/\/$/, '')`) before comparison in custom middleware to ensure consistency with how the framework will ultimately route the request.
