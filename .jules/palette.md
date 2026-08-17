@@ -43,3 +43,7 @@
 ## 2026-07-26 - Auto-scroll and Focus for Async Results
 **Learning:** When dynamically displaying asynchronous results (e.g., appending a result container), users on mobile devices or using screen readers often miss the new content because it appears outside their viewport or without focus. Simply unhiding the container is not enough to maintain context.
 **Action:** Always automatically scroll the new content into view (e.g., using `scrollIntoView({ behavior: 'smooth' })`) and explicitly move focus to it (using `.focus()` with `tabindex="-1"`) to ensure visibility for mobile users and maintain context for keyboard/screen reader users.
+
+## 2024-07-27 - Dynamic Content Visibility and Focus Management
+**Learning:** When dynamically displaying asynchronous results (like appending a result container), simply unhiding the element doesn't guarantee users will see it, especially on mobile devices where the new content might appear below the current viewport fold. Furthermore, screen readers might not correctly associate the new state.
+**Action:** Automatically scroll the new content into view (using `scrollIntoView({ behavior: 'smooth' })`) and explicitly move focus to it (using `.focus()` with `tabindex="-1"`) or its primary interactive element to ensure visibility for mobile users and maintain context for keyboard and screen reader users.
