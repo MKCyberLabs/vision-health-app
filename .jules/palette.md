@@ -91,3 +91,7 @@
 ## 2024-07-26 - Dynamic Result Scrolling and Focus
 **Learning:** When dynamically displaying asynchronous results (e.g., appending a result container), simply making the container visible is often insufficient, especially on smaller screens where the new content might appear below the fold. Furthermore, keyboard and screen reader users need their focus explicitly moved to the new content to maintain context.
 **Action:** Automatically scroll the new content into view (using `scrollIntoView({ behavior: 'smooth' })`) and explicitly move focus to it (using `.focus()` with `tabindex="-1"`) to ensure visibility for mobile users and maintain context for accessibility users.
+
+## 2024-07-21 - Dynamic Styling and ARIA for Async Results
+**Learning:** When dynamically displaying asynchronous results or backend errors in UI containers, simply changing the text content is insufficient. If the visual styling and ARIA attributes (like `role` and `aria-live`) do not reflect the state (e.g., green for success, red for error), it can confuse both sighted users and those using screen readers.
+**Action:** Ensure that visual styling (e.g., color classes) and ARIA attributes (`role`, `aria-live`) are dynamically updated to accurately reflect the state (e.g., `role="alert"` and red styling for errors, `role="status"` and green styling for success) when updating dynamic containers.
