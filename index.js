@@ -8,118 +8,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.set('trust proxy', 1);
-app.set('trust proxy', 1); // 🛡️ Sentinel: Trust proxy for accurate req.ip when behind load balancer
-
-// 🛡️ Sentinel: In-memory rate limiter (50 requests per 15 minutes)
-const rateLimitMap = new Map();
-const RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
-const MAX_REQUESTS = 50;
-
-setInterval(() => {
-    const now = Date.now();
-    for (const [ip, data] of rateLimitMap.entries()) {
-        if (now - data.startTime > RATE_LIMIT_WINDOW) {
-            rateLimitMap.delete(ip);
-        }
-    }
-}, RATE_LIMIT_WINDOW); // Periodically clean up to prevent memory leaks
-
-const rateLimiter = (req, res, next) => {
-    const ip = req.ip;
-    const now = Date.now();
-    if (!rateLimitMap.has(ip)) {
-        rateLimitMap.set(ip, { count: 1, startTime: now });
-    } else {
-        const data = rateLimitMap.get(ip);
-        if (now - data.startTime > RATE_LIMIT_WINDOW) {
-            data.count = 1;
-            data.startTime = now;
-        } else {
-            data.count++;
-            if (data.count > MAX_REQUESTS) {
-                return res.status(429).json({ error: 'Too many requests, please try again later.' });
-            }
-        }
-    }
-    next();
-};
-
-app.use(rateLimiter);
-
 app.disable('x-powered-by');
-
-// Simple in-memory rate limiter
-const rateLimitMap = new Map();
-setInterval(() => {
-    rateLimitMap.clear();
-}, 60000); // Clear every minute
-
-const rateLimiter = (req, res, next) => {
-    const ip = req.ip;
-    const currentRequests = rateLimitMap.get(ip) || 0;
-
-    if (currentRequests >= 30) {
-        return res.status(429).json({ error: 'Too many requests, please try again later.' });
-    }
-
-    rateLimitMap.set(ip, currentRequests + 1);
-app.disable('x-powered-by');
-
-// Simple in-memory rate limiter to prevent abuse
-const rateLimitMap = new Map();
-setInterval(() => {
-    const now = Date.now();
-    for (const [ip, data] of rateLimitMap.entries()) {
-        if (now > data.resetTime) {
-            rateLimitMap.delete(ip);
-        }
-app.disable('x-powered-by');
-
-// Rate limiting middleware
-const rateLimits = new Map();
-setInterval(() => {
-    const now = Date.now();
-    for (const [ip, data] of rateLimits.entries()) {
-        if (now > data.resetTime) rateLimits.delete(ip);
-    }
-}, 60000); // Cleanup every minute
-
-const rateLimiter = (req, res, next) => {
-    const ip = req.ip;
-    const now = Date.now();
-    const windowMs = 60000; // 1 minute window
-    const maxRequests = 20;
-
-    let data = rateLimitMap.get(ip);
-
-    if (!data || now > data.resetTime) {
-        data = { count: 1, resetTime: now + windowMs };
-        rateLimitMap.set(ip, data);
-    } else {
-        data.count++;
-        if (data.count > maxRequests) {
-            return res.status(429).json({ error: "Too many requests. Please try again later." });
-        }
-    }
-    next();
-};
-    const windowMs = 60000; // 1 minute
-    const maxRequests = 30;
-
-    let userRecord = rateLimits.get(ip);
-    if (!userRecord || now > userRecord.resetTime) {
-        userRecord = { count: 0, resetTime: now + windowMs };
-        rateLimits.set(ip, userRecord);
-    }
-
-    if (userRecord.count >= maxRequests) {
-        return res.status(429).json({ error: "Too many requests, please try again later." });
-    }
-
-    userRecord.count++;
-    next();
-};
-
 app.use((req, res, next) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('X-Frame-Options', 'DENY');
@@ -144,10 +33,9 @@ setInterval(() => {
             rateLimitMap.delete(ip);
         }
     }
-}, RATE_LIMIT_WINDOW).unref();
+}, RATE_LIMIT_WINDOW);
 
 app.use((req, res, next) => {
-    const normalizedPath = req.path.toLowerCase().replace(/\/$/, '');
     const normalizedPath = req.path.toLowerCase().replace(/\/+$/, '');
     if (normalizedPath === '/analyze' || normalizedPath === '/reply') {
         const ip = req.ip;
@@ -169,67 +57,6 @@ app.use((req, res, next) => {
     }
     next();
 });
-// Simple in-memory rate limiter
-// Rate Limiter
-const rateLimitMap = new Map();
-setInterval(() => {
-    const now = Date.now();
-    for (const [ip, data] of rateLimitMap.entries()) {
-        if (now > data.resetTime) {
-            rateLimitMap.delete(ip);
-        }
-    }
-}, 60000); // Cleanup every minute
-        if (now > data.resetTime) rateLimitMap.delete(ip);
-    }
-}, 60000);
-
-const rateLimiter = (req, res, next) => {
-    const ip = req.ip;
-    const now = Date.now();
-    const limitData = rateLimitMap.get(ip) || { count: 0, resetTime: now + 60000 };
-
-    if (now > limitData.resetTime) {
-        limitData.count = 0;
-        limitData.resetTime = now + 60000;
-    }
-
-    limitData.count++;
-    rateLimitMap.set(ip, limitData);
-
-    if (limitData.count > 20) {
-        return res.status(429).json({ error: "Too many requests, please try again later." });
-    const windowMs = 60 * 1000; // 1 minute window
-    const maxRequests = 30;
-
-    if (!rateLimitMap.has(ip)) {
-        rateLimitMap.set(ip, { count: 1, resetTime: now + windowMs });
-        return next();
-    }
-
-    const data = rateLimitMap.get(ip);
-    if (now > data.resetTime) {
-        rateLimitMap.set(ip, { count: 1, resetTime: now + windowMs });
-        return next();
-    }
-
-    data.count++;
-    if (data.count > maxRequests) {
-        return res.status(429).json({ error: "Too many requests. Please try again later." });
-    }
-    next();
-};
-
-    let data = rateLimitMap.get(ip) || { count: 0, resetTime: now + 60000 };
-    if (now > data.resetTime) data = { count: 0, resetTime: now + 60000 };
-    data.count++;
-    rateLimitMap.set(ip, data);
-    if (data.count > 30) return res.status(429).json({ error: 'Too many requests.' });
-    next();
-};
-
-app.use('/analyze', rateLimiter);
-app.use('/reply', rateLimiter);
 
 const upload = multer({
     dest: 'temp/',
@@ -243,75 +70,6 @@ const upload = multer({
 });
 const GEMINI_API_URL = process.env.GEMINI_API_URL || 'http://172.17.0.1:5000';
 
-// Rate Limiter
-const rateLimitMap = new Map();
-setInterval(() => {
-    const now = Date.now();
-    for (const [ip, data] of rateLimitMap.entries()) {
-        if (now - data.timestamp > 60000) {
-            rateLimitMap.delete(ip);
-        }
-    }
-}, 60000); // 1 minute cleanup
-
-const rateLimiter = (req, res, next) => {
-    const ip = req.ip;
-    const now = Date.now();
-    const entry = rateLimitMap.get(ip);
-
-    if (entry && now - entry.timestamp < 60000) {
-        if (entry.count >= 20) {
-            return res.status(429).json({ error: "Too many requests, please try again later." });
-        }
-        entry.count++;
-        rateLimitMap.set(ip, entry);
-    } else {
-        rateLimitMap.set(ip, { count: 1, timestamp: now });
-    }
-const rateLimitMap = new Map();
-const RATE_LIMIT_WINDOW_MS = 60 * 1000;
-const MAX_REQUESTS = 10;
-
-setInterval(() => {
-    const now = Date.now();
-    for (const [ip, data] of rateLimitMap.entries()) {
-        if (now - data.startTime > RATE_LIMIT_WINDOW_MS) {
-            rateLimitMap.delete(ip);
-        }
-    }
-}, RATE_LIMIT_WINDOW_MS);
-
-const apiRateLimiter = (req, res, next) => {
-    const ip = req.ip;
-    const now = Date.now();
-
-    if (!rateLimitMap.has(ip)) {
-        rateLimitMap.set(ip, { count: 1, startTime: now });
-        return next();
-    }
-
-    const data = rateLimitMap.get(ip);
-    if (now - data.startTime > RATE_LIMIT_WINDOW_MS) {
-        data.count = 1;
-        data.startTime = now;
-        return next();
-    }
-
-    data.count++;
-    if (data.count > MAX_REQUESTS) {
-        return res.status(429).json({ error: "Too many requests. Please try again later." });
-    }
-
-const requestCounts = new Map();
-setInterval(() => requestCounts.clear(), 60000); // Clear every minute
-const rateLimiter = (req, res, next) => {
-    const ip = req.ip;
-    const currentCount = requestCounts.get(ip) || 0;
-    if (currentCount >= 10) return res.status(429).json({ error: "Too many requests" });
-    requestCounts.set(ip, currentCount + 1);
-    next();
-};
-
 // Asynchronous file cleanup to avoid blocking the event loop
 const cleanupFileAsync = (filePath) => {
     fs.unlink(filePath, (unlinkErr) => {
@@ -321,23 +79,7 @@ const cleanupFileAsync = (filePath) => {
     });
 };
 
-app.post('/analyze', rateLimiter, upload.single('image'), async (req, res) => {
-app.post('/analyze', apiRateLimiter, upload.single('image'), async (req, res) => {
-// In-memory rate limiter: 20 requests per minute
-const rateLimitMap = new Map();
-setInterval(() => rateLimitMap.clear(), 60000).unref(); // unref to not block process exit during testing
-
-const rateLimiter = (req, res, next) => {
-    const ip = req.ip;
-    const currentCount = rateLimitMap.get(ip) || 0;
-    if (currentCount >= 20) {
-        return res.status(429).json({ error: "Too many requests. Please try again later." });
-    }
-    rateLimitMap.set(ip, currentCount + 1);
-    next();
-};
-
-app.post('/analyze', rateLimiter, upload.single('image'), async (req, res) => {
+app.post('/analyze', upload.single('image'), async (req, res) => {
     if (!req.file) return res.status(400).json({ error: "No image file provided." });
 
     const imagePath = req.file.path;
@@ -415,8 +157,7 @@ app.post('/analyze', rateLimiter, upload.single('image'), async (req, res) => {
     }
 });
 
-app.post('/reply', rateLimiter, async (req, res) => {
-app.post('/reply', apiRateLimiter, async (req, res) => {
+app.post('/reply', async (req, res) => {
     const { sessionId, answer } = req.body;
     if (!sessionId) return res.status(400).json({ error: "Session ID is required." });
     if (typeof answer !== 'string' || !['y', 'n'].includes(answer.toLowerCase())) {

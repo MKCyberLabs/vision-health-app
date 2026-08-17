@@ -26,28 +26,7 @@
         <form id="uploadForm" class="space-y-8">
             <fieldset>
                 <legend id="foodImageGroupLabel" class="block text-xl font-semibold text-pink-800 mb-3">Food Image (Required):</legend>
-                <div id="dropZone" class="flex flex-col gap-4 p-4 -m-4 rounded-2xl transition-all border-2 border-transparent" role="group" aria-labelledby="foodImageGroupLabel" aria-describedby="dragDropHint">
-                <legend id="foodImageGroupLabel" class="block text-xl font-semibold text-pink-800 mb-1">Food Image (Required):</legend>
-                <p id="drop-hint" class="text-sm text-gray-600 mb-3 font-medium">You can also drag & drop or paste an image here!</p>
-                <div id="dropZone" aria-describedby="drop-hint" class="flex flex-col gap-4 p-4 -m-4 rounded-2xl transition-all border-2 border-transparent" role="group" aria-labelledby="foodImageGroupLabel">
-                <div id="dropZone" class="flex flex-col gap-4 p-4 -m-4 rounded-2xl transition-all border-2 border-transparent" role="group" aria-labelledby="foodImageGroupLabel dropZoneHint">
-                <p id="drop-paste-hint" class="text-sm text-gray-600 mb-3 font-medium text-center bg-pink-50 p-2 rounded-lg border border-pink-100">💡 Tip: You can also drag & drop or <kbd class="px-2 py-1 bg-white border border-gray-200 rounded text-xs font-mono">Ctrl+V</kbd> paste an image here.</p>
-                <div id="dropZone" class="flex flex-col gap-4 p-4 -m-4 rounded-2xl transition-all border-2 border-transparent" role="group" aria-labelledby="foodImageGroupLabel drop-paste-hint">
-                <div id="dropZone" class="flex flex-col gap-4 p-4 -m-4 rounded-2xl transition-all border-2 border-transparent" role="group" aria-labelledby="foodImageGroupLabel dropPasteHint">
-                <legend id="foodImageGroupLabel" class="block text-xl font-semibold text-pink-800 mb-1">Food Image (Required):</legend>
-                <p id="dropZoneHint" class="text-sm text-gray-600 mb-3 font-medium">You can also drag & drop or paste an image here.</p>
-                <div id="dropZone" class="flex flex-col gap-4 p-4 -m-4 rounded-2xl transition-all border-2 border-transparent" role="group" aria-labelledby="foodImageGroupLabel" aria-describedby="dropZoneHint">
-                <div id="dropZone" class="flex flex-col gap-4 p-4 -m-4 rounded-2xl transition-all border-2 border-transparent" role="group" aria-labelledby="foodImageGroupLabel" aria-describedby="interactionHint">
-                <legend id="foodImageGroupLabel" class="block text-xl font-semibold text-pink-800 mb-1">Food Image (Required):</legend>
-                <p id="foodImageGroupHint" class="text-sm text-gray-600 mb-3 font-medium">You can also drag and drop or paste an image</p>
-                <div id="dropZone" class="flex flex-col gap-4 p-4 -m-4 rounded-2xl transition-all border-2 border-transparent" role="group" aria-labelledby="foodImageGroupLabel foodImageGroupHint">
-                <p id="upload-hint" class="text-sm text-gray-600 mb-3 font-medium">You can also drag and drop or paste an image from your clipboard.</p>
-                <legend id="foodImageGroupLabel" class="block text-xl font-semibold text-pink-800 mb-1">Food Image (Required):</legend>
-                <p id="upload-hint" class="text-sm text-gray-600 mb-3 font-medium">You can also drag & drop or paste an image anywhere</p>
-                <div id="dropZone" class="flex flex-col gap-4 p-4 -m-4 rounded-2xl transition-all border-2 border-transparent" role="group" aria-labelledby="foodImageGroupLabel upload-hint">
-                <div id="dropZone" class="flex flex-col gap-4 p-4 -m-4 rounded-2xl transition-all border-2 border-transparent" role="group" aria-labelledby="foodImageGroupLabel dropPasteHint">
-                <div id="dropZone" class="flex flex-col gap-4 p-4 -m-4 rounded-2xl transition-all border-2 border-transparent" role="group" aria-labelledby="foodImageGroupLabel dropZoneHint">
-                <div id="dropZone" class="flex flex-col gap-4 p-4 -m-4 rounded-2xl transition-all border-2 border-transparent" role="group" aria-labelledby="foodImageGroupLabel" aria-describedby="dropPasteHint">
+                <div id="dropZone" class="flex flex-col gap-4 p-4 -m-4 rounded-2xl transition-all border-2 border-transparent" role="group" aria-labelledby="foodImageGroupLabel">
                     <!-- Massive Snap Photo Button -->
                     <input type="file" id="imageCamera" accept="image/*" capture="environment" class="sr-only peer">
                     <label for="imageCamera" class="w-full cursor-pointer bg-gradient-to-br from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 text-white font-extrabold text-3xl py-8 rounded-2xl border-4 border-green-300 transition-all text-center shadow-lg transform hover:-translate-y-1 peer-focus-visible:ring-4 peer-focus-visible:ring-green-400 flex flex-col items-center justify-center gap-2">
@@ -60,27 +39,7 @@
                     <label for="imageUpload" class="w-full cursor-pointer bg-pink-100 hover:bg-pink-200 text-pink-800 font-semibold text-lg py-3 rounded-xl border-2 border-pink-300 transition-colors text-center shadow-sm peer-focus-visible:ring-4 peer-focus-visible:ring-pink-400">
                         📁 Upload from Gallery
                     </label>
-                    <p id="dropZoneHint" class="text-sm text-center text-pink-600 font-medium mt-1">💡 Pro tip: You can also drag & drop or paste an image here.</p>
-
-                    <p id="dragDropHint" class="text-sm text-center text-pink-700 mt-2 font-medium">💡 You can also drag &amp; drop or paste an image.</p>
-
-                    <!-- Helper Text for Drag & Drop / Paste -->
-                    <p id="dropPasteHint" class="text-sm text-center text-pink-700 font-medium mt-1">
-                        💡 You can also drag & drop or paste an image here.
-                    <p id="interactionHint" class="text-center text-gray-500 font-medium text-sm mt-1">
-                        💡 You can also drag & drop or paste an image anywhere
-                    </p>
-                    <p id="dropPasteHint" class="text-sm text-center text-pink-700 font-medium mt-2">💡 You can also drag &amp; drop or paste an image</p>
                 </div>
-                <div id="fileError" tabindex="-1" class="hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400 text-red-600 font-medium text-lg mt-3 mb-4 bg-red-50 p-4 rounded-xl border border-red-200 flex items-center gap-2 shadow-sm" role="alert">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                    <span id="fileErrorText">Please select or take an image first.</span>
-                </div>
-                <p id="dragDropHint" class="text-sm text-center text-pink-600 mt-5 font-medium">💡 You can also drag &amp; drop or paste an image</p>
-                <p id="dropZoneHint" class="text-sm text-center text-pink-600 mt-2 font-medium">You can also drag and drop an image here, or paste from your clipboard (Ctrl+V/Cmd+V).</p>
-                <p id="dropPasteHint" class="text-sm text-gray-600 mt-2 font-medium text-center">💡 You can also drag & drop an image here, or paste it from your clipboard.</p>
                 <p id="fileError" class="hidden text-red-600 font-medium mt-3" role="alert">Please select or take an image first.</p>
             </fieldset>
 
@@ -119,14 +78,6 @@
             Analyzing your meal... 🌸 Please wait.
         </div>
         <div id="result" tabindex="-1" aria-live="polite" class="mt-10 bg-green-50 text-green-900 p-8 rounded-2xl border-2 border-green-200 text-xl md:text-2xl leading-relaxed whitespace-pre-wrap shadow-inner font-medium focus:outline-none focus-visible:ring-4 focus-visible:ring-green-400"></div>
-        <div id="result" aria-live="polite" tabindex="-1" class="mt-10 bg-green-50 text-green-900 p-8 rounded-2xl border-2 border-green-200 text-xl md:text-2xl leading-relaxed whitespace-pre-wrap shadow-inner font-medium focus:outline-none focus-visible:ring-4 focus-visible:ring-green-400"></div>
-        <div id="result" tabindex="-1" aria-live="polite" class="mt-10 bg-green-50 text-green-900 p-8 rounded-2xl border-2 border-green-200 text-xl md:text-2xl leading-relaxed whitespace-pre-wrap shadow-inner font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-green-400"></div>
-        <div id="result" aria-live="polite" tabindex="-1" class="mt-10 bg-green-50 text-green-900 p-8 rounded-2xl border-2 border-green-200 text-xl md:text-2xl leading-relaxed whitespace-pre-wrap shadow-inner font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-green-400"></div>
-        <div id="result" tabindex="-1" aria-live="polite" class="mt-10 bg-green-50 text-green-900 p-8 rounded-2xl border-2 border-green-200 text-xl md:text-2xl leading-relaxed whitespace-pre-wrap shadow-inner font-medium focus:outline-none"></div>
-        <div id="result" tabindex="-1" aria-live="polite" class="mt-10 bg-green-50 text-green-900 p-8 rounded-2xl border-2 border-green-200 text-xl md:text-2xl leading-relaxed whitespace-pre-wrap shadow-inner font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-green-400"></div>
-        <div id="result" aria-live="polite" tabindex="-1" class="mt-10 bg-green-50 text-green-900 p-8 rounded-2xl border-2 border-green-200 text-xl md:text-2xl leading-relaxed whitespace-pre-wrap shadow-inner font-medium focus:outline-none focus-visible:ring-4 focus-visible:ring-green-400"></div>
-        <div id="result" aria-live="polite" tabindex="-1" class="mt-10 bg-green-50 text-green-900 p-8 rounded-2xl border-2 border-green-200 text-xl md:text-2xl leading-relaxed whitespace-pre-wrap shadow-inner font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-green-400"></div>
-        <div id="result" tabindex="-1" aria-live="polite" class="mt-10 focus:outline-none focus-visible:ring-4 focus-visible:ring-green-400 bg-green-50 text-green-900 p-8 rounded-2xl border-2 border-green-200 text-xl md:text-2xl leading-relaxed whitespace-pre-wrap shadow-inner font-medium"></div>
     </div>
 
     <script>
@@ -146,62 +97,13 @@
         let objectUrl = null;
 
         function handleFileSelect(event) {
-            const file = event.target.files ? event.target.files[0] : null;
-            if (file) {
-                // Front-end validation to prevent non-image files from being pasted/dropped
-                if (!file.type.startsWith('image/')) {
-                    const formError = document.getElementById('formError');
-                    const formErrorText = document.getElementById('formErrorText');
-                    formErrorText.textContent = "Please select a valid image file. Other file types are not supported.";
-                    formError.classList.remove('hidden');
-                    formError.focus();
-                    formError.classList.add('animate-bounce');
-                    setTimeout(() => formError.classList.remove('animate-bounce'), 1000);
-                if (!file.type.startsWith('image/')) {
-                    const fileError = document.getElementById('fileError');
-                    document.getElementById('fileErrorText').textContent = 'Please select a valid image file.';
-                    fileError.classList.remove('hidden');
-                    fileError.focus();
-                if (!file.type.startsWith('image/')) {
-                    showResult("Error: Please select a valid image file.", true);
-                if (!file.type.startsWith('image/')) {
-                    const formError = document.getElementById('formError');
-                    document.getElementById('formErrorText').textContent = "Please provide a valid image file.";
-                if (!file.type.startsWith('image/')) {
-                    const formError = document.getElementById('formError');
-                    const formErrorText = document.getElementById('formErrorText');
-                    formErrorText.textContent = 'Please select a valid image file.';
-                if (!file.type.startsWith('image/')) {
-                    const formError = document.getElementById('formError');
-                    document.getElementById('formErrorText').textContent = "Please select a valid image file.";
-                    formError.classList.remove('hidden');
-                    formError.focus();
-                    return;
-                }
-
-                if (!file.type.startsWith('image/')) {
-                    const fileError = document.getElementById('fileError');
-                    fileError.textContent = 'Please select a valid image file.';
-                if (!file.type.startsWith('image/')) {
-                    const fileError = document.getElementById('fileError');
-                    fileError.textContent = "Please select a valid image file.";
-            const file = (event.target && event.target.files) ? event.target.files[0] : event;
-            if (file) {
-                if (!file.type.startsWith('image/')) {
-                    const fileError = document.getElementById('fileError');
-                    fileError.textContent = 'Please select a valid image file.';
-                    fileError.classList.remove('hidden');
-                    return;
-                }
             const file = event.target.files[0];
-            if (file && file.type.startsWith('image/')) {
+            if (file) {
                 selectedFile = file;
                 document.getElementById('fileError').classList.add('hidden');
-                document.getElementById('fileErrorText').textContent = 'Please select or take an image first.';
 
                 // Hide error message if an image was selected
                 document.getElementById('formError').classList.add('hidden');
-                document.getElementById('formErrorText').textContent = "Please select or take an image first.";
 
                 // ⚡ Bolt Optimization: Release previous object URL to prevent memory leaks
                 if (objectUrl) {
@@ -215,11 +117,6 @@
                 imagePreview.src = objectUrl;
                 document.getElementById('fileNameDisplay').textContent = "Selected file: " + file.name;
                 previewContainer.classList.remove('hidden');
-            } else if (file) {
-                const errEl = document.getElementById('fileError');
-                errEl.textContent = 'Please upload a valid image file (e.g., JPG, PNG).';
-                errEl.classList.remove('hidden');
-                errEl.focus();
             }
         }
 
@@ -257,155 +154,8 @@
 
         dropZone.addEventListener('drop', (e) => {
             const dt = e.dataTransfer;
-            if (dt.files && dt.files.length > 0) {
-                const file = dt.files[0];
-                if (file.type.startsWith('image/')) {
-                    handleFileSelect({ target: { files: [file] } });
-                    handleFileSelect({ target: { files: dt.files } });
-                } else {
-                    const formError = document.getElementById('formError');
-                    formError.classList.remove('hidden');
-                    document.getElementById('formErrorText').textContent = "Please select a valid image file.";
-                    formError.focus();
-                    handleFileSelect({ target: { files: dt.files } });
-                }
-            }
+            if (dt.files && dt.files.length > 0) handleFileSelect({ target: { files: dt.files } });
         }, false);
-
-        window.addEventListener('paste', (e) => {
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-            const clipboardData = e.clipboardData || window.clipboardData;
-            if (!clipboardData) return;
-            const items = clipboardData.items;
-            for (let i = 0; i < items.length; i++) {
-                const item = items[i];
-                if (item.kind === 'file' && item.type.startsWith('image/')) {
-                    const file = item.getAsFile();
-                    if (file) {
-                        handleFileSelect({ target: { files: [file] } });
-                        break;
-                    }
-                }
-        // Paste support
-        window.addEventListener('paste', (e) => {
-            if (e.clipboardData && e.clipboardData.files && e.clipboardData.files.length > 0) {
-                handleFileSelect({ target: { files: e.clipboardData.files } });
-        // Paste support
-        window.addEventListener('paste', (e) => {
-            const clipboardData = e.clipboardData;
-            if (clipboardData && clipboardData.files && clipboardData.files.length > 0) {
-                // Ignore paste if the user is typing in a text input (like the weight field)
-                if (e.target.tagName !== 'INPUT' || e.target.type !== 'text') {
-                    handleFileSelect({ target: { files: clipboardData.files } });
-                }
-            // Do not intercept paste events inside form text inputs
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-
-            const items = e.clipboardData?.items;
-            if (items) {
-                for (let i = 0; i < items.length; i++) {
-                    if (items[i].type.startsWith('image/')) {
-                        const file = items[i].getAsFile();
-                        if (file) {
-                            handleFileSelect({ target: { files: [file] } });
-                        }
-                        break;
-                    }
-        // Global paste support
-        window.addEventListener('paste', (e) => {
-            // Ignore if typing in an input
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-
-            const dt = e.clipboardData;
-            if (dt.files && dt.files.length > 0) {
-                const file = dt.files[0];
-                if (file.type.startsWith('image/')) {
-                    handleFileSelect({ target: { files: dt.files } });
-                    // Scroll to preview container to show the pasted image
-                    previewContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                }
-        // Global Paste Event Listener
-        window.addEventListener('paste', (e) => {
-            const targetTag = e.target.tagName;
-            // Ignore paste if typing in an input or textarea
-            if (targetTag === 'INPUT' || targetTag === 'TEXTAREA') return;
-
-            if (e.clipboardData && e.clipboardData.files && e.clipboardData.files.length > 0) {
-                handleFileSelect({ target: { files: e.clipboardData.files } });
-                e.preventDefault(); // Prevent default paste behavior if files are handled
-        // Paste support
-        window.addEventListener('paste', (e) => {
-            // Ignore paste if we're focused on an input field
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-
-            if (e.clipboardData && e.clipboardData.files && e.clipboardData.files.length > 0) {
-                e.preventDefault();
-                handleFileSelect({ target: { files: e.clipboardData.files } });
-            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-            for (const item of items) {
-                if (item.type.startsWith('image/')) {
-                    const file = item.getAsFile();
-                    if (file) {
-                        handleFileSelect({ target: { files: [file] } });
-                    }
-                    break;
-                }
-            const clipboardData = e.clipboardData;
-            if (clipboardData && clipboardData.files && clipboardData.files.length > 0) {
-                e.preventDefault();
-                handleFileSelect({ target: { files: clipboardData.files } });
-            if (dt.files && dt.files.length > 0) handleFileSelect(dt.files[0]);
-        }, false);
-
-        // Global Paste Support
-        window.addEventListener('paste', (e) => {
-            // Ignore paste events on text inputs to avoid interfering with normal text editing
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
-                return;
-            }
-
-            const items = e.clipboardData.items;
-            for (let i = 0; i < items.length; i++) {
-                if (items[i].type.indexOf('image') !== -1) {
-                    const blob = items[i].getAsFile();
-                    handleFileSelect(blob);
-                    e.preventDefault(); // Prevent default paste behavior
-                    break; // Only handle the first image found
-                }
-        // Global Paste Event Listener
-        window.addEventListener('paste', (e) => {
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
-                return; // Ignore if pasting into a text field
-            }
-            if (e.clipboardData.files && e.clipboardData.files.length > 0) {
-        // Paste support
-        window.addEventListener('paste', (e) => {
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
-                return;
-            }
-            if (e.clipboardData && e.clipboardData.files && e.clipboardData.files.length > 0) {
-            // Ignore paste events in text inputs or textareas to avoid breaking standard workflows
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-            if (e.clipboardData && e.clipboardData.files.length > 0) {
-                handleFileSelect({ target: { files: e.clipboardData.files } });
-        // Global paste listener for images
-        document.addEventListener('paste', (e) => {
-            // Ignore paste if typing in an input or textarea
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-
-            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-            for (let index in items) {
-                const item = items[index];
-                if (item.kind === 'file' && item.type.startsWith('image/')) {
-                    const file = item.getAsFile();
-                    // Create a pseudo event object to reuse existing logic
-                    const dataTransfer = new DataTransfer();
-                    dataTransfer.items.add(file);
-                    handleFileSelect({ target: { files: dataTransfer.files } });
-                    break;
-                }
-            }
-        });
 
         function setLoadingState() {
             submitBtn.disabled = true;
@@ -425,7 +175,6 @@
 
             if (!selectedFile) {
                 const formError = document.getElementById('formError');
-                document.getElementById('formErrorText').textContent = "Please select or take an image first.";
                 formError.classList.remove('hidden');
                 formError.focus(); // Shift focus to error message for screen readers and keyboard users
 
@@ -479,11 +228,6 @@
             if (data.status === "success") {
                 showResult(data.result);
             } else if (data.status === "needs_approval") {
-                resultDiv.classList.remove('bg-green-50', 'text-green-900', 'border-green-200', 'bg-red-50', 'text-red-900', 'border-red-200');
-                resultDiv.classList.add('bg-yellow-50', 'text-yellow-900', 'border-yellow-200');
-                resultDiv.setAttribute('role', 'alert');
-                resultDiv.setAttribute('aria-live', 'assertive');
-
                 // 🛡️ Security Enhancement: Prevent XSS by building HTML safely
                 resultDiv.innerHTML = `
                     <p class="text-yellow-600 mb-4 text-2xl font-bold">⚠️ System Confirmation Required:</p>
@@ -499,17 +243,10 @@
                 // Safely inject dynamic message content
                 document.getElementById('approvalMessage').textContent = data.message;
                 resultDiv.style.display = 'block';
-                resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                resultDiv.scrollIntoView({ behavior: 'smooth' });
-                resultDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                resultDiv.scrollIntoView({ behavior: 'smooth' });
                 document.getElementById('btnConfirmYes').onclick = () => sendReply(data.sessionId, 'y');
                 document.getElementById('btnConfirmNo').onclick = () => sendReply(data.sessionId, 'n');
                 resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                resultDiv.scrollIntoView({ behavior: 'smooth' });
                 document.getElementById('btnConfirmYes').focus();
-                resultDiv.scrollIntoView({ behavior: 'smooth' });
-                resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             } else {
                 showResult("Error: " + (data.message || "Unknown error"), true);
             }
@@ -532,18 +269,6 @@
 
         function showResult(text, isError = false) {
             loading.style.display = 'none';
-
-            resultDiv.classList.remove('bg-green-50', 'text-green-900', 'border-green-200', 'bg-red-50', 'text-red-900', 'border-red-200', 'bg-yellow-50', 'text-yellow-900', 'border-yellow-200');
-            if (isError) {
-                resultDiv.classList.add('bg-red-50', 'text-red-900', 'border-red-200');
-                resultDiv.setAttribute('role', 'alert');
-                resultDiv.setAttribute('aria-live', 'assertive');
-            } else {
-                resultDiv.classList.add('bg-green-50', 'text-green-900', 'border-green-200');
-                resultDiv.setAttribute('role', 'status');
-                resultDiv.setAttribute('aria-live', 'polite');
-            }
-
             resultDiv.textContent = text;
 
             if (isError) {
@@ -552,13 +277,6 @@
                 resultDiv.setAttribute('aria-live', 'assertive');
             } else {
                 resultDiv.className = "mt-10 p-8 rounded-2xl border-2 text-xl md:text-2xl leading-relaxed whitespace-pre-wrap shadow-inner font-medium focus:outline-none focus-visible:ring-4 bg-green-50 text-green-900 border-green-200 focus-visible:ring-green-400";
-                resultDiv.classList.remove('bg-green-50', 'text-green-900', 'border-green-200', 'focus-visible:ring-green-400');
-                resultDiv.classList.add('bg-red-50', 'text-red-900', 'border-red-200', 'focus-visible:ring-red-400');
-                resultDiv.setAttribute('role', 'alert');
-                resultDiv.setAttribute('aria-live', 'assertive');
-            } else {
-                resultDiv.classList.remove('bg-red-50', 'text-red-900', 'border-red-200', 'focus-visible:ring-red-400');
-                resultDiv.classList.add('bg-green-50', 'text-green-900', 'border-green-200', 'focus-visible:ring-green-400');
                 resultDiv.setAttribute('role', 'status');
                 resultDiv.setAttribute('aria-live', 'polite');
             }
@@ -566,22 +284,24 @@
             resultDiv.style.display = 'block';
             resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             resultDiv.focus();
-            resultDiv.focus();
-            resultDiv.scrollIntoView({ behavior: 'smooth' });
-            resultDiv.scrollIntoView({ behavior: 'smooth' });
-            resultDiv.focus();
-            resultDiv.focus();
-            resultDiv.scrollIntoView({ behavior: 'smooth' });
-            resultDiv.scrollIntoView({ behavior: 'smooth' });
-            resultDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            resultDiv.focus();
-            resultDiv.scrollIntoView({ behavior: 'smooth' });
-            resultDiv.focus();
-            resultDiv.focus();
-            resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            resultDiv.scrollIntoView({ behavior: 'smooth' });
-            resultDiv.focus();
         }
+
+        // Global paste listener for images
+        document.addEventListener('paste', (e) => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+            const items = (e.clipboardData || e.originalEvent?.clipboardData)?.items;
+            if (!items) return;
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                if (item.kind === 'file' && item.type.startsWith('image/')) {
+                    const file = item.getAsFile();
+                    handleFileSelect({ target: { files: [file] } });
+                    e.preventDefault();
+                    break;
+                }
+            }
+        });
 
         // --- PWA & Offline Logic ---
         // Register Service Worker
