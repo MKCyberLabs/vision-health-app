@@ -53,3 +53,7 @@
 ## 2024-10-26 - Paste Support for File Uploads
 **Learning:** Users often copy images directly from the web or screenshot tools. Without global paste support, they are forced to save the file first, which is a significant friction point. However, implementing hidden interactions like paste or drag-and-drop without visible helper text makes them undiscoverable to most users.
 **Action:** Implement a global `paste` event listener, but ensure it ignores events inside text inputs/textareas. Always add visible, accessible helper text (e.g., linked via `aria-labelledby`) to make these hidden interaction patterns discoverable, and enforce strict frontend file type validation to prevent UI breakage from unsupported pasted files.
+
+## 2024-05-28 - Discoverable Paste Capabilities
+**Learning:** Hidden interaction patterns like global paste or drag-and-drop are excellent power-user features but fail usability and accessibility guidelines if they lack visible cues. Additionally, native HTML `accept` attributes are bypassed by programmatic paste/drop events, leading to potential UI breakage with unsupported files.
+**Action:** Always pair hidden interaction patterns with visible helper text, linking it to the relevant interactive group using `aria-describedby`. Always implement strict frontend file type validation (e.g., `file.type.startsWith('image/')`) in the JS event handlers to catch unsupported files that bypass native input validation.

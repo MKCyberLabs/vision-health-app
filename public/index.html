@@ -42,6 +42,8 @@
                 <p id="foodImageGroupHint" class="text-sm text-gray-600 mb-3 font-medium">You can also drag and drop or paste an image</p>
                 <div id="dropZone" class="flex flex-col gap-4 p-4 -m-4 rounded-2xl transition-all border-2 border-transparent" role="group" aria-labelledby="foodImageGroupLabel foodImageGroupHint">
                 <p id="upload-hint" class="text-sm text-gray-600 mb-3 font-medium">You can also drag and drop or paste an image from your clipboard.</p>
+                <legend id="foodImageGroupLabel" class="block text-xl font-semibold text-pink-800 mb-1">Food Image (Required):</legend>
+                <p id="upload-hint" class="text-sm text-gray-600 mb-3 font-medium">You can also drag & drop or paste an image anywhere</p>
                 <div id="dropZone" class="flex flex-col gap-4 p-4 -m-4 rounded-2xl transition-all border-2 border-transparent" role="group" aria-labelledby="foodImageGroupLabel upload-hint">
                     <!-- Massive Snap Photo Button -->
                     <input type="file" id="imageCamera" accept="image/*" capture="environment" class="sr-only peer">
@@ -157,6 +159,10 @@
                 if (!file.type.startsWith('image/')) {
                     const formError = document.getElementById('formError');
                     document.getElementById('formErrorText').textContent = "Please provide a valid image file.";
+                if (!file.type.startsWith('image/')) {
+                    const formError = document.getElementById('formError');
+                    const formErrorText = document.getElementById('formErrorText');
+                    formErrorText.textContent = 'Please select a valid image file.';
                     formError.classList.remove('hidden');
                     formError.focus();
                     return;
@@ -347,6 +353,13 @@
                     e.preventDefault(); // Prevent default paste behavior
                     break; // Only handle the first image found
                 }
+        // Global Paste Event Listener
+        window.addEventListener('paste', (e) => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                return; // Ignore if pasting into a text field
+            }
+            if (e.clipboardData.files && e.clipboardData.files.length > 0) {
+                handleFileSelect({ target: { files: e.clipboardData.files } });
             }
         });
 
