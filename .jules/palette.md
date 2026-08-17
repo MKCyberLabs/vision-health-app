@@ -71,3 +71,7 @@
 ## 2024-07-22 - Global Paste Support & Hidden Interactions
 **Learning:** When implementing hidden interaction patterns (like drag-and-drop or pasting from the clipboard), users may not discover the features if there is no visual indicator. Additionally, when handling custom drag-and-drop or paste events, passing unchecked files directly to the upload handler can break the UI if the file type is not supported.
 **Action:** Always add visible, accessible helper text (e.g., using `aria-describedby`) for hidden interactions so they are discoverable. When handling global paste events, ensure the handler ignores paste events inside text inputs (`e.target.tagName !== 'INPUT'`) and implement strict frontend file type validation (e.g., `file.type.startsWith('image/')`) to prevent unsupported files from breaking the application.
+
+## 2026-08-02 - Discoverability of Hidden Interactions
+**Learning:** When implementing hidden interaction patterns (like drag-and-drop or pasting from the clipboard), users may not realize the features exist. Additionally, frontend file handling needs strict validation to avoid UI breakage when unsupported file types are pasted or dropped.
+**Action:** Always add visible, accessible helper text (e.g., using `aria-describedby`) so the features are discoverable to all users. Additionally, always implement strict frontend file type validation (e.g., `file.type.startsWith('image/')`) to prevent UI breakage from unsupported file types.

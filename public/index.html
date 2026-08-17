@@ -37,6 +37,7 @@
                 <legend id="foodImageGroupLabel" class="block text-xl font-semibold text-pink-800 mb-1">Food Image (Required):</legend>
                 <p id="dropZoneHint" class="text-sm text-gray-600 mb-3 font-medium">You can also drag & drop or paste an image here.</p>
                 <div id="dropZone" class="flex flex-col gap-4 p-4 -m-4 rounded-2xl transition-all border-2 border-transparent" role="group" aria-labelledby="foodImageGroupLabel" aria-describedby="dropZoneHint">
+                <div id="dropZone" class="flex flex-col gap-4 p-4 -m-4 rounded-2xl transition-all border-2 border-transparent" role="group" aria-labelledby="foodImageGroupLabel" aria-describedby="interactionHint">
                     <!-- Massive Snap Photo Button -->
                     <input type="file" id="imageCamera" accept="image/*" capture="environment" class="sr-only peer">
                     <label for="imageCamera" class="w-full cursor-pointer bg-gradient-to-br from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 text-white font-extrabold text-3xl py-8 rounded-2xl border-4 border-green-300 transition-all text-center shadow-lg transform hover:-translate-y-1 peer-focus-visible:ring-4 peer-focus-visible:ring-green-400 flex flex-col items-center justify-center gap-2">
@@ -56,6 +57,8 @@
                     <!-- Helper Text for Drag & Drop / Paste -->
                     <p id="dropPasteHint" class="text-sm text-center text-pink-700 font-medium mt-1">
                         💡 You can also drag & drop or paste an image here.
+                    <p id="interactionHint" class="text-center text-gray-500 font-medium text-sm mt-1">
+                        💡 You can also drag & drop or paste an image anywhere
                     </p>
                 </div>
                 <div id="fileError" tabindex="-1" class="hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400 text-red-600 font-medium text-lg mt-3 mb-4 bg-red-50 p-4 rounded-xl border border-red-200 flex items-center gap-2 shadow-sm" role="alert">
@@ -152,6 +155,12 @@
                     return;
                 }
 
+                if (!file.type.startsWith('image/')) {
+                    const fileError = document.getElementById('fileError');
+                    fileError.textContent = 'Please select a valid image file.';
+                    fileError.classList.remove('hidden');
+                    return;
+                }
                 selectedFile = file;
                 document.getElementById('fileError').classList.add('hidden');
                 document.getElementById('fileErrorText').textContent = 'Please select or take an image first.';
@@ -292,6 +301,15 @@
             if (e.clipboardData && e.clipboardData.files && e.clipboardData.files.length > 0) {
                 e.preventDefault();
                 handleFileSelect({ target: { files: e.clipboardData.files } });
+            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+            for (const item of items) {
+                if (item.type.startsWith('image/')) {
+                    const file = item.getAsFile();
+                    if (file) {
+                        handleFileSelect({ target: { files: [file] } });
+                    }
+                    break;
+                }
             }
         });
 
