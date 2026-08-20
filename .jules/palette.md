@@ -115,3 +115,7 @@
 ## 2024-07-22 - Discoverability of Hidden Interactions and Paste UX
 **Learning:** Hidden interaction patterns like drag-and-drop or pasting from the clipboard are powerful UX tools, but they are completely invisible to users unless explicitly stated. Additionally, global paste listeners can inadvertently break text entry workflows if they intercept paste events inside inputs or textareas.
 **Action:** When implementing hidden interaction patterns, always add visible, accessible helper text (e.g., using `aria-describedby`) to make the features discoverable. Furthermore, when adding global paste event listeners, explicitly check the event target (e.target.tagName !== 'INPUT' and e.target.tagName !== 'TEXTAREA') to ignore events meant for standard text entry.
+
+## 2025-02-27 - Visual Discoverability of Hidden Interactions
+**Learning:** Hidden interaction patterns, such as file drag-and-drop or global clipboard pasting, are extremely convenient but entirely invisible to standard user flows unless explicitly indicated. Users (including those relying on screen readers) often miss out on these efficient interactions because the UI provides no cues.
+**Action:** Whenever implementing hidden interaction mechanisms (drag-and-drop, pasting), always pair them with clear, visible helper text directly in the UI. Furthermore, strictly link this text to the interactive elements (e.g., using `aria-describedby`) to ensure assistive technologies announce the availability of these features, making them discoverable and accessible to everyone.
