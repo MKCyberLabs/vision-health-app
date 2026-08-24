@@ -61,3 +61,7 @@
 ## 2026-06-30 - Move Focus and Scroll to Asynchronous Results
 **Learning:** When asynchronously appending new dynamic content (like a large analysis result container at the bottom of the page) and hiding the loading indicator, the new content might render off-screen for mobile users. Furthermore, keyboard and screen reader users aren't automatically aware of the newly rendered content, losing context.
 **Action:** Always automatically scroll the new content into view (e.g., using `scrollIntoView({ behavior: 'smooth' })`) and explicitly move keyboard focus to it (using `.focus()` with `tabindex="-1"` and `focus:outline-none`) to ensure visibility and maintain context.
+
+## 2024-11-20 - Discoverable Paste Capabilities
+**Learning:** Hidden interaction patterns like global paste or drag-and-drop are excellent power-user features but fail usability and accessibility guidelines if they lack visible cues. Additionally, native HTML accept attributes are bypassed by programmatic paste/drop events, leading to potential UI breakage with unsupported files.
+**Action:** Always pair hidden interaction patterns with visible helper text, linking it to the relevant interactive group using aria-describedby. Always implement strict frontend file type validation in the JS event handlers to catch unsupported files that bypass native input validation.
