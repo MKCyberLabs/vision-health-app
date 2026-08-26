@@ -18,11 +18,11 @@
     
     <!-- Offline Banner -->
     <div id="offlineBanner" role="alert" aria-live="assertive" aria-hidden="true" class="fixed top-0 left-0 w-full bg-red-500 text-white text-center py-2 font-bold transform -translate-y-full transition-transform duration-300 z-50 shadow-md">
-        ⚠️ No Internet Connection. AI Analysis is offline.
+        <span aria-hidden="true">⚠️</span> No Internet Connection. AI Analysis is offline.
     </div>
 
     <div class="bg-white rounded-3xl shadow-xl border border-pink-100 p-6 md:p-12 w-full max-w-4xl mt-10">
-        <h2 class="text-4xl md:text-5xl font-extrabold text-center text-pink-900 mb-8 tracking-tight">🌸 AI Health Matrix</h2>
+        <h2 class="text-4xl md:text-5xl font-extrabold text-center text-pink-900 mb-8 tracking-tight"><span aria-hidden="true">🌸</span> AI Health Matrix</h2>
         <form id="uploadForm" class="space-y-8">
             <fieldset>
                 <legend id="foodImageGroupLabel" class="block text-xl font-semibold text-pink-800 mb-3">Food Image (Required):</legend>
@@ -30,14 +30,14 @@
                     <!-- Massive Snap Photo Button -->
                     <input type="file" id="imageCamera" accept="image/*" capture="environment" class="sr-only peer">
                     <label for="imageCamera" class="w-full cursor-pointer bg-gradient-to-br from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 text-white font-extrabold text-3xl py-8 rounded-2xl border-4 border-green-300 transition-all text-center shadow-lg transform hover:-translate-y-1 peer-focus-visible:ring-4 peer-focus-visible:ring-green-400 flex flex-col items-center justify-center gap-2">
-                        <span class="text-5xl">📸</span>
+                        <span class="text-5xl" aria-hidden="true">📸</span>
                         Snap Photo
                     </label>
 
                     <!-- Secondary Upload Gallery Button -->
                     <input type="file" id="imageUpload" accept="image/*" class="sr-only peer">
                     <label for="imageUpload" class="w-full cursor-pointer bg-pink-100 hover:bg-pink-200 text-pink-800 font-semibold text-lg py-3 rounded-xl border-2 border-pink-300 transition-colors text-center shadow-sm peer-focus-visible:ring-4 peer-focus-visible:ring-pink-400">
-                        📁 Upload from Gallery
+                        <span aria-hidden="true">📁</span> Upload from Gallery
                     </label>
                 </div>
                 <p id="fileError" class="hidden text-red-600 font-medium mt-3" role="alert">Please select or take an image first.</p>
@@ -70,12 +70,12 @@
             </div>
 
             <button id="submitBtn" type="submit" class="w-full flex justify-center items-center gap-3 bg-gradient-to-r from-pink-500 to-green-500 text-white font-bold text-2xl py-5 rounded-2xl hover:from-pink-600 hover:to-green-600 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1 focus:outline-none focus-visible:ring-4 focus-visible:ring-green-400 focus-visible:ring-offset-2 focus-visible:ring-offset-pink-50">
-                <span>Analyze Meal ✨</span>
+                <span>Analyze Meal <span aria-hidden="true">✨</span></span>
             </button>
         </form>
 
         <div id="loading" role="status" aria-live="polite" class="text-2xl text-pink-600 italic font-medium text-center mt-10 animate-pulse">
-            Analyzing your meal... 🌸 Please wait.
+            Analyzing your meal... <span aria-hidden="true">🌸</span> Please wait.
         </div>
         <div id="result" tabindex="-1" aria-live="polite" class="mt-10 bg-green-50 text-green-900 p-8 rounded-2xl border-2 border-green-200 text-xl md:text-2xl leading-relaxed whitespace-pre-wrap shadow-inner font-medium focus:outline-none focus-visible:ring-4 focus-visible:ring-green-400"></div>
     </div>
@@ -219,7 +219,7 @@
             submitBtn.disabled = false;
             submitBtn.classList.remove('opacity-70', 'cursor-not-allowed');
             submitBtn.classList.add('hover:-translate-y-1', 'hover:shadow-xl', 'hover:from-pink-600', 'hover:to-green-600');
-            submitBtn.innerHTML = '<span>Analyze Meal ✨</span>';
+            submitBtn.innerHTML = '<span>Analyze Meal <span aria-hidden="true">✨</span></span>';
         }
 
         function handleBackendResponse(data) {
@@ -230,7 +230,7 @@
             } else if (data.status === "needs_approval") {
                 // 🛡️ Security Enhancement: Prevent XSS by building HTML safely
                 resultDiv.innerHTML = `
-                    <p class="text-yellow-600 mb-4 text-2xl font-bold">⚠️ System Confirmation Required:</p>
+                    <p class="text-yellow-600 mb-4 text-2xl font-bold"><span aria-hidden="true">⚠️</span> System Confirmation Required:</p>
                     <pre id="approvalMessage" class="whitespace-pre-wrap mb-6 font-sans text-xl"></pre>
                     <div class="flex gap-4">
                         <button id="btnConfirmYes" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl text-xl transition-colors shadow-md focus:outline-none focus-visible:ring-4 focus-visible:ring-green-300">Confirm (Yes)</button>
