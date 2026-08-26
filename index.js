@@ -116,7 +116,8 @@ app.post('/analyze', upload.single('image'), async (req, res) => {
             body: JSON.stringify({
                 message: prompt,
                 image_path: imagePath
-            })
+            }),
+            signal: AbortSignal.timeout(310000)
         });
 
         if (!response.ok) {
@@ -182,7 +183,8 @@ app.post('/reply', async (req, res) => {
             body: JSON.stringify({
                 session_id: sessionId,
                 answer: answer
-            })
+            }),
+            signal: AbortSignal.timeout(310000)
         });
 
         if (!response.ok) {

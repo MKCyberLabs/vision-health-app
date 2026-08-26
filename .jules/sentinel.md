@@ -173,6 +173,11 @@
 **Learning:** When an Express application is behind a proxy, it must explicitly trust the proxy to correctly resolve `req.ip` from the `X-Forwarded-For` header. Without this, IP-based rate limiting is useless and can lock out all users if the single proxy IP gets blocked.
 **Prevention:** Always configure `app.set('trust proxy', 1)` when deploying behind reverse proxies. Apply custom or library-based rate limiting to all public endpoints, especially those accepting files or making external API calls. Ensure custom memory-based rate limiters include periodic cleanup logic to avoid memory leaks.
 
+## 2024-10-31 - Missing Timeout on External API Calls
+**Vulnerability:** The Node.js Express gateway was using native `fetch` to communicate with an internal Flask backend without any timeout configured. If the Flask backend became unresponsive or experienced heavy load (e.g., waiting for the Antigravity CLI), the Node.js requests would hang indefinitely. This could eventually exhaust all available sockets and memory in the Node.js gateway, leading to a complete Denial of Service.
+**Learning:** By default, Node.js `fetch` does not have a timeout. It will wait indefinitely for a response. In a microservices architecture, this can cause cascading failures where one slow service takes down the entire system.
+**Prevention:** Always configure an explicit timeout when making external or internal server-to-server HTTP requests. With native Node.js `fetch`, this is done by passing `signal: AbortSignal.timeout(ms)` in the request options. The timeout should be set to a reasonable maximum expected response time plus a small buffer.
+
 ## 2026-07-15 - Rate Limiting to prevent DoS
 **Vulnerability:** The application was missing rate limiting on critical endpoints like `/analyze` and `/reply`. Specifically on `/analyze`, an attacker could repeatedly send large file uploads (up to 5MB each) to exhaust disk space (temp folder) or system memory (if processed simultaneously) leading to a Denial of Service.
 **Learning:** File upload endpoints are particularly sensitive to DoS attacks since they consume disk I/O, storage, and processing power. Furthermore, when deployed behind a reverse proxy (like Traefik), `req.ip` will always resolve to the proxy's IP unless `trust proxy` is explicitly configured.
