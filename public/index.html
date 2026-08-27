@@ -22,24 +22,25 @@
     </div>
 
     <div class="bg-white rounded-3xl shadow-xl border border-pink-100 p-6 md:p-12 w-full max-w-4xl mt-10">
-        <h2 class="text-4xl md:text-5xl font-extrabold text-center text-pink-900 mb-8 tracking-tight">🌸 AI Health Matrix</h2>
+        <h2 class="text-4xl md:text-5xl font-extrabold text-center text-pink-900 mb-8 tracking-tight"><span aria-hidden="true">🌸</span> AI Health Matrix</h2>
         <form id="uploadForm" class="space-y-8">
             <fieldset>
                 <legend id="foodImageGroupLabel" class="block text-xl font-semibold text-pink-800 mb-3">Food Image (Required):</legend>
-                <div id="dropZone" class="flex flex-col gap-4 p-4 -m-4 rounded-2xl transition-all border-2 border-transparent" role="group" aria-labelledby="foodImageGroupLabel">
+                <div id="dropZone" class="flex flex-col gap-4 p-4 -m-4 rounded-2xl transition-all border-2 border-transparent" role="group" aria-labelledby="foodImageGroupLabel" aria-describedby="dragPasteHint">
                     <!-- Massive Snap Photo Button -->
                     <input type="file" id="imageCamera" accept="image/*" capture="environment" class="sr-only peer">
                     <label for="imageCamera" class="w-full cursor-pointer bg-gradient-to-br from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 text-white font-extrabold text-3xl py-8 rounded-2xl border-4 border-green-300 transition-all text-center shadow-lg transform hover:-translate-y-1 peer-focus-visible:ring-4 peer-focus-visible:ring-green-400 flex flex-col items-center justify-center gap-2">
-                        <span class="text-5xl">📸</span>
+                        <span class="text-5xl" aria-hidden="true">📸</span>
                         Snap Photo
                     </label>
 
                     <!-- Secondary Upload Gallery Button -->
                     <input type="file" id="imageUpload" accept="image/*" class="sr-only peer">
                     <label for="imageUpload" class="w-full cursor-pointer bg-pink-100 hover:bg-pink-200 text-pink-800 font-semibold text-lg py-3 rounded-xl border-2 border-pink-300 transition-colors text-center shadow-sm peer-focus-visible:ring-4 peer-focus-visible:ring-pink-400">
-                        📁 Upload from Gallery
+                        <span aria-hidden="true">📁</span> Upload from Gallery
                     </label>
                 </div>
+                <p id="dragPasteHint" class="text-sm text-center text-gray-600 font-medium mt-6"><span aria-hidden="true">💡</span> Pro tip: You can also drag & drop or paste an image here.</p>
                 <p id="fileError" class="hidden text-red-600 font-medium mt-3" role="alert">Please select or take an image first.</p>
             </fieldset>
 
@@ -70,12 +71,12 @@
             </div>
 
             <button id="submitBtn" type="submit" class="w-full flex justify-center items-center gap-3 bg-gradient-to-r from-pink-500 to-green-500 text-white font-bold text-2xl py-5 rounded-2xl hover:from-pink-600 hover:to-green-600 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1 focus:outline-none focus-visible:ring-4 focus-visible:ring-green-400 focus-visible:ring-offset-2 focus-visible:ring-offset-pink-50">
-                <span>Analyze Meal ✨</span>
+                <span>Analyze Meal <span aria-hidden="true">✨</span></span>
             </button>
         </form>
 
         <div id="loading" role="status" aria-live="polite" class="text-2xl text-pink-600 italic font-medium text-center mt-10 animate-pulse">
-            Analyzing your meal... 🌸 Please wait.
+            Analyzing your meal... <span aria-hidden="true">🌸</span> Please wait.
         </div>
         <div id="result" tabindex="-1" aria-live="polite" class="mt-10 bg-green-50 text-green-900 p-8 rounded-2xl border-2 border-green-200 text-xl md:text-2xl leading-relaxed whitespace-pre-wrap shadow-inner font-medium focus:outline-none focus-visible:ring-4 focus-visible:ring-green-400"></div>
     </div>
@@ -219,7 +220,7 @@
             submitBtn.disabled = false;
             submitBtn.classList.remove('opacity-70', 'cursor-not-allowed');
             submitBtn.classList.add('hover:-translate-y-1', 'hover:shadow-xl', 'hover:from-pink-600', 'hover:to-green-600');
-            submitBtn.innerHTML = '<span>Analyze Meal ✨</span>';
+            submitBtn.innerHTML = '<span>Analyze Meal <span aria-hidden="true">✨</span></span>';
         }
 
         function handleBackendResponse(data) {
