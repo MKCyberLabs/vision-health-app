@@ -61,3 +61,7 @@
 ## 2026-06-30 - Move Focus and Scroll to Asynchronous Results
 **Learning:** When asynchronously appending new dynamic content (like a large analysis result container at the bottom of the page) and hiding the loading indicator, the new content might render off-screen for mobile users. Furthermore, keyboard and screen reader users aren't automatically aware of the newly rendered content, losing context.
 **Action:** Always automatically scroll the new content into view (e.g., using `scrollIntoView({ behavior: 'smooth' })`) and explicitly move keyboard focus to it (using `.focus()` with `tabindex="-1"` and `focus:outline-none`) to ensure visibility and maintain context.
+
+## 2024-05-23 - Add Helper Text for Hidden Interactions
+**Learning:** Hidden interaction patterns (like drag-and-drop or pasting from the clipboard) must have visible, accessible helper text (e.g., using `aria-describedby` or `aria-labelledby`) so the features are discoverable to all users.
+**Action:** Always add subtle helper text when implementing drag-and-drop or clipboard paste features for file uploads.
