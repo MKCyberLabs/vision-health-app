@@ -217,3 +217,8 @@
 **Vulnerability:** The Express.js backend applied a custom rate limit based on strict string equality (`req.path === '/analyze'`). However, Express routing is case-insensitive and ignores trailing slashes by default. An attacker could bypass the rate limit by sending requests to `/aNaLyZe` or `/analyze/`, leading to a Denial of Service.
 **Learning:** Default Express route handlers match flexibly (case-insensitive, optional trailing slash), but `req.path` reflects the exact parsed path string. Relying on strict equality without path normalization for security controls like rate limiting or authentication can easily lead to bypass vulnerabilities.
 **Prevention:** Always normalize the request path (e.g., `req.path.toLowerCase().replace(/\/$/, '')`) when implementing custom route-matching logic in Express middleware for security controls. Alternatively, apply security middleware directly to the route definitions (`app.post('/analyze', rateLimiter, handler)`) instead of globally, to inherit Express's built-in matching logic.
+
+## 2024-10-27 - Missing Timeout on Server-to-Server Requests
+**Vulnerability:** Missing timeouts on native `fetch` requests to downstream internal services, which could lead to resource exhaustion (DoS) if the downstream service hangs.
+**Learning:** Native `fetch` in Node.js does not time out by default. If the downstream server stops responding, the request hangs indefinitely, consuming connections and memory on the gateway.
+**Prevention:** Always include `signal: AbortSignal.timeout(ms)` in `fetch` options to ensure requests eventually time out.
