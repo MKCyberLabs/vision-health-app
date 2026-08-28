@@ -137,6 +137,7 @@ app.post('/analyze', upload.single('image'), async (req, res) => {
                 message: data.message
             });
         } else if (data.status === "success") {
+            if (imagePath) cleanupFileAsync(imagePath); // 🛡️ Sentinel: Clean up file on success to prevent disk exhaustion DoS
             return res.json({
                 status: "success",
                 result: data.response
