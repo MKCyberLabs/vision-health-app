@@ -61,3 +61,7 @@
 ## 2026-06-30 - Move Focus and Scroll to Asynchronous Results
 **Learning:** When asynchronously appending new dynamic content (like a large analysis result container at the bottom of the page) and hiding the loading indicator, the new content might render off-screen for mobile users. Furthermore, keyboard and screen reader users aren't automatically aware of the newly rendered content, losing context.
 **Action:** Always automatically scroll the new content into view (e.g., using `scrollIntoView({ behavior: 'smooth' })`) and explicitly move keyboard focus to it (using `.focus()` with `tabindex="-1"` and `focus:outline-none`) to ensure visibility and maintain context.
+
+## 2026-08-28 - Decorative Emoji Accessibility
+**Learning:** Emojis used for purely decorative purposes (such as 🌸, 📸, 📁, ✨, 💡) are announced literally by screen readers, causing unnecessary noise and cluttering the auditory user experience.
+**Action:** Wrap decorative emojis in `<span aria-hidden="true">` so they are visually rendered for sighted users while remaining hidden from assistive technologies.

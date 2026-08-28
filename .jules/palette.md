@@ -115,3 +115,7 @@
 ## 2024-07-22 - Discoverability of Hidden Interactions and Paste UX
 **Learning:** Hidden interaction patterns like drag-and-drop or pasting from the clipboard are powerful UX tools, but they are completely invisible to users unless explicitly stated. Additionally, global paste listeners can inadvertently break text entry workflows if they intercept paste events inside inputs or textareas.
 **Action:** When implementing hidden interaction patterns, always add visible, accessible helper text (e.g., using `aria-describedby`) to make the features discoverable. Furthermore, when adding global paste event listeners, explicitly check the event target (e.target.tagName !== 'INPUT' and e.target.tagName !== 'TEXTAREA') to ignore events meant for standard text entry.
+
+## 2026-08-28 - Decorative Emoji Accessibility
+**Learning:** Emojis used for purely decorative purposes (such as 🌸, 📸, 📁, ✨, 💡) are announced literally by screen readers, causing unnecessary noise and cluttering the auditory user experience.
+**Action:** Wrap decorative emojis in `<span aria-hidden="true">` so they are visually rendered for sighted users while remaining hidden from assistive technologies.

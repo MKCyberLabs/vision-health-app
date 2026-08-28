@@ -33,7 +33,7 @@ setInterval(() => {
             rateLimitMap.delete(ip);
         }
     }
-}, RATE_LIMIT_WINDOW);
+}, RATE_LIMIT_WINDOW).unref();
 
 app.use((req, res, next) => {
     const normalizedPath = req.path.toLowerCase().replace(/\/+$/, '');
@@ -116,7 +116,8 @@ app.post('/analyze', upload.single('image'), async (req, res) => {
             body: JSON.stringify({
                 message: prompt,
                 image_path: imagePath
-            })
+            }),
+            signal: AbortSignal.timeout(310000)
         });
 
         if (!response.ok) {
@@ -150,6 +151,14 @@ app.post('/analyze', upload.single('image'), async (req, res) => {
     } catch (err) {
         if (imagePath) cleanupFileAsync(imagePath); // ⚡ Bolt Optimization: Non-blocking async file cleanup
         console.error("Error communicating with Flask API:", err);
+
+        if (err.name === 'TimeoutError') {
+            return res.status(504).json({
+                status: "error",
+                message: "Gateway Timeout: Flask API did not respond in time."
+            });
+        }
+
         return res.status(500).json({
             status: "error",
             message: `Failed to connect to Flask API: ${err.message}`
@@ -182,7 +191,8 @@ app.post('/reply', async (req, res) => {
             body: JSON.stringify({
                 session_id: sessionId,
                 answer: answer
-            })
+            }),
+            signal: AbortSignal.timeout(310000)
         });
 
         if (!response.ok) {
@@ -213,6 +223,14 @@ app.post('/reply', async (req, res) => {
         }
     } catch (err) {
         console.error("Error communicating with Flask API during reply:", err);
+
+        if (err.name === 'TimeoutError') {
+            return res.status(504).json({
+                status: "error",
+                message: "Gateway Timeout: Flask API did not respond in time."
+            });
+        }
+
         return res.status(500).json({
             status: "error",
             message: `Failed to connect to Flask API: ${err.message}`
