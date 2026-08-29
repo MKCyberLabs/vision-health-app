@@ -65,3 +65,7 @@
 ## 2026-08-28 - Decorative Emoji Accessibility
 **Learning:** Emojis used for purely decorative purposes (such as 🌸, 📸, 📁, ✨, 💡) are announced literally by screen readers, causing unnecessary noise and cluttering the auditory user experience.
 **Action:** Wrap decorative emojis in `<span aria-hidden="true">` so they are visually rendered for sighted users while remaining hidden from assistive technologies.
+
+## 2024-11-26 - Decorative SVG and Emoji Accessibility
+**Learning:** Decorative SVG icons and emojis (like ⚠️) that add visual flair but convey no additional meaning beyond the surrounding text are often announced literally by screen readers (e.g., "Warning sign"), causing unnecessary noise and cluttering the auditory user experience.
+**Action:** Always add `aria-hidden="true"` to purely decorative `<svg>` elements. For decorative text elements like emojis, wrap them in `<span aria-hidden="true">` so they are visually rendered for sighted users while remaining hidden from assistive technologies.
