@@ -65,3 +65,7 @@
 ## 2026-08-28 - Decorative Emoji Accessibility
 **Learning:** Emojis used for purely decorative purposes (such as 🌸, 📸, 📁, ✨, 💡) are announced literally by screen readers, causing unnecessary noise and cluttering the auditory user experience.
 **Action:** Wrap decorative emojis in `<span aria-hidden="true">` so they are visually rendered for sighted users while remaining hidden from assistive technologies.
+
+## 2024-10-27 - Keyboard Shortcuts for Common Dismiss Actions
+**Learning:** Users often instinctively press the `Escape` key to cancel or dismiss contextual views, such as an image preview. Without this shortcut, keyboard users are forced to manually tab to the clear button, increasing friction.
+**Action:** Implement `Escape` key event listeners for dismissible previews, ensure focus is handled correctly upon dismissal, and update the associated clear button's `aria-label` and `title` attributes to advertise the shortcut (e.g., "Clear image (Esc)").
