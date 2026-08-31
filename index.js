@@ -35,28 +35,26 @@ setInterval(() => {
     }
 }, RATE_LIMIT_WINDOW).unref();
 
-app.use((req, res, next) => {
-    const normalizedPath = req.path.toLowerCase().replace(/\/+$/, '');
-    if (normalizedPath === '/analyze' || normalizedPath === '/reply') {
-        const ip = req.ip;
-        const now = Date.now();
-        const limitData = rateLimitMap.get(ip) || { count: 0, resetTime: now + RATE_LIMIT_WINDOW };
+const rateLimiter = (req, res, next) => {
+    const ip = req.ip;
+    const now = Date.now();
+    const limitData = rateLimitMap.get(ip) || { count: 0, resetTime: now + RATE_LIMIT_WINDOW };
 
-        if (now > limitData.resetTime) {
-            limitData.count = 1;
-            limitData.resetTime = now + RATE_LIMIT_WINDOW;
-        } else {
-            limitData.count++;
-        }
-
-        rateLimitMap.set(ip, limitData);
-
-        if (limitData.count > MAX_REQUESTS) {
-            return res.status(429).json({ error: "Too many requests, please try again later." });
-        }
+    if (now > limitData.resetTime) {
+        limitData.count = 1;
+        limitData.resetTime = now + RATE_LIMIT_WINDOW;
+    } else {
+        limitData.count++;
     }
+
+    rateLimitMap.set(ip, limitData);
+
+    if (limitData.count > MAX_REQUESTS) {
+        return res.status(429).json({ error: "Too many requests, please try again later." });
+    }
+
     next();
-});
+};
 
 const upload = multer({
     dest: 'temp/',
@@ -79,7 +77,7 @@ const cleanupFileAsync = (filePath) => {
     });
 };
 
-app.post('/analyze', upload.single('image'), async (req, res) => {
+app.post('/analyze', rateLimiter, upload.single('image'), async (req, res) => {
     if (!req.file) return res.status(400).json({ error: "No image file provided." });
 
     const imagePath = req.file.path;
@@ -166,7 +164,7 @@ app.post('/analyze', upload.single('image'), async (req, res) => {
     }
 });
 
-app.post('/reply', async (req, res) => {
+app.post('/reply', rateLimiter, async (req, res) => {
     const { sessionId, answer } = req.body;
     if (!sessionId) return res.status(400).json({ error: "Session ID is required." });
     if (typeof answer !== 'string' || !['y', 'n'].includes(answer.toLowerCase())) {
