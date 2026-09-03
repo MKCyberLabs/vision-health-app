@@ -1,0 +1,4 @@
+## 2026-08-31 - Express Path Normalization Bypass
+**Vulnerability:** The rate limiting middleware could be bypassed by sending requests with extra slashes (e.g., `//analyze`).
+**Learning:** This occurred because the rate limiter relied on a custom global `app.use` middleware with simple string matching against `req.path`. The custom normalizer (`req.path.toLowerCase().replace(/\/+$/, '')`) failed to handle leading double slashes, allowing malicious requests to evade the rate limiter while still reaching the intended route, potentially causing DoS.
+**Prevention:** To avoid path normalization discrepancies and ensure robust security, middleware (like rate limiters) should be applied directly to the specific Express route definitions (e.g., `app.post('/analyze', rateLimiter, handler)`). Express's built-in router handles path parsing inherently correctly, preventing these types of bypasses.
