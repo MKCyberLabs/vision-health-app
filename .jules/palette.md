@@ -8,6 +8,10 @@
 **Learning:** When providing input hints to convey expected formats, relying solely on the `placeholder` attribute is a poor UX practice because it disappears upon typing and often fails contrast guidelines, leaving users without context once they start filling the field.
 **Action:** Use a dedicated, visible description element (e.g., `<p>`) for hints and explicitly link it to the input field using `aria-describedby` to ensure context remains visible and screen readers announce it properly.
 
+## 2024-05-25 - Hiding Decorative SVGs from Screen Readers
+**Learning:** Inline SVG elements, especially those used for icons or loading spinners, can cause verbose or confusing announcements by screen readers if they are not explicitly hidden.
+**Action:** Always add `aria-hidden="true"` to purely decorative `<svg>` elements or wrap them in `<span aria-hidden="true">` to ensure screen readers ignore them and rely on the accompanying text or `aria-label`.
+
 ## 2024-07-11 - Accessible Offline Banners
 **Learning:** Dynamically appearing status banners like offline connection notifications need proper ARIA roles to be announced by screen readers when their state changes.
 **Action:** Ensure dynamically appearing status banners include `role="alert"` and `aria-live="assertive"` attributes, and dynamically toggle `aria-hidden` via JavaScript ('false' when visible, 'true' when hidden) so that their presence and state changes are immediately announced to users relying on assistive technologies.
