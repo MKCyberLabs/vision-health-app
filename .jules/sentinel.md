@@ -222,3 +222,8 @@
 **Vulnerability:** External `fetch` calls to the backend API (`/ask`, `/reply`) did not define a request timeout or abort signal, meaning slow or hanging responses could leave Node.js event loop sockets indefinitely open, exhausting available file descriptors and leading to Denial of Service (DoS).
 **Learning:** Native `fetch` in Node.js does not specify a default timeout. Network blips, hung connections, or deadlocked downstream microservices will cause fetch promises to hang forever unless bound to a timeout signal.
 **Prevention:** Always provide an explicit timeout using `AbortSignal.timeout(ms)` to outgoing `fetch()` requests and handle `TimeoutError` with appropriate HTTP 504 Gateway Timeout responses.
+
+## 2026-09-02 - Express Path Normalization Rate Limit Bypass
+**Vulnerability:** A global middleware in Express was used for rate limiting, manually checking `req.path.toLowerCase().replace(/\/+$/, '')` against `/analyze` and `/reply`. This could be bypassed using duplicate slashes (e.g. `//analyze`) which bypass the manual check but are correctly resolved by Express route handlers, rendering the rate limiter ineffective.
+**Learning:** Express route definitions natively handle path variations (like duplicate slashes), but `req.path` within global middleware retains the raw, unnormalized path string from the request (minus query params), causing string equality checks to fail maliciously.
+**Prevention:** Always attach security middleware (like rate limiting, authentication) directly to the specific route definitions (e.g. `app.post('/path', rateLimiter, handler)`) instead of relying on manual global string matching.
