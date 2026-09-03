@@ -69,3 +69,7 @@
 ## 2024-10-27 - Keyboard Shortcuts for Common Dismiss Actions
 **Learning:** Users often instinctively press the `Escape` key to cancel or dismiss contextual views, such as an image preview. Without this shortcut, keyboard users are forced to manually tab to the clear button, increasing friction.
 **Action:** Implement `Escape` key event listeners for dismissible previews, ensure focus is handled correctly upon dismissal, and update the associated clear button's `aria-label` and `title` attributes to advertise the shortcut (e.g., "Clear image (Esc)").
+
+## 2024-11-20 - Decorative SVG Accessibility
+**Learning:** Purely decorative `<svg>` elements (like icons inside buttons or error messages) can be announced literally by screen readers, creating unnecessary noise.
+**Action:** Always add `aria-hidden="true"` to decorative `<svg>` elements so they are visually rendered for sighted users but hidden from assistive technologies.
