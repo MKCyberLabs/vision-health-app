@@ -35,7 +35,7 @@ setInterval(() => {
     }
 }, RATE_LIMIT_WINDOW).unref();
 
-const rateLimitMiddleware = (req, res, next) => {
+const rateLimiter = (req, res, next) => {
     const ip = req.ip;
     const now = Date.now();
     const limitData = rateLimitMap.get(ip) || { count: 0, resetTime: now + RATE_LIMIT_WINDOW };
@@ -52,6 +52,7 @@ const rateLimitMiddleware = (req, res, next) => {
     if (limitData.count > MAX_REQUESTS) {
         return res.status(429).json({ error: "Too many requests, please try again later." });
     }
+
     next();
 };
 
@@ -76,7 +77,7 @@ const cleanupFileAsync = (filePath) => {
     });
 };
 
-app.post('/analyze', rateLimitMiddleware, upload.single('image'), async (req, res) => {
+app.post('/analyze', rateLimiter, upload.single('image'), async (req, res) => {
     if (!req.file) return res.status(400).json({ error: "No image file provided." });
 
     const imagePath = req.file.path;
@@ -163,7 +164,7 @@ app.post('/analyze', rateLimitMiddleware, upload.single('image'), async (req, re
     }
 });
 
-app.post('/reply', rateLimitMiddleware, async (req, res) => {
+app.post('/reply', rateLimiter, async (req, res) => {
     const { sessionId, answer } = req.body;
     if (!sessionId) return res.status(400).json({ error: "Session ID is required." });
     if (typeof answer !== 'string' || !['y', 'n'].includes(answer.toLowerCase())) {
