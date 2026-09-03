@@ -108,7 +108,12 @@ def handle_cli_interaction(child, session_id, host_image_path):
                 del active_sessions[session_id]
                 child.close(force=True)
             
-            # Image remains on the host for the frontend to serve
+            # 🛡️ Sentinel: Clean up the image now that interaction is complete to prevent disk exhaustion DoS
+            if host_image_path and os.path.exists(host_image_path):
+                try:
+                    os.remove(host_image_path)
+                except Exception as e:
+                    app.logger.warning("Failed to remove image on success: %s", e)
 
             return jsonify({"status": "success", "response": output})
             

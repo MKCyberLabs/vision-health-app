@@ -1,3 +1,8 @@
+## 2024-10-28 - Disk Space Exhaustion DoS via Missing Success Cleanup
+**Vulnerability:** The application was intentionally leaving uploaded images in the `temp/` directory after successfully processing them (status `"success"`), operating under the incorrect assumption that the frontend would request the images from the server to serve them. In reality, the frontend uses local `URL.createObjectURL(file)` to preview images. By continually leaving up to 5MB images on disk indefinitely after successful operations, an attacker (or regular usage over time) could rapidly exhaust the server's disk space, leading to a Denial of Service (DoS).
+**Learning:** File lifecycle management is critical for security and system stability. Endpoints handling temporary files must ensure those files are strictly deleted in ALL code paths (success, error, timeout, and exceptions) unless long-term storage is explicitly intended and managed with quotas.
+**Prevention:** Always implement explicit cleanup mechanisms (like `os.remove` or `fs.unlink`) across all termination branches of request handlers processing files to prevent temporary files from leaking and causing storage exhaustion DoS attacks.
+
 ## 2026-08-31 - Express Path Normalization Bypass
 **Vulnerability:** The rate limiting middleware could be bypassed by sending requests with extra slashes (e.g., `//analyze`).
 **Learning:** This occurred because the rate limiter relied on a custom global `app.use` middleware with simple string matching against `req.path`. The custom normalizer (`req.path.toLowerCase().replace(/\/+$/, '')`) failed to handle leading double slashes, allowing malicious requests to evade the rate limiter while still reaching the intended route, potentially causing DoS.
