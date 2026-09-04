@@ -62,8 +62,9 @@
                 <p id="weight-hint" class="text-sm text-gray-600 mb-3 font-medium">e.g., 100g, 1 slice, 2 cups</p>
                 <div class="relative">
                     <input type="text" id="weight" maxlength="50" aria-describedby="weight-hint weight-counter" class="w-full text-xl p-4 pb-8 border-2 border-pink-200 rounded-xl focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-200 transition-all text-gray-700">
-                    <div id="weight-counter" class="absolute bottom-2 right-4 text-xs text-gray-400 font-medium" aria-live="polite">0/50</div>
+                    <div id="weight-counter" class="absolute bottom-2 right-4 text-xs text-gray-400 font-medium">0/50</div>
                 </div>
+                <div id="weight-limit-warning" class="sr-only" aria-live="polite"></div>
             </div>
 
             <div id="formError" tabindex="-1" role="alert" aria-live="assertive" class="hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400 text-red-600 font-medium text-lg mt-2 mb-4 bg-red-50 p-4 rounded-xl border border-red-200 flex items-center gap-2 shadow-sm">
@@ -186,15 +187,18 @@
             if (dt.files && dt.files.length > 0) handleFileSelect({ target: { files: dt.files } });
         }, false);
 
+        const weightLimitWarning = document.getElementById('weight-limit-warning');
         weightInput.addEventListener('input', (e) => {
             const currentLength = e.target.value.length;
             weightCounter.textContent = `${currentLength}/50`;
             if (currentLength >= 50) {
                 weightCounter.classList.add('text-red-500');
                 weightCounter.classList.remove('text-gray-400');
+                weightLimitWarning.textContent = "Maximum character limit of 50 reached.";
             } else {
                 weightCounter.classList.add('text-gray-400');
                 weightCounter.classList.remove('text-red-500');
+                weightLimitWarning.textContent = "";
             }
         });
 
