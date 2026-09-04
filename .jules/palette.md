@@ -123,3 +123,7 @@
 ## 2026-08-28 - Decorative Emoji Accessibility
 **Learning:** Emojis used for purely decorative purposes (such as 🌸, 📸, 📁, ✨, 💡) are announced literally by screen readers, causing unnecessary noise and cluttering the auditory user experience.
 **Action:** Wrap decorative emojis in `<span aria-hidden="true">` so they are visually rendered for sighted users while remaining hidden from assistive technologies.
+
+## 2026-09-03 - Frontend Character Limits for Backend Constraints
+**Learning:** When a backend endpoint enforces a maximum length constraint on a text field (e.g., a 50-character limit on a portion size), failing to enforce this limit on the frontend leads to a frustrating user experience where the user only discovers the error after submitting the form.
+**Action:** Always add a corresponding `maxlength` attribute to the frontend input and include a visual character counter so users are aware of the limit before they submit the form.
