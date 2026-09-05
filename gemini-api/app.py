@@ -3,6 +3,7 @@ import pexpect
 import uuid
 from flask import Flask, request, jsonify
 import shutil
+import time
 from dotenv import load_dotenv
 
 # Load environment variables from .env if present
@@ -51,6 +52,26 @@ from werkzeug.exceptions import HTTPException
 # Dictionary to hold live CLI processes and metadata in RAM
 active_sessions = {}
 
+@app.before_request
+def cleanup_stale_sessions():
+    now = time.time()
+    stale_ids = [sid for sid, data in list(active_sessions.items()) if now - data.get('timestamp', now) > 300]
+    for sid in stale_ids:
+        session_data = active_sessions.pop(sid, None)
+        if session_data:
+            child = session_data.get("child")
+            if child and child.isalive():
+                try:
+                    child.close(force=True)
+                except Exception:
+                    pass
+            host_image_path = session_data.get("image_path")
+            if host_image_path and os.path.exists(host_image_path):
+                try:
+                    os.remove(host_image_path)
+                except Exception:
+                    pass
+
 @app.errorhandler(Exception)
 def handle_exception(e):
     # Pass through HTTP errors to standard handlers if they are configured
@@ -92,7 +113,8 @@ def handle_cli_interaction(child, session_id, host_image_path):
             # The CLI is paused and asking a question. Save the live session.
             active_sessions[session_id] = {
                 "child": child,
-                "image_path": host_image_path
+                "image_path": host_image_path,
+                "timestamp": time.time()
             }
             return jsonify({
                 "status": "needs_approval", 

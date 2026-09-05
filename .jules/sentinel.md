@@ -227,3 +227,8 @@
 **Vulnerability:** A global middleware in Express was used for rate limiting, manually checking `req.path.toLowerCase().replace(/\/+$/, '')` against `/analyze` and `/reply`. This could be bypassed using duplicate slashes (e.g. `//analyze`) which bypass the manual check but are correctly resolved by Express route handlers, rendering the rate limiter ineffective.
 **Learning:** Express route definitions natively handle path variations (like duplicate slashes), but `req.path` within global middleware retains the raw, unnormalized path string from the request (minus query params), causing string equality checks to fail maliciously.
 **Prevention:** Always attach security middleware (like rate limiting, authentication) directly to the specific route definitions (e.g. `app.post('/path', rateLimiter, handler)`) instead of relying on manual global string matching.
+
+## 2026-09-05 - DoS via Abandoned Interactive Sessions
+**Vulnerability:** The Flask backend stored active `pexpect` child processes in an `active_sessions` dictionary while waiting for user approval (via the `/reply` endpoint). If a user abandoned the request and never replied, the child process would remain alive indefinitely, leading to resource exhaustion (DoS).
+**Learning:** Storing stateful, long-running objects (like OS processes or file handles) in memory while waiting for external user interaction requires a robust expiration mechanism. Without it, attackers or normal user abandonment can trivially exhaust server resources.
+**Prevention:** Always implement a time-to-live (TTL) and a background cleanup mechanism for any in-memory session state, especially those tying up heavy system resources like child processes.
