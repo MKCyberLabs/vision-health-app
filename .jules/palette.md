@@ -127,3 +127,7 @@
 ## 2026-09-03 - Frontend Character Limits for Backend Constraints
 **Learning:** When a backend endpoint enforces a maximum length constraint on a text field (e.g., a 50-character limit on a portion size), failing to enforce this limit on the frontend leads to a frustrating user experience where the user only discovers the error after submitting the form.
 **Action:** Always add a corresponding `maxlength` attribute to the frontend input and include a visual character counter so users are aware of the limit before they submit the form.
+
+## 2026-09-06 - Color Contrast for Secondary Text Elements
+**Learning:** Secondary UI elements like character counters often use low-contrast utility classes (e.g., `text-gray-400` or `text-red-500`) on light backgrounds, which fail WCAG AA accessibility standards.
+**Action:** Use darker shades like `text-gray-600` or `text-red-600` to ensure a minimum 4.5:1 contrast ratio, maintaining readability for all users while preserving the visual hierarchy.
