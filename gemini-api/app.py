@@ -1,6 +1,8 @@
 import os
 import pexpect
 import uuid
+import time
+import threading
 from flask import Flask, request, jsonify
 import shutil
 from dotenv import load_dotenv
@@ -51,6 +53,34 @@ from werkzeug.exceptions import HTTPException
 # Dictionary to hold live CLI processes and metadata in RAM
 active_sessions = {}
 
+def cleanup_stale_sessions():
+    while True:
+        try:
+            current_time = time.time()
+            for sid, data in list(active_sessions.items()):
+                if current_time - data.get("timestamp", 0) > 300: # 5 minutes TTL
+                    app.logger.warning(f"Cleaning up stale session: {sid}")
+                    child = data.get("child")
+                    if child and child.isalive():
+                        try:
+                            child.close(force=True)
+                        except Exception:
+                            pass
+                    host_image_path = data.get("image_path")
+                    if host_image_path and os.path.exists(host_image_path):
+                        try:
+                            os.remove(host_image_path)
+                        except Exception:
+                            pass
+                    active_sessions.pop(sid, None)
+        except Exception as e:
+            app.logger.error(f"Error in background cleanup loop: {e}")
+        time.sleep(60)
+
+# Start background cleanup thread
+cleanup_thread = threading.Thread(target=cleanup_stale_sessions, daemon=True)
+cleanup_thread.start()
+
 @app.errorhandler(Exception)
 def handle_exception(e):
     # Pass through HTTP errors to standard handlers if they are configured
@@ -92,7 +122,8 @@ def handle_cli_interaction(child, session_id, host_image_path):
             # The CLI is paused and asking a question. Save the live session.
             active_sessions[session_id] = {
                 "child": child,
-                "image_path": host_image_path
+                "image_path": host_image_path,
+                "timestamp": time.time()
             }
             return jsonify({
                 "status": "needs_approval", 

@@ -227,3 +227,8 @@
 **Vulnerability:** A global middleware in Express was used for rate limiting, manually checking `req.path.toLowerCase().replace(/\/+$/, '')` against `/analyze` and `/reply`. This could be bypassed using duplicate slashes (e.g. `//analyze`) which bypass the manual check but are correctly resolved by Express route handlers, rendering the rate limiter ineffective.
 **Learning:** Express route definitions natively handle path variations (like duplicate slashes), but `req.path` within global middleware retains the raw, unnormalized path string from the request (minus query params), causing string equality checks to fail maliciously.
 **Prevention:** Always attach security middleware (like rate limiting, authentication) directly to the specific route definitions (e.g. `app.post('/path', rateLimiter, handler)`) instead of relying on manual global string matching.
+
+## 2026-09-06 - Missing TTL on Stateful Interactive Sessions
+**Vulnerability:** The Python Flask backend maintained interactive CLI sessions in RAM via `active_sessions` but lacked a Time-To-Live (TTL) or cleanup mechanism. If a user abandoned a session while the CLI prompted for a reply, the `pexpect` child process, associated file descriptors, and uploaded image files would remain indefinitely on the server, leading to Resource Exhaustion and Denial of Service (DoS).
+**Learning:** Storing stateful processes in memory without a strict eviction policy guarantees resource leaks over time. Network timeouts or user abandonment must always be handled gracefully by a background cleanup loop.
+**Prevention:** Always implement a TTL and a background cleanup mechanism when maintaining stateful sessions or spawned processes in memory.
