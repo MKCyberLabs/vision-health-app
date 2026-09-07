@@ -228,7 +228,13 @@
 **Learning:** Express route definitions natively handle path variations (like duplicate slashes), but `req.path` within global middleware retains the raw, unnormalized path string from the request (minus query params), causing string equality checks to fail maliciously.
 **Prevention:** Always attach security middleware (like rate limiting, authentication) directly to the specific route definitions (e.g. `app.post('/path', rateLimiter, handler)`) instead of relying on manual global string matching.
 
+## 2026-09-05 - DoS via Abandoned Interactive Sessions
+**Vulnerability:** The Flask backend stored active `pexpect` child processes in an `active_sessions` dictionary while waiting for user approval (via the `/reply` endpoint). If a user abandoned the request and never replied, the child process would remain alive indefinitely, leading to resource exhaustion (DoS).
+**Learning:** Storing stateful, long-running objects (like OS processes or file handles) in memory while waiting for external user interaction requires a robust expiration mechanism. Without it, attackers or normal user abandonment can trivially exhaust server resources.
+**Prevention:** Always implement a time-to-live (TTL) and a background cleanup mechanism for any in-memory session state, especially those tying up heavy system resources like child processes.
+
 ## 2026-09-06 - Missing TTL on Stateful Interactive Sessions
 **Vulnerability:** The Python Flask backend maintained interactive CLI sessions in RAM via `active_sessions` but lacked a Time-To-Live (TTL) or cleanup mechanism. If a user abandoned a session while the CLI prompted for a reply, the `pexpect` child process, associated file descriptors, and uploaded image files would remain indefinitely on the server, leading to Resource Exhaustion and Denial of Service (DoS).
 **Learning:** Storing stateful processes in memory without a strict eviction policy guarantees resource leaks over time. Network timeouts or user abandonment must always be handled gracefully by a background cleanup loop.
 **Prevention:** Always implement a TTL and a background cleanup mechanism when maintaining stateful sessions or spawned processes in memory.
+
