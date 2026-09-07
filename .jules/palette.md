@@ -131,3 +131,7 @@
 ## 2026-09-05 - Secondary Text Contrast for Character Counters
 **Learning:** Using lighter shades (e.g., `text-gray-400` or `text-red-500`) for secondary UI elements like character counters often fails WCAG contrast guidelines (4.5:1 ratio), making them difficult to read for visually impaired users.
 **Action:** Always use darker, higher contrast shades (e.g., `text-gray-600` and `text-red-600`) for small text and validation counters to ensure they remain legible and accessible.
+
+## 2026-09-06 - Color Contrast for Secondary Text Elements
+**Learning:** Secondary UI elements like character counters often use low-contrast utility classes (e.g., `text-gray-400` or `text-red-500`) on light backgrounds, which fail WCAG AA accessibility standards.
+**Action:** Use darker shades like `text-gray-600` or `text-red-600` to ensure a minimum 4.5:1 contrast ratio, maintaining readability for all users while preserving the visual hierarchy.
