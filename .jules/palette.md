@@ -135,3 +135,7 @@
 ## 2026-09-06 - Color Contrast for Secondary Text Elements
 **Learning:** Secondary UI elements like character counters often use low-contrast utility classes (e.g., `text-gray-400` or `text-red-500`) on light backgrounds, which fail WCAG AA accessibility standards.
 **Action:** Use darker shades like `text-gray-600` or `text-red-600` to ensure a minimum 4.5:1 contrast ratio, maintaining readability for all users while preserving the visual hierarchy.
+
+## 2026-09-07 - Semantic Landmarks and Skip Links
+**Learning:** Using a generic `<div>` for main content and missing a top-level `<h1>` breaks document structure for screen readers. Users navigating by keyboard cannot easily bypass repetitive elements without a skip link.
+**Action:** Always wrap primary content in `<main id="main-content">`, provide a logical heading hierarchy starting with `<h1>`, and include a visually-hidden but focusable skip link at the top of the body pointing to the main container.

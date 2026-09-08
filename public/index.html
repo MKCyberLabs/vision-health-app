@@ -16,13 +16,18 @@
 </head>
 <body class="bg-pink-50 font-sans text-gray-800 antialiased min-h-screen p-4 md:p-8 flex justify-center items-start">
     
+    <!-- Skip to Content Link -->
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:bg-pink-600 focus:text-white focus:px-6 focus:py-3 focus:rounded-xl focus:z-50 focus:outline-none focus:ring-4 focus:ring-pink-300 font-bold transition-all">
+        Skip to main content
+    </a>
+
     <!-- Offline Banner -->
     <div id="offlineBanner" role="alert" aria-live="assertive" aria-hidden="true" class="fixed top-0 left-0 w-full bg-red-500 text-white text-center py-2 font-bold transform -translate-y-full transition-transform duration-300 z-50 shadow-md">
         <span aria-hidden="true">⚠️</span> No Internet Connection. AI Analysis is offline.
     </div>
 
-    <div class="bg-white rounded-3xl shadow-xl border border-pink-100 p-6 md:p-12 w-full max-w-4xl mt-10">
-        <h2 class="text-4xl md:text-5xl font-extrabold text-center text-pink-900 mb-8 tracking-tight"><span aria-hidden="true">🌸</span> AI Health Matrix</h2>
+    <main id="main-content" tabindex="-1" class="bg-white rounded-3xl shadow-xl border border-pink-100 p-6 md:p-12 w-full max-w-4xl mt-10 focus:outline-none">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-center text-pink-900 mb-8 tracking-tight"><span aria-hidden="true">🌸</span> AI Health Matrix</h1>
         <form id="uploadForm" class="space-y-8">
             <fieldset>
                 <legend id="foodImageGroupLabel" class="block text-xl font-semibold text-pink-800 mb-3">Food Image (Required):</legend>
@@ -83,7 +88,7 @@
             Analyzing your meal... <span aria-hidden="true">🌸</span> Please wait.
         </div>
         <div id="result" tabindex="-1" aria-live="polite" class="mt-10 bg-green-50 text-green-900 p-8 rounded-2xl border-2 border-green-200 text-xl md:text-2xl leading-relaxed whitespace-pre-wrap shadow-inner font-medium focus:outline-none focus-visible:ring-4 focus-visible:ring-green-400"></div>
-    </div>
+    </main>
 
     <script>
         const form = document.getElementById('uploadForm');
