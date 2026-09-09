@@ -139,3 +139,7 @@
 ## 2026-09-07 - Semantic Landmarks and Skip Links
 **Learning:** Using a generic `<div>` for main content and missing a top-level `<h1>` breaks document structure for screen readers. Users navigating by keyboard cannot easily bypass repetitive elements without a skip link.
 **Action:** Always wrap primary content in `<main id="main-content">`, provide a logical heading hierarchy starting with `<h1>`, and include a visually-hidden but focusable skip link at the top of the body pointing to the main container.
+
+## 2026-09-09 - Horizontal Shake for Error Feedback
+**Learning:** Using a vertical "bounce" animation to draw attention to form errors feels jarring and inappropriately playful. Users intuitively associate a horizontal "shake" (like shaking a head "no") with a rejected action or validation error.
+**Action:** When animating error states to draw user attention, always use a quick, horizontal shake animation rather than a vertical bounce to provide intuitive, physical feedback.
