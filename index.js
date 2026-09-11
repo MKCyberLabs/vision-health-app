@@ -60,7 +60,9 @@ const upload = multer({
     dest: 'temp/',
     limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
     fileFilter: (req, file, cb) => {
-        if (!file.mimetype.startsWith('image/')) {
+        const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.gif'];
+        const ext = path.extname(file.originalname).toLowerCase();
+        if (!file.mimetype.startsWith('image/') || !allowedExtensions.includes(ext)) {
             return cb(new Error('INVALID_FILE_TYPE'), false);
         }
         cb(null, true);

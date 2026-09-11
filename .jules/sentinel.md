@@ -238,3 +238,7 @@
 **Learning:** Storing stateful processes in memory without a strict eviction policy guarantees resource leaks over time. Network timeouts or user abandonment must always be handled gracefully by a background cleanup loop.
 **Prevention:** Always implement a TTL and a background cleanup mechanism when maintaining stateful sessions or spawned processes in memory.
 
+## 2026-09-10 - File Upload Filter Bypass
+**Vulnerability:** The multer configuration in index.js relied solely on `file.mimetype` to validate uploaded files. Since MIME types are client-provided, an attacker could spoof the MIME type (e.g., setting it to `image/png` while uploading an executable `.sh` file), bypassing the filter.
+**Learning:** When implementing file uploads, client-provided MIME types can be easily spoofed and must not be solely relied upon for security validation.
+**Prevention:** Implement a strict allowlist based on the file extension (e.g., `path.extname(file.originalname)`) in addition to MIME type validation.
