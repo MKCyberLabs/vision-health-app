@@ -12,6 +12,15 @@
         /* Custom styles that can't be purely utility-based or are easier this way */
         #result { display: none; }
         #loading { display: none; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+        .animate-shake {
+            animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+        }
     </style>
 </head>
 <body class="bg-pink-50 font-sans text-gray-800 antialiased min-h-screen p-4 md:p-8 flex justify-center items-start">
@@ -229,8 +238,8 @@
                 formError.focus(); // Shift focus to error message for screen readers and keyboard users
 
                 // Add a gentle shake animation to draw attention
-                formError.classList.add('animate-bounce');
-                setTimeout(() => formError.classList.remove('animate-bounce'), 1000);
+                formError.classList.add('animate-shake');
+                setTimeout(() => formError.classList.remove('animate-shake'), 400);
                 return;
             }
 
