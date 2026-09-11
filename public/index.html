@@ -128,6 +128,8 @@
                     }
                     imagePreview.src = '';
                     previewContainer.classList.add('hidden');
+                    dropZone.classList.remove('hidden');
+                    document.getElementById('dragPasteHint').classList.remove('hidden');
 
                     const fileError = document.getElementById('fileError');
                     fileError.textContent = 'Please select a valid image file.';
@@ -143,6 +145,10 @@
                 // Hide error message if an image was selected
                 document.getElementById('formError').classList.add('hidden');
 
+                // Hide drop zone to reduce clutter
+                dropZone.classList.add('hidden');
+                document.getElementById('dragPasteHint').classList.add('hidden');
+
                 // ⚡ Bolt Optimization: Release previous object URL to prevent memory leaks
                 if (objectUrl) {
                     URL.revokeObjectURL(objectUrl);
@@ -155,6 +161,9 @@
                 imagePreview.src = objectUrl;
                 document.getElementById('fileNameDisplay').textContent = "Selected file: " + file.name;
                 previewContainer.classList.remove('hidden');
+
+                // Move focus to clear image button to maintain keyboard context
+                clearImageBtn.focus();
             }
         }
 
@@ -176,6 +185,11 @@
             imagePreview.src = '';
             document.getElementById('fileNameDisplay').textContent = '';
             previewContainer.classList.add('hidden');
+
+            // Restore drop zone visibility
+            dropZone.classList.remove('hidden');
+            document.getElementById('dragPasteHint').classList.remove('hidden');
+
             imageUpload.value = '';
             imageCamera.value = '';
             imageUpload.focus();
