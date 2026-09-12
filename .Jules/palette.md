@@ -77,3 +77,7 @@
 ## 2026-09-04 - Accessible Character Counters
 **Learning:** Placing aria-live="polite" directly on a character counter creates overwhelming noise for screen reader users by announcing every keystroke. However, completely removing live feedback leaves them unaware when they hit the maximum length limit.
 **Action:** Remove aria-live from the visible character counter element and rely on aria-describedby for initial context. Add a separate, visually-hidden (sr-only) element with aria-live="polite" that only populates text (e.g., "Maximum character limit reached") when the limit is actually hit.
+
+## 2026-09-12 - Accessible Icon Contrast in Error Messages
+**Learning:** The light red-500 color used for icons in error messages fails WCAG color contrast requirements against light backgrounds, making them hard to discern for visually impaired users.
+**Action:** Use darker shades like red-600 for icons in error or alert states to maintain visual feedback while ensuring accessibility.
