@@ -143,3 +143,7 @@
 ## 2026-09-09 - Horizontal Shake for Error Feedback
 **Learning:** Using a vertical "bounce" animation to draw attention to form errors feels jarring and inappropriately playful. Users intuitively associate a horizontal "shake" (like shaking a head "no") with a rejected action or validation error.
 **Action:** When animating error states to draw user attention, always use a quick, horizontal shake animation rather than a vertical bounce to provide intuitive, physical feedback.
+
+## 2026-09-11 - Dynamic Clutter Reduction and Focus Management
+**Learning:** Hiding large UI elements (like drop zones) when they are no longer needed reduces cognitive load and visual clutter, but if the hidden element contained the current keyboard focus, focus is lost, resetting to the top of the document.
+**Action:** When dynamically hiding active UI elements (such as after an image is selected), always explicitly shift focus (using `.focus()`) to the most relevant next logical element (e.g., a "Clear Image" button) to maintain keyboard and screen reader context.
