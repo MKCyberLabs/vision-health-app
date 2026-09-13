@@ -135,9 +135,8 @@ def handle_cli_interaction(child, session_id, host_image_path):
             # Command finished cleanly without asking anything further
             output = (child.before or "").strip()
             # Clean up session as it's now finished
-            if session_id in active_sessions:
-                del active_sessions[session_id]
-                child.close(force=True)
+            active_sessions.pop(session_id, None)
+            child.close(force=True)
             
             # 🛡️ Sentinel: Clean up the image now that interaction is complete to prevent disk exhaustion DoS
             if host_image_path and os.path.exists(host_image_path):
@@ -151,8 +150,7 @@ def handle_cli_interaction(child, session_id, host_image_path):
     except pexpect.TIMEOUT:
         if child and child.isalive():
             child.close(force=True)
-        if session_id in active_sessions:
-            del active_sessions[session_id]
+        active_sessions.pop(session_id, None)
         if host_image_path and os.path.exists(host_image_path):
             try:
                 os.remove(host_image_path)
@@ -167,8 +165,7 @@ def handle_cli_interaction(child, session_id, host_image_path):
         app.logger.exception("Error during handle_cli_interaction: %s", e)
         if child and child.isalive():
             child.close(force=True)
-        if session_id in active_sessions:
-            del active_sessions[session_id]
+        active_sessions.pop(session_id, None)
         if host_image_path and os.path.exists(host_image_path):
             try:
                 os.remove(host_image_path)
@@ -259,8 +256,7 @@ def reply_gemini():
         app.logger.exception("Error during reply_gemini: %s", e)
         if 'child' in locals() and child and child.isalive():
             child.close(force=True)
-        if session_id in active_sessions:
-            del active_sessions[session_id]
+        active_sessions.pop(session_id, None)
         if 'host_image_path' in locals() and host_image_path and os.path.exists(host_image_path):
             try:
                 os.remove(host_image_path)
