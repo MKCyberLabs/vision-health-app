@@ -147,3 +147,7 @@
 ## 2026-09-11 - Dynamic Clutter Reduction and Focus Management
 **Learning:** Hiding large UI elements (like drop zones) when they are no longer needed reduces cognitive load and visual clutter, but if the hidden element contained the current keyboard focus, focus is lost, resetting to the top of the document.
 **Action:** When dynamically hiding active UI elements (such as after an image is selected), always explicitly shift focus (using `.focus()`) to the most relevant next logical element (e.g., a "Clear Image" button) to maintain keyboard and screen reader context.
+
+## 2026-09-13 - Preventing Input Dead Zones with Absolute Elements
+**Learning:** Absolutely positioned elements inside input containers (like character counters or icons) can inadvertently block pointer events on the underlying input field, creating frustrating "dead zones" where clicking fails to focus the input.
+**Action:** Always apply CSS `pointer-events: none` (e.g., the `pointer-events-none` utility class in Tailwind) to visually overlaid but non-interactive secondary elements within form inputs to ensure seamless user interaction.
