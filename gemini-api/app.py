@@ -53,6 +53,13 @@ from werkzeug.exceptions import HTTPException
 # Dictionary to hold live CLI processes and metadata in RAM
 active_sessions = {}
 
+def safe_close_child(child):
+    if child and child.isalive():
+        try:
+            child.close(force=True)
+        except Exception:
+            pass
+
 def cleanup_stale_sessions():
     while True:
         try:
@@ -61,11 +68,7 @@ def cleanup_stale_sessions():
                 if current_time - data.get("timestamp", 0) > 300: # 5 minutes TTL
                     app.logger.warning(f"Cleaning up stale session: {sid}")
                     child = data.get("child")
-                    if child and child.isalive():
-                        try:
-                            child.close(force=True)
-                        except Exception:
-                            pass
+                    safe_close_child(child)
                     host_image_path = data.get("image_path")
                     if host_image_path and os.path.exists(host_image_path):
                         try:
@@ -136,7 +139,7 @@ def handle_cli_interaction(child, session_id, host_image_path):
             output = (child.before or "").strip()
             # Clean up session as it's now finished
             active_sessions.pop(session_id, None)
-            child.close(force=True)
+            safe_close_child(child)
             
             # 🛡️ Sentinel: Clean up the image now that interaction is complete to prevent disk exhaustion DoS
             if host_image_path and os.path.exists(host_image_path):
@@ -148,31 +151,26 @@ def handle_cli_interaction(child, session_id, host_image_path):
             return jsonify({"status": "success", "response": output})
             
     except pexpect.TIMEOUT:
-        if child and child.isalive():
-            child.close(force=True)
+        safe_close_child(child)
         active_sessions.pop(session_id, None)
         if host_image_path and os.path.exists(host_image_path):
             try:
                 os.remove(host_image_path)
             except Exception:
                 pass
-        if child and child.isalive():
-            child.close(force=True)
+        safe_close_child(child)
         return jsonify({"status": "error", "message": "CLI process timed out."}), 504
     except Exception as e:
-        if child and child.isalive():
-            child.close(force=True)
+        safe_close_child(child)
         app.logger.exception("Error during handle_cli_interaction: %s", e)
-        if child and child.isalive():
-            child.close(force=True)
+        safe_close_child(child)
         active_sessions.pop(session_id, None)
         if host_image_path and os.path.exists(host_image_path):
             try:
                 os.remove(host_image_path)
             except Exception:
                 pass
-        if child and child.isalive():
-            child.close(force=True)
+        safe_close_child(child)
         return jsonify({"status": "error", "message": "An internal error occurred."}), 500
 
 @app.route('/ask', methods=['POST'])
@@ -251,19 +249,17 @@ def reply_gemini():
         return handle_cli_interaction(child, session_id, host_image_path)
         
     except Exception as e:
-        if child and child.isalive():
-            child.close(force=True)
+        safe_close_child(child)
         app.logger.exception("Error during reply_gemini: %s", e)
-        if 'child' in locals() and child and child.isalive():
-            child.close(force=True)
+        if 'child' in locals():
+            safe_close_child(child)
         active_sessions.pop(session_id, None)
         if 'host_image_path' in locals() and host_image_path and os.path.exists(host_image_path):
             try:
                 os.remove(host_image_path)
             except Exception:
                 pass
-        if child and child.isalive():
-            child.close(force=True)
+        safe_close_child(child)
         return jsonify({"status": "error", "message": "An internal error occurred."}), 500
 
 
