@@ -151,3 +151,7 @@
 ## 2026-09-13 - Preventing Input Dead Zones with Absolute Elements
 **Learning:** Absolutely positioned elements inside input containers (like character counters or icons) can inadvertently block pointer events on the underlying input field, creating frustrating "dead zones" where clicking fails to focus the input.
 **Action:** Always apply CSS `pointer-events: none` (e.g., the `pointer-events-none` utility class in Tailwind) to visually overlaid but non-interactive secondary elements within form inputs to ensure seamless user interaction.
+
+## 2026-09-14 - Exposing Keyboard Shortcuts Visually
+**Learning:** Hidden keyboard shortcuts (like pressing 'Esc' to clear an image) improve power-user workflow, but they remain undiscoverable unless explicitly communicated in the UI. Screen reader users might hear them in `aria-label`, but sighted keyboard users need a visual cue.
+**Action:** Always add visual `<kbd>` hints (e.g., `<kbd class="hidden md:inline-block">Esc</kbd>`) next to interactive elements that have hidden keyboard shortcuts to make them discoverable. Ensure these visual hints have `aria-hidden="true"` if the information is already conveyed via the element's `aria-label`.
