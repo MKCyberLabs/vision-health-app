@@ -252,3 +252,8 @@
 **Vulnerability:** Closing `pexpect` processes via `child.close(force=True)` can raise unhandled exceptions if the process has already terminated between the `child.isalive()` check and the `close()` call, leading to dropped requests or resource leaks (DoS).
 **Learning:** Checking state before an action in concurrent environments without atomicity leads to race conditions.
 **Prevention:** Wrap cleanup logic like `child.close(force=True)` in a `try...except Exception: pass` block to handle intermediate terminations gracefully.
+
+## 2026-09-16 - File Leak on Needs Approval Status
+**Vulnerability:** In `index.js`, when the Flask backend returns a `needs_approval` status, the Node.js API returned early without calling `cleanupFileAsync(imagePath)` to delete the temporary image file, allowing attackers to exhaust disk space (DoS) by repeatedly uploading files that trigger an approval prompt.
+**Learning:** Temporary files created during request handling must be cleaned up in every possible execution path, including early returns for user interaction or specific business logic states.
+**Prevention:** Ensure file deletion logic is implemented in all execution paths (success, error, and timeout) to prevent disk space exhaustion (DoS) vulnerabilities.

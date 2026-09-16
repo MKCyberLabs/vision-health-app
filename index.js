@@ -131,6 +131,7 @@ app.post('/analyze', rateLimiter, upload.single('image'), async (req, res) => {
 
         const data = await response.json();
         if (data.status === "needs_approval") {
+            if (imagePath) cleanupFileAsync(imagePath); // 🛡️ Sentinel: Clean up file on early return to prevent disk exhaustion DoS
             return res.json({
                 status: "needs_approval",
                 sessionId: data.session_id,
