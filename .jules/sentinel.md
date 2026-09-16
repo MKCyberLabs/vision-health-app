@@ -247,3 +247,8 @@
 **Vulnerability:** In Python multi-threaded environments (like Flask request hooks), checking `if key in dict:` followed by `del dict[key]` is not thread-safe. If a background cleanup thread deletes the key between the check and the deletion, a `KeyError` is raised, potentially leading to unhandled exceptions and dropped requests. Furthermore, deleting keys via `del` in one thread while another is iterating over `list(dict.items())` is generally unsafe without locks.
 **Learning:** Checking for a key and then deleting it is a race condition in multi-threaded applications without explicit locking.
 **Prevention:** Use `dict.pop(key, None)` instead of `del dict[key]` to safely remove elements from a dictionary without raising a `KeyError` if another thread has already removed the key.
+
+## 2026-09-15 - Missing Try-Except Around Process Cleanup
+**Vulnerability:** Closing `pexpect` processes via `child.close(force=True)` can raise unhandled exceptions if the process has already terminated between the `child.isalive()` check and the `close()` call, leading to dropped requests or resource leaks (DoS).
+**Learning:** Checking state before an action in concurrent environments without atomicity leads to race conditions.
+**Prevention:** Wrap cleanup logic like `child.close(force=True)` in a `try...except Exception: pass` block to handle intermediate terminations gracefully.
