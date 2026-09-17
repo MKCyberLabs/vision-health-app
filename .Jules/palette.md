@@ -81,3 +81,7 @@
 ## 2026-09-12 - Accessible Icon Contrast in Error Messages
 **Learning:** The light red-500 color used for icons in error messages fails WCAG color contrast requirements against light backgrounds, making them hard to discern for visually impaired users.
 **Action:** Use darker shades like red-600 for icons in error or alert states to maintain visual feedback while ensuring accessibility.
+
+## 2026-09-16 - Accessible Contrast for Secondary Text Elements
+**Learning:** The light `pink-500` color used for secondary text elements like keyboard shortcut hints (`<kbd>`) on a light background fails WCAG color contrast requirements, making them hard to discern for visually impaired users.
+**Action:** Use darker shades like `pink-700` or `gray-600` for secondary informational text elements on light backgrounds to ensure sufficient color contrast and accessibility.
