@@ -234,6 +234,9 @@
         });
 
         function setLoadingState() {
+            imageCamera.disabled = true;
+            imageUpload.disabled = true;
+            weightInput.disabled = true;
             submitBtn.disabled = true;
             submitBtn.classList.remove('hover:-translate-y-1', 'hover:shadow-xl', 'hover:from-pink-600', 'hover:to-green-600');
             submitBtn.classList.add('opacity-70', 'cursor-not-allowed');
@@ -268,7 +271,6 @@
             resultDiv.style.display = 'none';
             setLoadingState();
 
-            submitBtn.disabled = true;
             submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
             submitBtn.innerHTML = `
                 <svg class="animate-spin -ml-1 mr-3 h-8 w-8 text-white inline-block align-middle" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
@@ -285,6 +287,9 @@
                 restoreSubmitButton();
                 showResult("An error occurred connecting to the server.", true);
             } finally {
+                imageCamera.disabled = false;
+                imageUpload.disabled = false;
+                weightInput.disabled = false;
                 submitBtn.disabled = false;
                 submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
                 submitBtn.innerHTML = originalBtnText;
@@ -292,6 +297,9 @@
         });
 
         function restoreSubmitButton() {
+            imageCamera.disabled = false;
+            imageUpload.disabled = false;
+            weightInput.disabled = false;
             submitBtn.disabled = false;
             submitBtn.classList.remove('opacity-70', 'cursor-not-allowed');
             submitBtn.classList.add('hover:-translate-y-1', 'hover:shadow-xl', 'hover:from-pink-600', 'hover:to-green-600');
