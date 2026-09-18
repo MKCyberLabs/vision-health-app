@@ -85,3 +85,7 @@
 ## 2026-09-16 - Accessible Contrast for Secondary Text Elements
 **Learning:** The light `pink-500` color used for secondary text elements like keyboard shortcut hints (`<kbd>`) on a light background fails WCAG color contrast requirements, making them hard to discern for visually impaired users.
 **Action:** Use darker shades like `pink-700` or `gray-600` for secondary informational text elements on light backgrounds to ensure sufficient color contrast and accessibility.
+
+## 2026-09-17 - Disable Form Inputs During Submission
+**Learning:** When a form is submitted asynchronously, disabling the submit button alone is insufficient UX. Users might attempt to change other inputs (like file uploads or text fields) while waiting, creating confusion if their late changes are ignored.
+**Action:** Always disable all form inputs (e.g., file pickers, text inputs) in addition to the submit button during an asynchronous submission to clearly indicate the form is locked.
