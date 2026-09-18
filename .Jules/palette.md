@@ -89,3 +89,7 @@
 ## 2026-09-17 - Disable Form Inputs During Submission
 **Learning:** When a form is submitted asynchronously, disabling the submit button alone is insufficient UX. Users might attempt to change other inputs (like file uploads or text fields) while waiting, creating confusion if their late changes are ignored.
 **Action:** Always disable all form inputs (e.g., file pickers, text inputs) in addition to the submit button during an asynchronous submission to clearly indicate the form is locked.
+
+## 2026-09-18 - Visual Disabled State for Custom File Inputs
+**Learning:** When using visually hidden `<input type="file" class="sr-only peer">` with custom-styled `<label>` elements, disabling the input programmatically does not automatically update the visual state of the label. Users might try to interact with the seemingly active upload buttons during asynchronous operations, leading to confusion.
+**Action:** Always link the visual disabled state of the custom label to the hidden input's disabled attribute using Tailwind's `peer-disabled` utility classes (e.g., `peer-disabled:opacity-50 peer-disabled:cursor-not-allowed`).
