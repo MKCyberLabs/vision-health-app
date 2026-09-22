@@ -226,10 +226,14 @@
                 weightCounter.classList.add('text-red-600');
                 weightCounter.classList.remove('text-gray-600');
                 weightLimitWarning.textContent = "Maximum character limit of 50 reached.";
+                weightInput.classList.remove('focus:border-green-400', 'focus:ring-green-200', 'border-pink-200');
+                weightInput.classList.add('focus:border-red-500', 'focus:ring-red-200', 'border-red-300');
             } else {
                 weightCounter.classList.add('text-gray-600');
                 weightCounter.classList.remove('text-red-600');
                 weightLimitWarning.textContent = "";
+                weightInput.classList.remove('focus:border-red-500', 'focus:ring-red-200', 'border-red-300');
+                weightInput.classList.add('focus:border-green-400', 'focus:ring-green-200', 'border-pink-200');
             }
         });
 
