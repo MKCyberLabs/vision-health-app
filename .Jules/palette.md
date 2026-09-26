@@ -97,3 +97,7 @@
 ## 2026-09-19 - Visual Disabled State for Text Inputs
 **Learning:** Disabling a text input without applying visual changes leaves users confused as to why they can no longer interact with it. Default disabled styles are often insufficient or missing when using custom Tailwind utility classes.
 **Action:** Always add explicit disabled styles (e.g., `disabled:bg-gray-100 disabled:text-gray-600 disabled:cursor-not-allowed`) to text inputs to clearly convey the locked state visually.
+
+## 2026-09-25 - Programmatically identify invalid input constraints
+**Learning:** When dynamically changing input borders to convey an error state (like reaching a max character limit), screen reader users are left unaware of the invalid state.
+**Action:** Always toggle the `aria-invalid="true"` attribute on form inputs alongside visual validation feedback to programmatically communicate the error state to assistive technologies.
