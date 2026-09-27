@@ -31,7 +31,7 @@
     </a>
 
     <!-- Offline Banner -->
-    <div id="offlineBanner" role="alert" aria-live="assertive" aria-hidden="true" class="fixed top-0 left-0 w-full bg-red-500 text-white text-center py-2 font-bold transform -translate-y-full transition-transform duration-300 z-50 shadow-md">
+    <div id="offlineBanner" role="alert" aria-live="assertive" aria-hidden="true" class="fixed top-0 left-0 w-full bg-red-600 text-white text-center py-2 font-bold transform -translate-y-full transition-transform duration-300 z-50 shadow-md">
         <span aria-hidden="true">⚠️</span> No Internet Connection. AI Analysis is offline.
     </div>
 
@@ -43,7 +43,7 @@
                 <div id="dropZone" class="flex flex-col gap-4 p-4 -m-4 rounded-2xl transition-all border-2 border-transparent" role="group" aria-labelledby="foodImageGroupLabel" aria-describedby="dragPasteHint">
                     <!-- Massive Snap Photo Button -->
                     <input type="file" id="imageCamera" accept="image/*" capture="environment" class="sr-only peer">
-                    <label for="imageCamera" class="w-full cursor-pointer bg-gradient-to-br from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 text-white font-extrabold text-3xl py-8 rounded-2xl border-4 border-green-300 transition-all text-center shadow-lg transform hover:-translate-y-1 peer-focus-visible:ring-4 peer-focus-visible:ring-green-400 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:hover:translate-y-0 peer-disabled:hover:shadow-lg flex flex-col items-center justify-center gap-2">
+                    <label for="imageCamera" class="w-full cursor-pointer bg-gradient-to-br from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-extrabold text-3xl py-8 rounded-2xl border-4 border-green-300 transition-all text-center shadow-lg transform hover:-translate-y-1 peer-focus-visible:ring-4 peer-focus-visible:ring-green-400 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:hover:translate-y-0 peer-disabled:hover:shadow-lg flex flex-col items-center justify-center gap-2">
                         <span class="text-5xl" aria-hidden="true">📸</span>
                         Snap Photo
                     </label>
@@ -91,7 +91,7 @@
                 <span id="formErrorText">Please select or take an image first.</span>
             </div>
 
-            <button id="submitBtn" type="submit" class="w-full flex justify-center items-center gap-3 bg-gradient-to-r from-pink-500 to-green-500 text-white font-bold text-2xl py-5 rounded-2xl hover:from-pink-600 hover:to-green-600 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1 focus:outline-none focus-visible:ring-4 focus-visible:ring-green-400 focus-visible:ring-offset-2 focus-visible:ring-offset-pink-50">
+            <button id="submitBtn" type="submit" class="w-full flex justify-center items-center gap-3 bg-gradient-to-r from-pink-600 to-green-600 text-white font-bold text-2xl py-5 rounded-2xl hover:from-pink-700 hover:to-green-700 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1 focus:outline-none focus-visible:ring-4 focus-visible:ring-green-400 focus-visible:ring-offset-2 focus-visible:ring-offset-pink-50">
                 <span>Analyze Meal <span aria-hidden="true">✨</span></span>
             </button>
         </form>
@@ -244,7 +244,7 @@
             imageUpload.disabled = true;
             weightInput.disabled = true;
             submitBtn.disabled = true;
-            submitBtn.classList.remove('hover:-translate-y-1', 'hover:shadow-xl', 'hover:from-pink-600', 'hover:to-green-600');
+            submitBtn.classList.remove('hover:-translate-y-1', 'hover:shadow-xl', 'hover:from-pink-700', 'hover:to-green-700');
             submitBtn.classList.add('opacity-70', 'cursor-not-allowed');
             submitBtn.innerHTML = `
                 <svg class="animate-spin h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
@@ -308,7 +308,7 @@
             weightInput.disabled = false;
             submitBtn.disabled = false;
             submitBtn.classList.remove('opacity-70', 'cursor-not-allowed');
-            submitBtn.classList.add('hover:-translate-y-1', 'hover:shadow-xl', 'hover:from-pink-600', 'hover:to-green-600');
+            submitBtn.classList.add('hover:-translate-y-1', 'hover:shadow-xl', 'hover:from-pink-700', 'hover:to-green-700');
             submitBtn.innerHTML = '<span>Analyze Meal <span aria-hidden="true">✨</span></span>';
         }
 
@@ -323,8 +323,8 @@
                     <p class="text-yellow-600 mb-4 text-2xl font-bold"><span aria-hidden="true">⚠️</span> System Confirmation Required:</p>
                     <pre id="approvalMessage" class="whitespace-pre-wrap mb-6 font-sans text-xl"></pre>
                     <div class="flex gap-4">
-                        <button id="btnConfirmYes" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl text-xl transition-colors shadow-md focus:outline-none focus-visible:ring-4 focus-visible:ring-green-300 flex justify-center items-center"><span>Confirm (Yes)</span></button>
-                        <button id="btnConfirmNo" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-xl text-xl transition-colors shadow-md focus:outline-none focus-visible:ring-4 focus-visible:ring-red-300 flex justify-center items-center"><span>Cancel (No)</span></button>
+                        <button id="btnConfirmYes" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-xl text-xl transition-colors shadow-md focus:outline-none focus-visible:ring-4 focus-visible:ring-green-300 flex justify-center items-center"><span>Confirm (Yes)</span></button>
+                        <button id="btnConfirmNo" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-4 rounded-xl text-xl transition-colors shadow-md focus:outline-none focus-visible:ring-4 focus-visible:ring-red-300 flex justify-center items-center"><span>Cancel (No)</span></button>
                     </div>
                 `;
                 resultDiv.className = "mt-10 p-8 rounded-2xl border-2 text-xl md:text-2xl leading-relaxed whitespace-pre-wrap shadow-inner font-medium focus:outline-none focus-visible:ring-4 bg-yellow-50 text-yellow-900 border-yellow-200 focus-visible:ring-yellow-400";
