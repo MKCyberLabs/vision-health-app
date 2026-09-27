@@ -101,3 +101,7 @@
 ## 2026-09-25 - Programmatically identify invalid input constraints
 **Learning:** When dynamically changing input borders to convey an error state (like reaching a max character limit), screen reader users are left unaware of the invalid state.
 **Action:** Always toggle the `aria-invalid="true"` attribute on form inputs alongside visual validation feedback to programmatically communicate the error state to assistive technologies.
+
+## 2026-09-26 - Maintain Contextual Loading States
+**Learning:** Hiding an entire interactive container (like a confirmation dialog) and falling back to a global loading spinner causes a jarring layout shift and loss of user context during async operations.
+**Action:** Keep the interactive container visible, disable its form controls to prevent duplicate submissions, and provide inline visual loading feedback (like a spinner on the clicked button) to maintain a seamless UX.

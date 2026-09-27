@@ -323,8 +323,8 @@
                     <p class="text-yellow-600 mb-4 text-2xl font-bold"><span aria-hidden="true">⚠️</span> System Confirmation Required:</p>
                     <pre id="approvalMessage" class="whitespace-pre-wrap mb-6 font-sans text-xl"></pre>
                     <div class="flex gap-4">
-                        <button id="btnConfirmYes" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl text-xl transition-colors shadow-md focus:outline-none focus-visible:ring-4 focus-visible:ring-green-300">Confirm (Yes)</button>
-                        <button id="btnConfirmNo" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-xl text-xl transition-colors shadow-md focus:outline-none focus-visible:ring-4 focus-visible:ring-red-300">Cancel (No)</button>
+                        <button id="btnConfirmYes" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl text-xl transition-colors shadow-md focus:outline-none focus-visible:ring-4 focus-visible:ring-green-300 flex justify-center items-center"><span>Confirm (Yes)</span></button>
+                        <button id="btnConfirmNo" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-xl text-xl transition-colors shadow-md focus:outline-none focus-visible:ring-4 focus-visible:ring-red-300 flex justify-center items-center"><span>Cancel (No)</span></button>
                     </div>
                 `;
                 resultDiv.className = "mt-10 p-8 rounded-2xl border-2 text-xl md:text-2xl leading-relaxed whitespace-pre-wrap shadow-inner font-medium focus:outline-none focus-visible:ring-4 bg-yellow-50 text-yellow-900 border-yellow-200 focus-visible:ring-yellow-400";
@@ -343,8 +343,38 @@
         }
 
         async function sendReply(sessionId, answer) {
-            loading.style.display = 'block';
-            resultDiv.style.display = 'none';
+            const btnYes = document.getElementById('btnConfirmYes');
+            const btnNo = document.getElementById('btnConfirmNo');
+            let originalYesHtml = '';
+            let originalNoHtml = '';
+
+            if (btnYes && btnNo) {
+                originalYesHtml = btnYes.innerHTML;
+                originalNoHtml = btnNo.innerHTML;
+
+                btnYes.disabled = true;
+                btnNo.disabled = true;
+                btnYes.classList.add('opacity-70', 'cursor-not-allowed');
+                btnNo.classList.add('opacity-70', 'cursor-not-allowed');
+
+                const spinner = `
+                    <svg class="animate-spin mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                `;
+
+                if (answer === 'y') {
+                    btnYes.innerHTML = spinner + '<span>Confirming...</span>';
+                } else {
+                    btnNo.innerHTML = spinner + '<span>Canceling...</span>';
+                }
+            } else {
+                // Fallback if buttons aren't found for some reason
+                loading.style.display = 'block';
+                resultDiv.style.display = 'none';
+            }
+
             try {
                 const response = await fetch('/reply', {
                     method: 'POST',
@@ -353,6 +383,14 @@
                 });
                 handleBackendResponse(await response.json());
             } catch (err) {
+                if (btnYes && btnNo) {
+                    btnYes.disabled = false;
+                    btnNo.disabled = false;
+                    btnYes.classList.remove('opacity-70', 'cursor-not-allowed');
+                    btnNo.classList.remove('opacity-70', 'cursor-not-allowed');
+                    btnYes.innerHTML = originalYesHtml;
+                    btnNo.innerHTML = originalNoHtml;
+                }
                 showResult("Failed to send response.", true);
             }
         }
