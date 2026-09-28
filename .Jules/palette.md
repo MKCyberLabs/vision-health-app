@@ -109,3 +109,7 @@
 ## 2026-09-27 - Accessible Gradient and Button Contrast
 **Learning:** Light gradient buttons (like Tailwind's from-green-400 to-green-600 or from-pink-500) and alert banners (bg-red-500) fail WCAG AA color contrast requirements (min 3:1 for large text, 4.5:1 for normal) when paired with white text, making primary actions illegible for visually impaired users.
 **Action:** Always use darker shades (e.g., green-600, pink-600, red-600) for button backgrounds and gradients that contain white text to ensure a minimum accessible contrast ratio.
+
+## 2026-09-28 - Disable Destructive Actions During Submission
+**Learning:** Disabling primary form inputs during an asynchronous submission is good, but leaving secondary destructive actions (like a "Clear Image" button or Escape key shortcut) enabled allows users to break the application state while the submission is in progress.
+**Action:** Always disable secondary destructive actions and their associated keyboard shortcuts during asynchronous operations, and provide clear visual feedback by adding `disabled:opacity-50 disabled:cursor-not-allowed` utility classes to the action buttons.
