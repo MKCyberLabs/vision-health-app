@@ -105,3 +105,7 @@
 ## 2026-09-26 - Maintain Contextual Loading States
 **Learning:** Hiding an entire interactive container (like a confirmation dialog) and falling back to a global loading spinner causes a jarring layout shift and loss of user context during async operations.
 **Action:** Keep the interactive container visible, disable its form controls to prevent duplicate submissions, and provide inline visual loading feedback (like a spinner on the clicked button) to maintain a seamless UX.
+
+## 2026-09-27 - Accessible Gradient and Button Contrast
+**Learning:** Light gradient buttons (like Tailwind's from-green-400 to-green-600 or from-pink-500) and alert banners (bg-red-500) fail WCAG AA color contrast requirements (min 3:1 for large text, 4.5:1 for normal) when paired with white text, making primary actions illegible for visually impaired users.
+**Action:** Always use darker shades (e.g., green-600, pink-600, red-600) for button backgrounds and gradients that contain white text to ensure a minimum accessible contrast ratio.
