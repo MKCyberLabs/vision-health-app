@@ -113,3 +113,7 @@
 ## 2026-09-28 - Disable Destructive Actions During Submission
 **Learning:** Disabling primary form inputs during an asynchronous submission is good, but leaving secondary destructive actions (like a "Clear Image" button or Escape key shortcut) enabled allows users to break the application state while the submission is in progress.
 **Action:** Always disable secondary destructive actions and their associated keyboard shortcuts during asynchronous operations, and provide clear visual feedback by adding `disabled:opacity-50 disabled:cursor-not-allowed` utility classes to the action buttons.
+
+## 2026-09-29 - Prevent Stale State and Enforce Limits Client-Side
+**Learning:** Users can become confused if previous analysis results remain visible after the target image has been cleared or replaced. Furthermore, waiting for a backend 413 Payload Too Large error creates a frustrating delay that could be caught immediately on the client.
+**Action:** Always hide or reset contextual result containers when the primary input (like an image) is modified or cleared. Replicate strict backend size/format limits on the frontend to provide instant, accessible validation feedback.
