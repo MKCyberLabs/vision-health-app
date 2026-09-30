@@ -123,6 +123,9 @@
         function handleFileSelect(event) {
             const file = event.target.files[0];
             if (file) {
+                // Hide previous analysis result
+                resultDiv.style.display = 'none';
+
                 if (!file.type.startsWith('image/')) {
                     selectedFile = null;
                     if (objectUrl) {
@@ -136,6 +139,23 @@
 
                     const fileError = document.getElementById('fileError');
                     fileError.textContent = 'Please select a valid image file.';
+                    fileError.classList.remove('hidden');
+                    return;
+                }
+
+                if (file.size > 5 * 1024 * 1024) {
+                    selectedFile = null;
+                    if (objectUrl) {
+                        URL.revokeObjectURL(objectUrl);
+                        objectUrl = null;
+                    }
+                    imagePreview.src = '';
+                    previewContainer.classList.add('hidden');
+                    dropZone.classList.remove('hidden');
+                    document.getElementById('dragPasteHint').classList.remove('hidden');
+
+                    const fileError = document.getElementById('fileError');
+                    fileError.textContent = 'File too large. Maximum size is 5MB.';
                     fileError.classList.remove('hidden');
                     return;
                 }
@@ -162,7 +182,10 @@
                 // memory as a base64 string, preventing UI jank on large files.
                 objectUrl = URL.createObjectURL(file);
                 imagePreview.src = objectUrl;
-                document.getElementById('fileNameDisplay').textContent = "Selected file: " + file.name;
+
+                // Display file size in MB
+                const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+                document.getElementById('fileNameDisplay').textContent = `Selected file: ${file.name} (${fileSizeMB} MB)`;
                 previewContainer.classList.remove('hidden');
 
                 // Move focus to clear image button to maintain keyboard context
@@ -188,6 +211,7 @@
             imagePreview.src = '';
             document.getElementById('fileNameDisplay').textContent = '';
             previewContainer.classList.add('hidden');
+            resultDiv.style.display = 'none';
 
             // Restore drop zone visibility
             dropZone.classList.remove('hidden');
