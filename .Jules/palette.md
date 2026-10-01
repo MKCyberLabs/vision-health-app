@@ -117,3 +117,7 @@
 ## 2026-09-29 - Prevent Stale State and Enforce Limits Client-Side
 **Learning:** Users can become confused if previous analysis results remain visible after the target image has been cleared or replaced. Furthermore, waiting for a backend 413 Payload Too Large error creates a frustrating delay that could be caught immediately on the client.
 **Action:** Always hide or reset contextual result containers when the primary input (like an image) is modified or cleared. Replicate strict backend size/format limits on the frontend to provide instant, accessible validation feedback.
+
+## 2026-10-01 - Standardizing Required Form Indicators
+**Learning:** Writing out "(Required)" directly inside form `<legend>` or `<label>` elements creates unnecessary visual clutter and reduces scannability for sighted users. However, relying purely on visual cues without semantic meaning breaks accessibility.
+**Action:** Always use a standard, high-contrast asterisk (`<span class="text-red-600" aria-hidden="true">*</span>`) for required fields to maintain a clean visual hierarchy, paired with a visually hidden text (`<span class="sr-only"> (Required)</span>`) to ensure screen reader users receive the exact same semantic context.
