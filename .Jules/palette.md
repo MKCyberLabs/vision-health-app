@@ -121,3 +121,7 @@
 ## 2026-10-01 - Standardizing Required Form Indicators
 **Learning:** Writing out "(Required)" directly inside form `<legend>` or `<label>` elements creates unnecessary visual clutter and reduces scannability for sighted users. However, relying purely on visual cues without semantic meaning breaks accessibility.
 **Action:** Always use a standard, high-contrast asterisk (`<span class="text-red-600" aria-hidden="true">*</span>`) for required fields to maintain a clean visual hierarchy, paired with a visually hidden text (`<span class="sr-only"> (Required)</span>`) to ensure screen reader users receive the exact same semantic context.
+
+## 2026-10-02 - Keyboard Shortcuts for Action Buttons
+**Learning:** For transient modal dialogues or confirmation messages, users expect to use quick keyboard shortcuts (like Y/N) instead of clicking, which reduces friction. When buttons update dynamically or show loaders, explicitly specifying `flex` gaps and wrapping the inner text in `<span>` is necessary to prevent layout breakage from inline styles like `align-middle` that disrupt the button's layout structure.
+**Action:** Always provide explicit keyboard shortcut hints using styled `<kbd>` tags (with `aria-hidden="true"`) for common actions, pair them with robust `aria-label`s, and manage their click handlers gracefully using global `keydown` listeners. When updating button states programmatically, avoid overriding `innerHTML` with clashing inline display classes (like `inline-block`) if the button is designed as a flex container.
