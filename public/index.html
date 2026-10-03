@@ -57,7 +57,12 @@
                     </label>
                 </div>
                 <p id="dragPasteHint" class="text-sm text-center text-gray-600 font-medium mt-6"><span aria-hidden="true">💡</span> Pro tip: You can also drag & drop or paste an image here.</p>
-                <p id="fileError" class="hidden text-red-600 font-medium mt-3" role="alert">Please select or take an image first.</p>
+                <div id="fileError" tabindex="-1" role="alert" aria-live="assertive" class="hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400 text-red-600 font-medium text-lg mt-3 bg-red-50 p-4 rounded-xl border border-red-200 flex items-center gap-2 shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    <span id="fileErrorText">Please select or take an image first.</span>
+                </div>
             </fieldset>
 
             <div id="previewContainer" class="hidden mt-6 relative">
@@ -142,8 +147,11 @@
                     document.getElementById('dragPasteHint').classList.remove('hidden');
 
                     const fileError = document.getElementById('fileError');
-                    fileError.textContent = 'Please select a valid image file.';
+                    document.getElementById('fileErrorText').textContent = 'Please select a valid image file.';
                     fileError.classList.remove('hidden');
+                    fileError.focus();
+                    fileError.classList.add('animate-shake');
+                    setTimeout(() => fileError.classList.remove('animate-shake'), 400);
                     return;
                 }
 
@@ -159,14 +167,17 @@
                     document.getElementById('dragPasteHint').classList.remove('hidden');
 
                     const fileError = document.getElementById('fileError');
-                    fileError.textContent = 'File too large. Maximum size is 5MB.';
+                    document.getElementById('fileErrorText').textContent = 'File too large. Maximum size is 5MB.';
                     fileError.classList.remove('hidden');
+                    fileError.focus();
+                    fileError.classList.add('animate-shake');
+                    setTimeout(() => fileError.classList.remove('animate-shake'), 400);
                     return;
                 }
 
                 selectedFile = file;
                 const fileError = document.getElementById('fileError');
-                fileError.textContent = 'Please select or take an image first.';
+                document.getElementById('fileErrorText').textContent = 'Please select or take an image first.';
                 fileError.classList.add('hidden');
 
                 // Hide error message if an image was selected
