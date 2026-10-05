@@ -125,3 +125,7 @@
 ## 2026-10-02 - Keyboard Shortcuts for Action Buttons
 **Learning:** For transient modal dialogues or confirmation messages, users expect to use quick keyboard shortcuts (like Y/N) instead of clicking, which reduces friction. When buttons update dynamically or show loaders, explicitly specifying `flex` gaps and wrapping the inner text in `<span>` is necessary to prevent layout breakage from inline styles like `align-middle` that disrupt the button's layout structure.
 **Action:** Always provide explicit keyboard shortcut hints using styled `<kbd>` tags (with `aria-hidden="true"`) for common actions, pair them with robust `aria-label`s, and manage their click handlers gracefully using global `keydown` listeners. When updating button states programmatically, avoid overriding `innerHTML` with clashing inline display classes (like `inline-block`) if the button is designed as a flex container.
+
+## 2026-10-04 - Focus Management for Inline Validation Errors
+**Learning:** When dynamically rendering inline form validation errors (like file type or size limits) without focusing them, screen readers may not reliably announce the error immediately, and keyboard users lose context of the failure.
+**Action:** Always assign `tabindex="-1"` and `role="alert"` to the error container and programmatically call `.focus()` on it to ensure screen readers announce the validation failure immediately and keyboard focus is correctly managed. Also, enhance visual clarity with high-contrast icons and error boundaries.
