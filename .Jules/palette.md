@@ -129,3 +129,7 @@
 ## 2026-10-04 - Focus Management for Inline Validation Errors
 **Learning:** When dynamically rendering inline form validation errors (like file type or size limits) without focusing them, screen readers may not reliably announce the error immediately, and keyboard users lose context of the failure.
 **Action:** Always assign `tabindex="-1"` and `role="alert"` to the error container and programmatically call `.focus()` on it to ensure screen readers announce the validation failure immediately and keyboard focus is correctly managed. Also, enhance visual clarity with high-contrast icons and error boundaries.
+
+## 2026-10-05 - Robust Announcer for Dynamic Hidden Containers
+**Learning:** Using `aria-live` on a dynamically hidden and shown container (like a preview block with `display: none` or Tailwind's `hidden`) is unreliable across screen readers, often failing to announce updates correctly when the element is revealed.
+**Action:** Provide a dedicated, persistent, visually hidden (`sr-only`) `aria-live` element in the DOM solely for announcements, rather than placing `aria-live` attributes directly on elements that toggle visibility.
