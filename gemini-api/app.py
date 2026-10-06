@@ -73,6 +73,20 @@ from werkzeug.exceptions import HTTPException
 # Dictionary to hold live CLI processes and metadata in RAM
 active_sessions = {}
 
+def cleanup_expired_sessions():
+    now = time.time()
+    for sid in list(active_sessions.keys()):
+        session_data = active_sessions.get(sid)
+        if session_data and session_data.get("expires_at", 0) < now:
+            active_sessions.pop(sid, None)
+            safe_close_child(session_data.get("child"))
+            host_image_path = session_data.get("image_path")
+            if host_image_path and os.path.exists(host_image_path):
+                try:
+                    os.remove(host_image_path)
+                except Exception:
+                    pass
+
 def safe_close_child(child):
     if child and child.isalive():
         try:
@@ -146,7 +160,8 @@ def handle_cli_interaction(child, session_id, host_image_path):
             active_sessions[session_id] = {
                 "child": child,
                 "image_path": host_image_path,
-                "timestamp": time.time()
+                "timestamp": time.time(),
+                "expires_at": time.time() + 300
             }
             return jsonify({
                 "status": "needs_approval", 
@@ -195,6 +210,7 @@ def handle_cli_interaction(child, session_id, host_image_path):
 
 @app.route('/ask', methods=['POST'])
 def ask_gemini():
+    cleanup_expired_sessions()
     data = request.json
     if not isinstance(data, dict):
         data = {}
