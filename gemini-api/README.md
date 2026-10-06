@@ -44,6 +44,28 @@ Fallback is opt-in. For example, `ANALYSIS_FALLBACK_PROVIDER=openrouter` retries
 
 Do not use `agy -c` for HTTP requests. It continues the most recent conversation and can mix context between users. The service intentionally invokes stateless `agy -p` requests.
 
+## Shared Upload Volume & Permissions
+
+When NutriSnap runs in Docker and calls this native Python service, meal photos are uploaded to the container volume `/app/public/uploads` mapped to a canonical host path (e.g., `/opt/docker/containers/vision-health-app/temp`).
+
+1. **Configure host path in `.env`**:
+   ```env
+   SHARED_UPLOAD_DIR=/opt/docker/containers/vision-health-app/temp
+   ```
+   If `SHARED_UPLOAD_DIR` is unset, the service falls back to `HOST_TEMP_DIR` or `../temp`. Filenames are strictly sanitized to prevent directory traversal.
+
+2. **Production-safe directory permissions**:
+   To avoid world-writable `777` permissions while allowing both the Docker container process (e.g. `root`) and the Python host process user (e.g. `openclaw`) read/write access:
+   - Assign group ownership to the service group:
+     ```bash
+     sudo chown root:<service-group> /opt/docker/containers/vision-health-app/temp
+     ```
+   - Set mode `2770` with the setgid (`g+s`) bit enabled:
+     ```bash
+     sudo chmod 2770 /opt/docker/containers/vision-health-app/temp
+     ```
+   The setgid bit ensures all new files written by the container automatically inherit the shared service group, allowing the host Python service to read and analyze them while denying access to unrelated system users.
+
 ## Running the Server
 
 ### Option A: Foreground (Development)

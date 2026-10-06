@@ -79,6 +79,82 @@ class MealAnalysisRouteTests(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
         generate.assert_not_called()
 
+    def test_resolve_host_image_path_resolves_existing_file(self):
+        import tempfile
+        import os
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            test_file = os.path.join(tmp_dir, "meal-123.jpg")
+            with open(test_file, "w") as f:
+                f.write("image-bytes")
+            with patch.object(application, "HOST_TEMP_DIR", tmp_dir):
+                resolved = application.resolve_host_image_path("/uploads/meal-123.jpg")
+                self.assertEqual(resolved, test_file)
+
+    def test_resolve_host_image_path_fallback_to_default(self):
+        import tempfile
+        import os
+        with tempfile.TemporaryDirectory() as empty_shared, tempfile.TemporaryDirectory() as fallback_dir:
+            test_file = os.path.join(fallback_dir, "fallback-meal.jpg")
+            with open(test_file, "w") as f:
+                f.write("image-bytes")
+            with patch.object(application, "HOST_TEMP_DIR", empty_shared), \
+                 patch.object(application, "DEFAULT_TEMP_DIR", fallback_dir):
+                resolved = application.resolve_host_image_path("/uploads/fallback-meal.jpg")
+                self.assertEqual(resolved, test_file)
+
+
+    def test_ready_endpoint_success(self):
+        readiness = {
+            "ready": True,
+            "selected": {"text": "agy", "image": "agy"},
+            "checks": {"text": True, "image": True},
+            "providers": {"agy": {"configured": True}},
+        }
+        with patch.object(application.PROVIDER_ROUTER, "readiness", return_value=readiness):
+            response = self.client.get("/ready")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get_json()["status"], "ready")
+
+    def test_resolve_host_image_path_returns_none_for_empty(self):
+        self.assertIsNone(application.resolve_host_image_path(""))
+        self.assertIsNone(application.resolve_host_image_path(None))
+
+    def test_resolve_host_image_path_rejects_traversal(self):
+        traversal_paths = [
+            "../../etc/passwd",
+            "/uploads/../../secret.txt",
+            "..",
+            "../meal.jpg",
+            "/uploads/../temp/meal.jpg",
+        ]
+        for path in traversal_paths:
+            with self.subTest(path=path):
+                with self.assertRaises(ValueError) as ctx:
+                    application.resolve_host_image_path(path)
+                self.assertIn("traversal", str(ctx.exception).lower())
+
+    def test_resolve_host_image_path_rejects_invalid_filename(self):
+        invalid_paths = [".", "/"]
+        for path in invalid_paths:
+            with self.subTest(path=path):
+                with self.assertRaises(ValueError) as ctx:
+                    application.resolve_host_image_path(path)
+                self.assertIn("invalid", str(ctx.exception).lower())
+
+    def test_resolve_host_image_path_missing_file_raises_error(self):
+        with self.assertRaises(ValueError) as ctx:
+            application.resolve_host_image_path("/uploads/nonexistent-image.jpg")
+        self.assertIn("not found", str(ctx.exception).lower())
+
+    def test_health_matrix_traversal_image_returns_400(self):
+        with patch.object(application.PROVIDER_ROUTER, "generate") as generate:
+            response = self.client.post(
+                "/health-matrix", json={"imagePath": "/uploads/../../etc/passwd"}
+            )
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("error", response.get_json())
+        generate.assert_not_called()
+
 
 if __name__ == "__main__":
     unittest.main()

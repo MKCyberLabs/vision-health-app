@@ -28,7 +28,9 @@ load_dotenv()
 app = Flask(__name__)
 
 # ⚡ Bolt Optimization: Cache paths at module level to avoid repeated os.stat/I/O per request
-HOST_TEMP_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'temp'))
+DEFAULT_TEMP_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'temp'))
+SHARED_UPLOAD_DIR = os.environ.get("SHARED_UPLOAD_DIR") or os.environ.get("HOST_TEMP_DIR") or DEFAULT_TEMP_DIR
+HOST_TEMP_DIR = os.path.abspath(SHARED_UPLOAD_DIR)
 
 def get_agy_path():
     # 1. Check environment variable override
@@ -302,10 +304,25 @@ def reply_gemini():
 def resolve_host_image_path(image_path):
     if not image_path:
         return None
-    target_path = os.path.join(HOST_TEMP_DIR, os.path.basename(image_path))
-    if not os.path.isfile(target_path):
-        raise ValueError("Image file was not found in the shared upload directory.")
-    return target_path
+    if ".." in image_path or "\x00" in image_path:
+        raise ValueError("Path traversal detected.")
+    basename = os.path.basename(image_path)
+    if not basename or basename in ('.', '..') or '/' in basename or '\\' in basename:
+        raise ValueError("Invalid image filename.")
+
+    target_path = os.path.abspath(os.path.join(HOST_TEMP_DIR, basename))
+    if not target_path.startswith(os.path.abspath(HOST_TEMP_DIR) + os.sep):
+        raise ValueError("Path traversal detected.")
+    if os.path.isfile(target_path):
+        return target_path
+
+    fallback_path = os.path.abspath(os.path.join(DEFAULT_TEMP_DIR, basename))
+    if not fallback_path.startswith(os.path.abspath(DEFAULT_TEMP_DIR) + os.sep):
+        raise ValueError("Path traversal detected.")
+    if os.path.isfile(fallback_path):
+        return fallback_path
+
+    raise ValueError("Image file was not found in the shared upload directory.")
 
 
 def run_meal_analysis(data, prompt, host_image_path, telegram=False):
