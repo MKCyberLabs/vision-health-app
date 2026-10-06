@@ -78,7 +78,7 @@
                     </div>
                 </div>
                 <img id="imagePreview" src="" alt="Selected food preview" class="w-full max-h-[600px] object-cover rounded-2xl border-4 border-pink-200 shadow-md">
-                <p id="fileNameDisplay" class="text-md text-pink-700 font-medium mt-2" aria-live="polite"></p>
+            <p id="fileNameDisplay" class="text-md text-pink-700 font-medium mt-2"></p>
             </div>
 
             <div>
@@ -92,6 +92,8 @@
                 </div>
                 <div id="weight-limit-warning" class="sr-only" aria-live="polite"></div>
             </div>
+
+        <div id="announcer" class="sr-only" aria-live="polite"></div>
 
             <div id="formError" tabindex="-1" role="alert" aria-live="assertive" class="hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400 text-red-600 font-medium text-lg mt-2 mb-4 bg-red-50 p-4 rounded-xl border border-red-200 flex items-center gap-2 shadow-sm">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -201,6 +203,7 @@
                 // Display file size in MB
                 const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
                 document.getElementById('fileNameDisplay').textContent = `Selected file: ${file.name} (${fileSizeMB} MB)`;
+                document.getElementById('announcer').textContent = `Selected file: ${file.name} (${fileSizeMB} MB)`;
                 previewContainer.classList.remove('hidden');
 
                 // Move focus to clear image button to maintain keyboard context
@@ -236,6 +239,7 @@
             }
             imagePreview.src = '';
             document.getElementById('fileNameDisplay').textContent = '';
+            document.getElementById('announcer').textContent = 'Image cleared';
             previewContainer.classList.add('hidden');
             resultDiv.style.display = 'none';
 
