@@ -95,13 +95,6 @@
 
         <div id="announcer" class="sr-only" aria-live="polite"></div>
 
-            <div id="formError" tabindex="-1" role="alert" aria-live="assertive" class="hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400 text-red-600 font-medium text-lg mt-2 mb-4 bg-red-50 p-4 rounded-xl border border-red-200 flex items-center gap-2 shadow-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
-                <span id="formErrorText">Please select or take an image first.</span>
-            </div>
-
             <button id="submitBtn" type="submit" class="w-full flex justify-center items-center gap-3 bg-gradient-to-r from-pink-600 to-green-600 text-white font-bold text-2xl py-5 rounded-2xl hover:from-pink-700 hover:to-green-700 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1 focus:outline-none focus-visible:ring-4 focus-visible:ring-green-400 focus-visible:ring-offset-2 focus-visible:ring-offset-pink-50">
                 <span>Analyze Meal <span aria-hidden="true">✨</span></span>
             </button>
@@ -181,9 +174,6 @@
                 const fileError = document.getElementById('fileError');
                 document.getElementById('fileErrorText').textContent = 'Please select or take an image first.';
                 fileError.classList.add('hidden');
-
-                // Hide error message if an image was selected
-                document.getElementById('formError').classList.add('hidden');
 
                 // Hide drop zone to reduce clutter
                 dropZone.classList.add('hidden');
@@ -314,13 +304,13 @@
             e.preventDefault();
 
             if (!selectedFile) {
-                const formError = document.getElementById('formError');
-                formError.classList.remove('hidden');
-                formError.focus(); // Shift focus to error message for screen readers and keyboard users
+                const fileError = document.getElementById('fileError');
+                fileError.classList.remove('hidden');
+                fileError.focus(); // Shift focus to error message for screen readers and keyboard users
 
                 // Add a gentle shake animation to draw attention
-                formError.classList.add('animate-shake');
-                setTimeout(() => formError.classList.remove('animate-shake'), 400);
+                fileError.classList.add('animate-shake');
+                setTimeout(() => fileError.classList.remove('animate-shake'), 400);
                 return;
             }
 
