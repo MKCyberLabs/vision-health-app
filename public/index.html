@@ -100,7 +100,7 @@
             </button>
         </form>
 
-        <div id="loading" role="status" aria-live="polite" class="text-2xl text-pink-600 italic font-medium text-center mt-10 animate-pulse">
+        <div id="loading" class="text-2xl text-pink-600 italic font-medium text-center mt-10 animate-pulse">
             Analyzing your meal... <span aria-hidden="true">🌸</span> Please wait.
         </div>
         <div id="result" tabindex="-1" aria-live="polite" class="mt-10 bg-green-50 text-green-900 p-8 rounded-2xl border-2 border-green-200 text-xl md:text-2xl leading-relaxed whitespace-pre-wrap shadow-inner font-medium focus:outline-none focus-visible:ring-4 focus-visible:ring-green-400"></div>
@@ -320,16 +320,8 @@
 
             loading.style.display = 'block';
             resultDiv.style.display = 'none';
+            document.getElementById('announcer').textContent = 'Analyzing your meal... Please wait.';
             setLoadingState();
-
-            submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
-            submitBtn.innerHTML = `
-                <svg class="animate-spin h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                <span>Analyzing...</span>
-            `;
 
             try {
                 const response = await fetch('/analyze', { method: 'POST', body: formData });
