@@ -138,6 +138,10 @@
 **Learning:** Using `aria-live` on a dynamically hidden and shown container (like a preview block with `display: none` or Tailwind's `hidden`) is unreliable across screen readers, often failing to announce updates correctly when the element is revealed.
 **Action:** Provide a dedicated, persistent, visually hidden (`sr-only`) `aria-live` element in the DOM solely for announcements, rather than placing `aria-live` attributes directly on elements that toggle visibility.
 
+## 2026-10-08 - Contextual Focus During Async Operations
+**Learning:** When an active element (e.g., a submit button) is disabled during an async operation, keyboard focus resets to the document body. To prevent disorientation for screen reader and keyboard users, programmatically shift focus to a relevant element (e.g., a loading container with `tabindex="-1"`) immediately before disabling the button.
+**Action:** Always programmatically shift focus to a relevant contextual element (like a loading state or alert container) using `.focus()` just before disabling the active element that triggered the async operation.
+
 ## 2026-10-06 - Contextual Focus for Form Validation
 **Learning:** Duplicating form validation error messages (like generic "file required" errors near the submit button when an identical inline error exists near the file inputs) creates confusion. When focus is moved to the bottom of the form for the generic error, screen reader and keyboard users lose their contextual place relative to the actual input that needs attention.
 **Action:** Consolidate validation messages into a single, inline error placed directly near the relevant input field. When validation fails on submit, programmatically focus that specific inline error container to instantly direct the user to the exact field that requires correction.
