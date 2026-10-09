@@ -138,6 +138,10 @@
 **Learning:** Using `aria-live` on a dynamically hidden and shown container (like a preview block with `display: none` or Tailwind's `hidden`) is unreliable across screen readers, often failing to announce updates correctly when the element is revealed.
 **Action:** Provide a dedicated, persistent, visually hidden (`sr-only`) `aria-live` element in the DOM solely for announcements, rather than placing `aria-live` attributes directly on elements that toggle visibility.
 
+## 2026-10-09 - Screen Reader Announcements for Secondary Async Actions
+**Learning:** It's easy to remember screen reader announcements for primary form submissions, but secondary asynchronous actions (like interactive confirmation dialogues) are often overlooked, leaving assistive tech users waiting in silence when they click "Confirm" or "Cancel".
+**Action:** Always ensure secondary async interactions trigger an `aria-live` announcement (via a dedicated announcer element) in addition to updating visual button states.
+
 ## 2026-10-08 - Contextual Focus During Async Operations
 **Learning:** When an active element (e.g., a submit button) is disabled during an async operation, keyboard focus resets to the document body. To prevent disorientation for screen reader and keyboard users, programmatically shift focus to a relevant element (e.g., a loading container with `tabindex="-1"`) immediately before disabling the button.
 **Action:** Always programmatically shift focus to a relevant contextual element (like a loading state or alert container) using `.focus()` just before disabling the active element that triggered the async operation.
