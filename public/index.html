@@ -398,6 +398,9 @@
                 originalYesHtml = btnYes.innerHTML;
                 originalNoHtml = btnNo.innerHTML;
 
+                // Shift focus to prevent losing context when buttons disable
+                resultDiv.focus();
+
                 btnYes.disabled = true;
                 btnNo.disabled = true;
                 btnYes.classList.add('opacity-70', 'cursor-not-allowed');
@@ -412,8 +415,10 @@
 
                 if (answer === 'y') {
                     btnYes.innerHTML = spinner + '<span>Confirming...</span>';
+                    document.getElementById('announcer').textContent = 'Confirming... Please wait.';
                 } else {
                     btnNo.innerHTML = spinner + '<span>Canceling...</span>';
+                    document.getElementById('announcer').textContent = 'Canceling... Please wait.';
                 }
             } else {
                 // Fallback if buttons aren't found for some reason
